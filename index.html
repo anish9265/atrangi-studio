@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google Review Assistant</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Review Assistant</title>
 
   <style>
     * {
@@ -12,433 +13,782 @@
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f5f7;
-      color: #222;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 480px;
-      margin: auto;
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+      background:
+        radial-gradient(circle at top, #fff7df 0%, #f7f8fc 42%, #eef1f7 100%);
+      color: #171717;
       min-height: 100vh;
-      background: white;
-      padding: 20px;
     }
 
-    .business-card {
-      background: linear-gradient(135deg, #4f46e5, #6d5dfc);
-      color: white;
-      padding: 22px;
-      border-radius: 18px;
+    .page {
+      width: 100%;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 28px 18px 40px;
+    }
+
+    .brand {
+      text-align: center;
       margin-bottom: 22px;
     }
 
+    .brand-icon {
+      width: 54px;
+      height: 54px;
+      margin: 0 auto 12px;
+      border-radius: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #111827;
+      color: #fff;
+      font-size: 27px;
+      box-shadow: 0 10px 25px rgba(17, 24, 39, 0.16);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+    }
+
     .business-name {
-      font-size: 23px;
-      font-weight: bold;
-      margin-bottom: 7px;
+      margin-top: 8px;
+      color: #6b7280;
+      font-size: 15px;
     }
 
-    .business-subtitle {
-      font-size: 14px;
-      opacity: 0.9;
+    .card {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 15px 45px rgba(31, 41, 55, 0.08);
+      backdrop-filter: blur(10px);
     }
 
-    h2 {
-      font-size: 19px;
-      margin: 20px 0 12px;
+    .section {
+      margin-bottom: 25px;
     }
+
+    .section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .section-subtitle {
+      font-size: 13px;
+      color: #737373;
+      margin-bottom: 15px;
+      line-height: 1.45;
+    }
+
+    /* Stars */
 
     .stars {
       display: flex;
       justify-content: center;
-      gap: 8px;
-      margin: 15px 0 25px;
+      gap: 7px;
+      margin: 8px 0 5px;
     }
 
-    .star {
-      border: none;
-      background: #f1f1f1;
-      width: 54px;
-      height: 54px;
-      border-radius: 50%;
-      font-size: 27px;
+    .star-btn {
+      border: 0;
+      background: #f4f4f5;
+      width: 56px;
+      height: 56px;
+      border-radius: 17px;
+      font-size: 28px;
       cursor: pointer;
+      transition:
+        transform 0.16s ease,
+        background 0.16s ease,
+        box-shadow 0.16s ease;
     }
 
-    .star.selected {
-      background: #fff1b8;
+    .star-btn:hover {
+      transform: translateY(-2px);
     }
 
-    .experiences {
+    .star-btn.selected {
+      background: #fff4c7;
+      box-shadow: 0 7px 18px rgba(245, 158, 11, 0.18);
+      transform: translateY(-2px) scale(1.03);
+    }
+
+    .rating-text {
+      text-align: center;
+      min-height: 22px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #8a6200;
+      margin-top: 7px;
+    }
+
+    /* Experience chips */
+
+    .chips {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
     }
 
-    .experience {
-      border: 1px solid #ddd;
-      background: white;
-      padding: 11px 15px;
-      border-radius: 30px;
-      cursor: pointer;
+    .chip {
+      border: 1px solid #e5e7eb;
+      background: #fafafa;
+      color: #404040;
+      padding: 11px 14px;
+      border-radius: 999px;
       font-size: 14px;
-    }
-
-    .experience.selected {
-      background: #eeeaff;
-      border-color: #5b4df5;
-      color: #4b3de0;
-    }
-
-    .generate-btn,
-    .copy-btn,
-    .google-btn {
-      width: 100%;
-      border: none;
-      border-radius: 13px;
-      padding: 15px;
-      font-size: 16px;
-      font-weight: bold;
       cursor: pointer;
-      margin-top: 18px;
+      transition: all 0.15s ease;
     }
+
+    .chip:hover {
+      border-color: #cfcfcf;
+      background: #f5f5f5;
+    }
+
+    .chip.selected {
+      background: #111827;
+      color: #fff;
+      border-color: #111827;
+    }
+
+    /* Main button */
 
     .generate-btn {
-      background: #111;
-      color: white;
+      width: 100%;
+      border: 0;
+      border-radius: 15px;
+      padding: 15px 18px;
+      background: #111827;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+      margin-top: 5px;
     }
 
-    .copy-btn {
-      background: #4f46e5;
-      color: white;
+    .generate-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .generate-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Review */
+
+    .review-section {
+      display: none;
+      margin-top: 24px;
+    }
+
+    .review-section.show {
+      display: block;
+    }
+
+    .review-card {
+      background: #fafafa;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 145px;
+      resize: vertical;
+      border: 1px solid #dedede;
+      border-radius: 14px;
+      padding: 14px;
+      font-family: inherit;
+      font-size: 15px;
+      line-height: 1.55;
+      outline: none;
+      background: #fff;
+    }
+
+    textarea:focus {
+      border-color: #111827;
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.07);
+    }
+
+    .review-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .action-btn {
+      border-radius: 13px;
+      padding: 13px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid #dedede;
+      background: #fff;
+      color: #222;
     }
 
     .google-btn {
-      background: #34a853;
-      color: white;
+      background: #111827;
+      color: #fff;
+      border-color: #111827;
     }
 
-    .review-box {
-      width: 100%;
-      min-height: 130px;
-      margin-top: 15px;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 13px;
-      resize: vertical;
-      font-size: 15px;
-      line-height: 1.5;
-    }
-
-    .hidden {
-      display: none;
+    .copied {
+      background: #ecfdf5 !important;
+      color: #047857 !important;
+      border-color: #a7f3d0 !important;
     }
 
     .note {
+      margin-top: 17px;
       text-align: center;
-      color: #777;
       font-size: 12px;
-      margin-top: 18px;
       line-height: 1.5;
+      color: #8a8a8a;
     }
 
     .loading {
+      display: none;
       text-align: center;
-      margin-top: 15px;
-      color: #555;
+      padding: 12px;
       font-size: 14px;
+      color: #666;
+    }
+
+    .loading.show {
+      display: block;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #ddd;
+      border-top-color: #111827;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: -3px;
+      margin-right: 7px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .error {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #fff1f2;
+      color: #be123c;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .error.show {
+      display: block;
+    }
+
+    @media (max-width: 480px) {
+      .page {
+        padding: 20px 13px 30px;
+      }
+
+      .card {
+        padding: 19px;
+        border-radius: 21px;
+      }
+
+      .star-btn {
+        width: 52px;
+        height: 52px;
+        font-size: 26px;
+      }
+
+      .review-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .brand h1 {
+        font-size: 23px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-<div class="container">
+  <main class="page">
 
-  <div class="business-card">
-    <div class="business-name" id="businessName">
-      Sharma Restaurant
+    <div class="brand">
+      <div class="brand-icon">✦</div>
+
+      <h1>Share Your Experience</h1>
+
+      <div class="business-name" id="businessName">
+        Loading business...
+      </div>
     </div>
 
-    <div class="business-subtitle">
-      Share your genuine experience
+    <div class="card">
+
+      <!-- Rating -->
+      <section class="section">
+
+        <div class="section-title">
+          How was your experience?
+        </div>
+
+        <div class="section-subtitle">
+          Select the rating that honestly matches your experience.
+        </div>
+
+        <div class="stars">
+
+          <button class="star-btn" data-rating="1" type="button">⭐</button>
+          <button class="star-btn" data-rating="2" type="button">⭐</button>
+          <button class="star-btn" data-rating="3" type="button">⭐</button>
+          <button class="star-btn" data-rating="4" type="button">⭐</button>
+          <button class="star-btn" data-rating="5" type="button">⭐</button>
+
+        </div>
+
+        <div class="rating-text" id="ratingText"></div>
+
+      </section>
+
+      <!-- Experience -->
+      <section class="section">
+
+        <div class="section-title">
+          What did you like or notice?
+        </div>
+
+        <div class="section-subtitle">
+          Select whatever genuinely matches your experience.
+        </div>
+
+        <div class="chips">
+
+          <button class="chip" type="button" data-experience="Staff">👥 Friendly staff</button>
+
+          <button class="chip" type="button" data-experience="Service">⚡ Good service</button>
+
+          <button class="chip" type="button" data-experience="Quality">✨ Good quality</button>
+
+          <button class="chip" type="button" data-experience="Price">💰 Good value</button>
+
+          <button class="chip" type="button" data-experience="Cleanliness">🧼 Clean</button>
+
+          <button class="chip" type="button" data-experience="Overall experience">❤️ Overall experience</button>
+
+        </div>
+
+      </section>
+
+      <button class="generate-btn" id="generateBtn" type="button">
+        ✨ Generate My Review
+      </button>
+
+      <div class="loading" id="loading">
+        <span class="spinner"></span>
+        Creating your review...
+      </div>
+
+      <div class="error" id="error"></div>
+
+      <!-- Review -->
+      <section class="review-section" id="reviewSection">
+
+        <div class="section-title">
+          Your review
+        </div>
+
+        <div class="section-subtitle">
+          You can edit the review before posting it.
+        </div>
+
+        <div class="review-card">
+
+          <textarea id="reviewText"></textarea>
+
+          <div class="review-actions">
+
+            <button class="action-btn" id="copyBtn" type="button">
+              📋 Copy Review
+            </button>
+
+            <button class="action-btn google-btn" id="googleBtn" type="button">
+              ⭐ Google par Review Karein
+            </button>
+
+          </div>
+
+        </div>
+
+        <div class="note">
+          Your review should reflect your genuine experience. You can edit it before posting.
+        </div>
+
+      </section>
+
     </div>
-  </div>
 
-  <h2>How was your experience?</h2>
-
-  <div class="stars">
-    <button class="star" onclick="selectRating(1)">⭐</button>
-    <button class="star" onclick="selectRating(2)">⭐</button>
-    <button class="star" onclick="selectRating(3)">⭐</button>
-    <button class="star" onclick="selectRating(4)">⭐</button>
-    <button class="star" onclick="selectRating(5)">⭐</button>
-  </div>
-
-  <h2>What did you experience?</h2>
-
-  <div class="experiences">
-
-    <button class="experience" onclick="toggleExperience(this)">
-      Staff
-    </button>
-
-    <button class="experience" onclick="toggleExperience(this)">
-      Service
-    </button>
-
-    <button class="experience" onclick="toggleExperience(this)">
-      Quality
-    </button>
-
-    <button class="experience" onclick="toggleExperience(this)">
-      Price
-    </button>
-
-    <button class="experience" onclick="toggleExperience(this)">
-      Cleanliness
-    </button>
-
-    <button class="experience" onclick="toggleExperience(this)">
-      Overall
-    </button>
-
-  </div>
-
-  <button class="generate-btn" onclick="generateReview()">
-    Generate Review
-  </button>
-
-  <div id="loading" class="loading hidden">
-    Creating your review...
-  </div>
-
-  <div id="reviewSection" class="hidden">
-
-    <h2>Your Review</h2>
-
-    <textarea id="reviewText" class="review-box"></textarea>
-
-    <button class="copy-btn" onclick="copyAndContinue()">
-      📋 Copy Review & Continue
-    </button>
-
-    <button class="google-btn" onclick="openGoogleReview()">
-      ⭐ Google par Review Karein
-    </button>
-
-  </div>
-
-  <div class="note">
-    Your review should reflect your genuine experience.
-    You can edit the review before posting.
-  </div>
-
-</div>
+  </main>
 
 
-<script>
+  <script>
 
-  let selectedRating = 0;
-  let selectedExperiences = [];
+    let selectedRating = null;
+    let business = null;
 
-  // Temporary Google review link.
-  // Later this will come automatically from Supabase.
-  let googleReviewUrl = "#";
+    const ratingText = document.getElementById("ratingText");
+    const businessNameEl = document.getElementById("businessName");
+    const generateBtn = document.getElementById("generateBtn");
+    const loading = document.getElementById("loading");
+    const errorBox = document.getElementById("error");
+    const reviewSection = document.getElementById("reviewSection");
+    const reviewText = document.getElementById("reviewText");
+    const copyBtn = document.getElementById("copyBtn");
+    const googleBtn = document.getElementById("googleBtn");
 
 
-  function selectRating(rating) {
+    // -------------------------
+    // Get business slug
+    // -------------------------
 
-    selectedRating = rating;
+    function getSlug() {
 
-    const stars = document.querySelectorAll(".star");
+      const parts = window.location.pathname.split("/").filter(Boolean);
 
-    stars.forEach((star, index) => {
+      const rIndex = parts.indexOf("r");
 
-      if (index < rating) {
-        star.classList.add("selected");
-      } else {
-        star.classList.remove("selected");
+      if (rIndex !== -1 && parts[rIndex + 1]) {
+        return parts[rIndex + 1];
+      }
+
+      return "sharma-restaurant";
+    }
+
+
+    // -------------------------
+    // Load business
+    // -------------------------
+
+    async function loadBusiness() {
+
+      try {
+
+        const slug = getSlug();
+
+        const response = await fetch(
+          `/api/business?slug=${encodeURIComponent(slug)}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Business not found");
+        }
+
+        business = await response.json();
+
+        businessNameEl.textContent = business.name;
+
+        document.title =
+          `${business.name} | Share Your Experience`;
+
+      } catch (error) {
+
+        businessNameEl.textContent =
+          "Business could not be loaded";
+
+        showError(
+          "We couldn't load this business. Please try again."
+        );
+
+      }
+
+    }
+
+
+    // -------------------------
+    // Rating
+    // -------------------------
+
+    const starButtons =
+      document.querySelectorAll(".star-btn");
+
+    const ratingMessages = {
+      1: "1 star selected",
+      2: "2 stars selected",
+      3: "3 stars selected",
+      4: "4 stars selected",
+      5: "5 stars selected"
+    };
+
+
+    starButtons.forEach(button => {
+
+      button.addEventListener("click", () => {
+
+        selectedRating =
+          Number(button.dataset.rating);
+
+        starButtons.forEach(star => {
+
+          const value =
+            Number(star.dataset.rating);
+
+          star.classList.toggle(
+            "selected",
+            value <= selectedRating
+          );
+
+        });
+
+        ratingText.textContent =
+          ratingMessages[selectedRating];
+
+        errorBox.classList.remove("show");
+
+      });
+
+    });
+
+
+    // -------------------------
+    // Experience chips
+    // -------------------------
+
+    const chips =
+      document.querySelectorAll(".chip");
+
+    chips.forEach(chip => {
+
+      chip.addEventListener("click", () => {
+
+        chip.classList.toggle("selected");
+
+      });
+
+    });
+
+
+    // -------------------------
+    // Generate review
+    // -------------------------
+
+    generateBtn.addEventListener("click", async () => {
+
+      errorBox.classList.remove("show");
+
+      if (!selectedRating) {
+
+        showError(
+          "Please select a star rating first."
+        );
+
+        return;
+      }
+
+
+      const experiences =
+        Array.from(
+          document.querySelectorAll(".chip.selected")
+        ).map(chip => chip.dataset.experience);
+
+
+      if (experiences.length === 0) {
+
+        showError(
+          "Please select at least one experience."
+        );
+
+        return;
+      }
+
+
+      generateBtn.disabled = true;
+      loading.classList.add("show");
+
+
+      try {
+
+        const response = await fetch(
+          "/api/generate-review",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+              businessName: business?.name || "this business",
+              rating: selectedRating,
+              experiences
+            })
+          }
+        );
+
+
+        if (!response.ok) {
+          throw new Error("Review generation failed");
+        }
+
+
+        const data = await response.json();
+
+
+        if (!data.review) {
+          throw new Error("No review generated");
+        }
+
+
+        reviewText.value = data.review;
+
+        reviewSection.classList.add("show");
+
+        reviewSection.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+
+      } catch (error) {
+
+        showError(
+          "Something went wrong while creating the review. Please try again."
+        );
+
+      } finally {
+
+        generateBtn.disabled = false;
+        loading.classList.remove("show");
+
       }
 
     });
 
-  }
+
+    // -------------------------
+    // Copy review
+    // -------------------------
+
+    copyBtn.addEventListener("click", async () => {
+
+      const text =
+        reviewText.value.trim();
+
+      if (!text) return;
 
 
-  function toggleExperience(button) {
+      try {
 
-    const experience = button.innerText.trim();
+        await navigator.clipboard.writeText(text);
 
-    button.classList.toggle("selected");
+        copyBtn.textContent =
+          "✓ Review Copied";
 
-    if (selectedExperiences.includes(experience)) {
-
-      selectedExperiences =
-        selectedExperiences.filter(item => item !== experience);
-
-    } else {
-
-      selectedExperiences.push(experience);
-
-    }
-
-  }
+        copyBtn.classList.add("copied");
 
 
-  async function generateReview() {
+        setTimeout(() => {
 
-    if (selectedRating === 0) {
-      alert("Please select a rating first.");
-      return;
-    }
+          copyBtn.textContent =
+            "📋 Copy Review";
 
-    if (selectedExperiences.length === 0) {
-      alert("Please select at least one experience.");
-      return;
-    }
+          copyBtn.classList.remove("copied");
 
-    document.getElementById("loading").classList.remove("hidden");
-
-    document.getElementById("reviewSection").classList.add("hidden");
+        }, 1800);
 
 
-    /*
-      Later this request will go to our secure Vercel backend.
-      The backend will send the information to Gemini AI.
-    */
+      } catch (error) {
 
-    try {
+        reviewText.select();
 
-      const response = await fetch("/api/generate-review", {
+        document.execCommand("copy");
 
-        method: "POST",
+        copyBtn.textContent =
+          "✓ Review Copied";
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+      }
 
-        body: JSON.stringify({
-
-          businessName:
-            document.getElementById("businessName").innerText,
-
-          rating: selectedRating,
-
-          experiences: selectedExperiences
-
-        })
-
-      });
+    });
 
 
-      if (!response.ok) {
-        throw new Error("API not ready");
+    // -------------------------
+    // Google review
+    // -------------------------
+
+    googleBtn.addEventListener("click", () => {
+
+      if (
+        !business ||
+        !business.google_review_url
+      ) {
+
+        showError(
+          "Google review link is not available yet."
+        );
+
+        return;
+
       }
 
 
-      const data = await response.json();
-
-      document.getElementById("reviewText").value =
-        data.review;
-
-    } catch (error) {
-
-      /*
-        Temporary fallback.
-        The real AI version will replace this
-        after we connect Gemini.
-      */
-
-      document.getElementById("reviewText").value =
-        createTemporaryReview();
-
-    }
-
-
-    document.getElementById("loading").classList.add("hidden");
-
-    document.getElementById("reviewSection").classList.remove("hidden");
-
-  }
-
-
-  function createTemporaryReview() {
-
-    const ratingText = {
-
-      1: "I was not very satisfied with my experience.",
-      2: "My experience was okay, but there is room for improvement.",
-      3: "Overall, I had an average experience.",
-      4: "I had a good experience overall.",
-      5: "I had a great experience overall."
-
-    };
-
-
-    let experienceText =
-      selectedExperiences.join(", ").toLowerCase();
-
-
-    return ratingText[selectedRating] +
-      " I especially noticed the " +
-      experienceText +
-      ".";
-  }
-
-
-  async function copyAndContinue() {
-
-    const review =
-      document.getElementById("reviewText").value.trim();
-
-    if (!review) {
-      alert("Please generate a review first.");
-      return;
-    }
-
-    try {
-
-      await navigator.clipboard.writeText(review);
-
-    } catch (error) {
-
-      const textarea =
-        document.getElementById("reviewText");
-
-      textarea.select();
-
-      document.execCommand("copy");
-
-    }
-
-
-    openGoogleReview();
-
-  }
-
-
-  function openGoogleReview() {
-
-    if (googleReviewUrl === "#") {
-
-      alert(
-        "Google Review link will be connected after we set up the business database."
+      window.open(
+        business.google_review_url,
+        "_blank"
       );
 
-      return;
+    });
+
+
+    // -------------------------
+    // Error helper
+    // -------------------------
+
+    function showError(message) {
+
+      errorBox.textContent = message;
+
+      errorBox.classList.add("show");
+
     }
 
-    window.open(
-      googleReviewUrl,
-      "_blank"
-    );
 
-  }
+    // -------------------------
+    // Start
+    // -------------------------
 
-</script>
+    loadBusiness();
+
+  </script>
 
 </body>
 </html>
