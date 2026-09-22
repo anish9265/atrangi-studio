@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atrangi Studio - Google Review Assistant</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: white;
+      padding: 28px 20px;
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #777;
+      font-size: 14px;
+      margin-bottom: 35px;
+    }
+
+    h1 {
+      font-size: 24px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .business {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 28px;
+    }
+
+    .question {
+      text-align: center;
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+
+    .stars {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 30px;
+    }
+
+    .star {
+      border: none;
+      background: #eee;
+      border-radius: 10px;
+      font-size: 28px;
+      width: 52px;
+      height: 52px;
+      cursor: pointer;
+    }
+
+    .star.selected {
+      background: #222;
+      color: white;
+    }
+
+    .experiences {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .experience {
+      padding: 14px 10px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .experience.selected {
+      background: #222;
+      color: white;
+      border-color: #222;
+    }
+
+    .generate {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: #111;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .review-box {
+      display: none;
+      margin-top: 25px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 130px;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      resize: vertical;
+      font-size: 15px;
+    }
+
+    .buttons {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .copy,
+    .google {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .copy {
+      background: #eee;
+      color: #222;
+    }
+
+    .google {
+      background: #111;
+      color: white;
+    }
+
+    .note {
+      text-align: center;
+      color: #888;
+      font-size: 12px;
+      margin-top: 25px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="logo">Atrangi Studio</div>
+
+    <div class="subtitle">
+      Google Review Assistant
+    </div>
+
+    <h1>How was your experience?</h1>
+
+    <div class="business">
+      Sharma Restaurant
+    </div>
+
+    <div class="question">
+      Select your rating
+    </div>
+
+    <div class="stars">
+      <button class="star" onclick="selectRating(1)">1</button>
+      <button class="star" onclick="selectRating(2)">2</button>
+      <button class="star" onclick="selectRating(3)">3</button>
+      <button class="star" onclick="selectRating(4)">4</button>
+      <button class="star" onclick="selectRating(5)">5</button>
+    </div>
+
+    <div class="question">
+      What did you experience?
+    </div>
+
+    <div class="experiences">
+      <button class="experience" onclick="toggleExperience(this)">Staff</button>
+      <button class="experience" onclick="toggleExperience(this)">Service</button>
+      <button class="experience" onclick="toggleExperience(this)">Quality</button>
+      <button class="experience" onclick="toggleExperience(this)">Price</button>
+      <button class="experience" onclick="toggleExperience(this)">Cleanliness</button>
+      <button class="experience" onclick="toggleExperience(this)">Overall</button>
+    </div>
+
+    <button class="generate" onclick="generateReview()">
+      Generate Review
+    </button>
+
+    <div class="review-box" id="reviewBox">
+
+      <textarea id="reviewText"></textarea>
+
+      <div class="buttons">
+        <button class="copy" onclick="copyReview()">
+          Copy Review
+        </button>
+
+        <button class="google" onclick="openGoogle()">
+          Google par Review Karein
+        </button>
+      </div>
+
+    </div>
+
+    <div class="note">
+      Your review should reflect your genuine experience.
+      You can edit the review before posting.
+    </div>
+
+  </div>
+
+  <script>
+
+    let rating = 0;
+
+    function selectRating(value) {
+      rating = value;
+
+      const stars = document.querySelectorAll(".star");
+
+      stars.forEach((star, index) => {
+        if (index < value) {
+          star.classList.add("selected");
+        } else {
+          star.classList.remove("selected");
+        }
+      });
+    }
+
+    function toggleExperience(button) {
+      button.classList.toggle("selected");
+    }
+
+    function generateReview() {
+
+      if (rating === 0) {
+        alert("Please select a rating first.");
+        return;
+      }
+
+      const selected = document.querySelectorAll(".experience.selected");
+
+      let experiences = [];
+
+      selected.forEach(item => {
+        experiences.push(item.innerText);
+      });
+
+      let review = "";
+
+      if (rating >= 4) {
+
+        review =
+          "I had a good experience at Sharma Restaurant. " +
+          (experiences.length
+            ? "I especially liked the " + experiences.join(", ").toLowerCase() + ". "
+            : "") +
+          "Overall, it was a nice experience.";
+
+      } else if (rating === 3) {
+
+        review =
+          "My experience at Sharma Restaurant was average. " +
+          (experiences.length
+            ? "The main things I noticed were " + experiences.join(", ").toLowerCase() + ". "
+            : "") +
+          "There is still some room for improvement.";
+
+      } else {
+
+        review =
+          "My experience at Sharma Restaurant was not very satisfactory. " +
+          (experiences.length
+            ? "I noticed some issues with " + experiences.join(", ").toLowerCase() + ". "
+            : "") +
+          "I hope the experience improves in the future.";
+      }
+
+      document.getElementById("reviewText").value = review;
+      document.getElementById("reviewBox").style.display = "block";
+    }
+
+    function copyReview() {
+
+      const text = document.getElementById("reviewText").value;
+
+      navigator.clipboard.writeText(text);
+
+      alert("Review copied!");
+    }
+
+    function openGoogle() {
+
+      alert("Google Review link will be connected later.");
+    }
+
+  </script>
+
+</body>
+</html>
