@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Atrangi Studio - Google Review Assistant</title>
+  <title>Google Review Assistant</title>
 
   <style>
     * {
@@ -13,311 +13,432 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
+      background: #f5f5f7;
       color: #222;
     }
 
     .container {
+      width: 100%;
       max-width: 480px;
-      margin: 0 auto;
+      margin: auto;
       min-height: 100vh;
       background: white;
-      padding: 28px 20px;
+      padding: 20px;
     }
 
-    .logo {
-      text-align: center;
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 8px;
+    .business-card {
+      background: linear-gradient(135deg, #4f46e5, #6d5dfc);
+      color: white;
+      padding: 22px;
+      border-radius: 18px;
+      margin-bottom: 22px;
     }
 
-    .subtitle {
-      text-align: center;
-      color: #777;
+    .business-name {
+      font-size: 23px;
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    .business-subtitle {
       font-size: 14px;
-      margin-bottom: 35px;
+      opacity: 0.9;
     }
 
-    h1 {
-      font-size: 24px;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    .business {
-      text-align: center;
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 28px;
-    }
-
-    .question {
-      text-align: center;
-      font-size: 16px;
-      margin-bottom: 15px;
+    h2 {
+      font-size: 19px;
+      margin: 20px 0 12px;
     }
 
     .stars {
       display: flex;
       justify-content: center;
       gap: 8px;
-      margin-bottom: 30px;
+      margin: 15px 0 25px;
     }
 
     .star {
       border: none;
-      background: #eee;
-      border-radius: 10px;
-      font-size: 28px;
-      width: 52px;
-      height: 52px;
+      background: #f1f1f1;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      font-size: 27px;
       cursor: pointer;
     }
 
     .star.selected {
-      background: #222;
-      color: white;
+      background: #fff1b8;
     }
 
     .experiences {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 25px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .experience {
-      padding: 14px 10px;
       border: 1px solid #ddd;
       background: white;
-      border-radius: 10px;
+      padding: 11px 15px;
+      border-radius: 30px;
       cursor: pointer;
       font-size: 14px;
     }
 
     .experience.selected {
-      background: #222;
-      color: white;
-      border-color: #222;
+      background: #eeeaff;
+      border-color: #5b4df5;
+      color: #4b3de0;
     }
 
-    .generate {
+    .generate-btn,
+    .copy-btn,
+    .google-btn {
       width: 100%;
-      padding: 16px;
       border: none;
-      border-radius: 12px;
+      border-radius: 13px;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 18px;
+    }
+
+    .generate-btn {
       background: #111;
       color: white;
-      font-size: 16px;
-      cursor: pointer;
+    }
+
+    .copy-btn {
+      background: #4f46e5;
+      color: white;
+    }
+
+    .google-btn {
+      background: #34a853;
+      color: white;
     }
 
     .review-box {
-      display: none;
-      margin-top: 25px;
-    }
-
-    textarea {
       width: 100%;
       min-height: 130px;
-      padding: 14px;
+      margin-top: 15px;
+      padding: 15px;
       border: 1px solid #ddd;
-      border-radius: 10px;
+      border-radius: 13px;
       resize: vertical;
       font-size: 15px;
+      line-height: 1.5;
     }
 
-    .buttons {
-      display: grid;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .copy,
-    .google {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
-    .copy {
-      background: #eee;
-      color: #222;
-    }
-
-    .google {
-      background: #111;
-      color: white;
+    .hidden {
+      display: none;
     }
 
     .note {
       text-align: center;
-      color: #888;
+      color: #777;
       font-size: 12px;
-      margin-top: 25px;
+      margin-top: 18px;
       line-height: 1.5;
+    }
+
+    .loading {
+      text-align: center;
+      margin-top: 15px;
+      color: #555;
+      font-size: 14px;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <div class="logo">Atrangi Studio</div>
-
-    <div class="subtitle">
-      Google Review Assistant
-    </div>
-
-    <h1>How was your experience?</h1>
-
-    <div class="business">
+  <div class="business-card">
+    <div class="business-name" id="businessName">
       Sharma Restaurant
     </div>
 
-    <div class="question">
-      Select your rating
+    <div class="business-subtitle">
+      Share your genuine experience
     </div>
+  </div>
 
-    <div class="stars">
-      <button class="star" onclick="selectRating(1)">1</button>
-      <button class="star" onclick="selectRating(2)">2</button>
-      <button class="star" onclick="selectRating(3)">3</button>
-      <button class="star" onclick="selectRating(4)">4</button>
-      <button class="star" onclick="selectRating(5)">5</button>
-    </div>
+  <h2>How was your experience?</h2>
 
-    <div class="question">
-      What did you experience?
-    </div>
+  <div class="stars">
+    <button class="star" onclick="selectRating(1)">⭐</button>
+    <button class="star" onclick="selectRating(2)">⭐</button>
+    <button class="star" onclick="selectRating(3)">⭐</button>
+    <button class="star" onclick="selectRating(4)">⭐</button>
+    <button class="star" onclick="selectRating(5)">⭐</button>
+  </div>
 
-    <div class="experiences">
-      <button class="experience" onclick="toggleExperience(this)">Staff</button>
-      <button class="experience" onclick="toggleExperience(this)">Service</button>
-      <button class="experience" onclick="toggleExperience(this)">Quality</button>
-      <button class="experience" onclick="toggleExperience(this)">Price</button>
-      <button class="experience" onclick="toggleExperience(this)">Cleanliness</button>
-      <button class="experience" onclick="toggleExperience(this)">Overall</button>
-    </div>
+  <h2>What did you experience?</h2>
 
-    <button class="generate" onclick="generateReview()">
-      Generate Review
+  <div class="experiences">
+
+    <button class="experience" onclick="toggleExperience(this)">
+      Staff
     </button>
 
-    <div class="review-box" id="reviewBox">
+    <button class="experience" onclick="toggleExperience(this)">
+      Service
+    </button>
 
-      <textarea id="reviewText"></textarea>
+    <button class="experience" onclick="toggleExperience(this)">
+      Quality
+    </button>
 
-      <div class="buttons">
-        <button class="copy" onclick="copyReview()">
-          Copy Review
-        </button>
+    <button class="experience" onclick="toggleExperience(this)">
+      Price
+    </button>
 
-        <button class="google" onclick="openGoogle()">
-          Google par Review Karein
-        </button>
-      </div>
+    <button class="experience" onclick="toggleExperience(this)">
+      Cleanliness
+    </button>
 
-    </div>
-
-    <div class="note">
-      Your review should reflect your genuine experience.
-      You can edit the review before posting.
-    </div>
+    <button class="experience" onclick="toggleExperience(this)">
+      Overall
+    </button>
 
   </div>
 
-  <script>
+  <button class="generate-btn" onclick="generateReview()">
+    Generate Review
+  </button>
 
-    let rating = 0;
+  <div id="loading" class="loading hidden">
+    Creating your review...
+  </div>
 
-    function selectRating(value) {
-      rating = value;
+  <div id="reviewSection" class="hidden">
 
-      const stars = document.querySelectorAll(".star");
+    <h2>Your Review</h2>
 
-      stars.forEach((star, index) => {
-        if (index < value) {
-          star.classList.add("selected");
-        } else {
-          star.classList.remove("selected");
-        }
-      });
-    }
+    <textarea id="reviewText" class="review-box"></textarea>
 
-    function toggleExperience(button) {
-      button.classList.toggle("selected");
-    }
+    <button class="copy-btn" onclick="copyAndContinue()">
+      📋 Copy Review & Continue
+    </button>
 
-    function generateReview() {
+    <button class="google-btn" onclick="openGoogleReview()">
+      ⭐ Google par Review Karein
+    </button>
 
-      if (rating === 0) {
-        alert("Please select a rating first.");
-        return;
-      }
+  </div>
 
-      const selected = document.querySelectorAll(".experience.selected");
+  <div class="note">
+    Your review should reflect your genuine experience.
+    You can edit the review before posting.
+  </div>
 
-      let experiences = [];
+</div>
 
-      selected.forEach(item => {
-        experiences.push(item.innerText);
-      });
 
-      let review = "";
+<script>
 
-      if (rating >= 4) {
+  let selectedRating = 0;
+  let selectedExperiences = [];
 
-        review =
-          "I had a good experience at Sharma Restaurant. " +
-          (experiences.length
-            ? "I especially liked the " + experiences.join(", ").toLowerCase() + ". "
-            : "") +
-          "Overall, it was a nice experience.";
+  // Temporary Google review link.
+  // Later this will come automatically from Supabase.
+  let googleReviewUrl = "#";
 
-      } else if (rating === 3) {
 
-        review =
-          "My experience at Sharma Restaurant was average. " +
-          (experiences.length
-            ? "The main things I noticed were " + experiences.join(", ").toLowerCase() + ". "
-            : "") +
-          "There is still some room for improvement.";
+  function selectRating(rating) {
 
+    selectedRating = rating;
+
+    const stars = document.querySelectorAll(".star");
+
+    stars.forEach((star, index) => {
+
+      if (index < rating) {
+        star.classList.add("selected");
       } else {
-
-        review =
-          "My experience at Sharma Restaurant was not very satisfactory. " +
-          (experiences.length
-            ? "I noticed some issues with " + experiences.join(", ").toLowerCase() + ". "
-            : "") +
-          "I hope the experience improves in the future.";
+        star.classList.remove("selected");
       }
 
-      document.getElementById("reviewText").value = review;
-      document.getElementById("reviewBox").style.display = "block";
+    });
+
+  }
+
+
+  function toggleExperience(button) {
+
+    const experience = button.innerText.trim();
+
+    button.classList.toggle("selected");
+
+    if (selectedExperiences.includes(experience)) {
+
+      selectedExperiences =
+        selectedExperiences.filter(item => item !== experience);
+
+    } else {
+
+      selectedExperiences.push(experience);
+
     }
 
-    function copyReview() {
+  }
 
-      const text = document.getElementById("reviewText").value;
 
-      navigator.clipboard.writeText(text);
+  async function generateReview() {
 
-      alert("Review copied!");
+    if (selectedRating === 0) {
+      alert("Please select a rating first.");
+      return;
     }
 
-    function openGoogle() {
-
-      alert("Google Review link will be connected later.");
+    if (selectedExperiences.length === 0) {
+      alert("Please select at least one experience.");
+      return;
     }
 
-  </script>
+    document.getElementById("loading").classList.remove("hidden");
+
+    document.getElementById("reviewSection").classList.add("hidden");
+
+
+    /*
+      Later this request will go to our secure Vercel backend.
+      The backend will send the information to Gemini AI.
+    */
+
+    try {
+
+      const response = await fetch("/api/generate-review", {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+
+          businessName:
+            document.getElementById("businessName").innerText,
+
+          rating: selectedRating,
+
+          experiences: selectedExperiences
+
+        })
+
+      });
+
+
+      if (!response.ok) {
+        throw new Error("API not ready");
+      }
+
+
+      const data = await response.json();
+
+      document.getElementById("reviewText").value =
+        data.review;
+
+    } catch (error) {
+
+      /*
+        Temporary fallback.
+        The real AI version will replace this
+        after we connect Gemini.
+      */
+
+      document.getElementById("reviewText").value =
+        createTemporaryReview();
+
+    }
+
+
+    document.getElementById("loading").classList.add("hidden");
+
+    document.getElementById("reviewSection").classList.remove("hidden");
+
+  }
+
+
+  function createTemporaryReview() {
+
+    const ratingText = {
+
+      1: "I was not very satisfied with my experience.",
+      2: "My experience was okay, but there is room for improvement.",
+      3: "Overall, I had an average experience.",
+      4: "I had a good experience overall.",
+      5: "I had a great experience overall."
+
+    };
+
+
+    let experienceText =
+      selectedExperiences.join(", ").toLowerCase();
+
+
+    return ratingText[selectedRating] +
+      " I especially noticed the " +
+      experienceText +
+      ".";
+  }
+
+
+  async function copyAndContinue() {
+
+    const review =
+      document.getElementById("reviewText").value.trim();
+
+    if (!review) {
+      alert("Please generate a review first.");
+      return;
+    }
+
+    try {
+
+      await navigator.clipboard.writeText(review);
+
+    } catch (error) {
+
+      const textarea =
+        document.getElementById("reviewText");
+
+      textarea.select();
+
+      document.execCommand("copy");
+
+    }
+
+
+    openGoogleReview();
+
+  }
+
+
+  function openGoogleReview() {
+
+    if (googleReviewUrl === "#") {
+
+      alert(
+        "Google Review link will be connected after we set up the business database."
+      );
+
+      return;
+    }
+
+    window.open(
+      googleReviewUrl,
+      "_blank"
+    );
+
+  }
+
+</script>
 
 </body>
 </html>
