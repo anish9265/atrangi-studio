@@ -363,7 +363,7 @@ const businessCard =
       document.getElementById("loginPassword").value;
 
     const { error } =
-      await supabase.auth.signInWithPassword({
+  await supabaseClient.auth.signInWithPassword({
         email,
         password
       });
