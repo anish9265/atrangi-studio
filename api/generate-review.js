@@ -57,9 +57,9 @@ Rules:
 - Do not mention that AI generated the review.
 - Do not use hashtags.
 - Do not use exaggerated marketing language such as "best ever", "amazing", "perfect", or "highly recommended" unless the customer's selected information clearly supports that wording.
-- Keep the review as short as possible while naturally including the selected experiences.
-- Do not add extra sentences just to make the review longer.
-- Do not add unnecessary sentences just to reach a word count.
+- Make the review detailed enough to sound like a genuine customer review, but do not pad it with meaningless sentences.
+- When multiple selected experiences are available, naturally combine them into 2–3 sentences.
+- Never add a new fact just to make the review longer.
 - When the same rating and experience selections are provided repeatedly, vary the wording and sentence structure naturally.
 - Do not use the exact same sentence pattern every time.
 - You may change the order of the selected experience points when it sounds natural.
