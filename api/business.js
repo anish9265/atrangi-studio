@@ -14,29 +14,50 @@ export default async function handler(req, res) {
       });
     }
 
-    const response = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/businesses?slug=eq.${encodeURIComponent(slug)}&active=eq.true&select=name,slug,google_review_url,category,language&limit=1`,
-      {
-        headers: {
-          apikey: process.env.SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`
-        }
-      }
-    );
+    // Supabase URL ko safely normalize kar rahe hain
+    const rawUrl = process.env.SUPABASE_URL;
 
-    if (!response.ok) {
-      const errorText = await response.text();
-
-      console.error("Supabase error:", errorText);
-
-return res.status(500).json({
-  error: "Database request failed",
-  status: response.status,
-  details: errorText
-});
+    if (!rawUrl) {
+      return res.status(500).json({
+        error: "SUPABASE_URL is missing"
+      });
     }
 
-    const businesses = await response.json();
+    const baseUrl = rawUrl
+      .trim()
+      .replace(/\/+$/, "")
+      .replace(/\/rest\/v1$/, "");
+
+    const supabaseUrl = `${baseUrl}/rest/v1`;
+
+    const url =
+      `${supabaseUrl}/businesses` +
+      `?slug=eq.${encodeURIComponent(slug)}` +
+      `&active=eq.true` +
+      `&select=name,slug,google_review_url,category,language` +
+      `&limit=1`;
+
+    const response = await fetch(url, {
+      headers: {
+        apikey: process.env.SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`
+      }
+    });
+
+    const responseText = await response.text();
+
+    if (!response.ok) {
+      console.error("Supabase URL:", url);
+      console.error("Supabase error:", responseText);
+
+      return res.status(500).json({
+        error: "Database request failed",
+        status: response.status,
+        details: responseText
+      });
+    }
+
+    const businesses = JSON.parse(responseText);
 
     if (!businesses.length) {
       return res.status(404).json({
@@ -50,7 +71,8 @@ return res.status(500).json({
     console.error("Server error:", error);
 
     return res.status(500).json({
-      error: "Something went wrong"
+      error: "Something went wrong",
+      details: error.message
     });
   }
 }
