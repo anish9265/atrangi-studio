@@ -21,19 +21,31 @@ Business: ${businessName}
 Rating selected by customer: ${rating}/5
 Customer's selected experiences: ${experiences.join(", ")}
 
-Write ONE short, natural-sounding review in simple English.
+Write ONE short, natural-sounding customer review in natural Indian Hinglish.
+
+Use a natural mix of simple Hindi and English, like a real Indian customer would casually write in a Google review.
+
+Do not force Hindi or English. Use whichever words sound natural in Hinglish.
 
 Rules:
-- Use ONLY the information provided above.
-- Do not invent food items, products, staff names, prices, services, events, or other details.
-- The review must match the selected rating.
-- Do not exaggerate.
-- Do not mention that AI wrote the review.
+- Use ONLY the information provided by the customer.
+- Treat the selected rating and selected experiences as the customer's complete feedback.
+- Never invent or assume anything that the customer did not provide.
+- Do not add food items, products, staff names, prices, services, facilities, events, waiting times, locations, or other details unless explicitly provided.
+- Do not turn a general selection into a specific claim.
+- The review must honestly match the selected rating.
+- For 1–2 star ratings, keep the review genuinely negative or critical when the selected experiences are negative. Do not make it sound positive.
+- For 3 stars, keep the tone balanced and neutral.
+- For 4–5 stars, keep the tone positive but natural and not exaggerated.
+- Mention only the selected experience points.
+- Do not mention the numerical rating anywhere in the review.
+- Do not write phrases such as "5 stars", "3-star", "one-star", "five-star", "I am leaving a X-star rating", or similar rating explanations.
+- Do not mention that AI generated the review.
 - Do not use hashtags.
-- Keep it around 25-45 words.
-- Do not mention the star rating or write phrases like "5 stars", "3-star", "one-star", "five-star", or "I am leaving a X-star rating".
-- Do not explicitly state the numerical rating in the review.
-- Make the review sound like a natural customer-written review, not a rating explanation.
+- Do not use exaggerated marketing language such as "best ever", "amazing", "perfect", or "highly recommended" unless the customer's selected information clearly supports that wording.
+- Keep the review short and natural, usually around 20–40 words.
+- Do not add unnecessary sentences just to reach a word count.
+- Make it sound like a real customer wrote it, not like an AI-generated advertisement.
 - The customer can edit the review before posting.
 `;
 
