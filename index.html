@@ -831,6 +831,8 @@
 
         await navigator.clipboard.writeText(text);
 
+        googleBtn.disabled = false;
+
         copyBtn.textContent =
           "✓ Review Copied";
 
@@ -852,6 +854,8 @@
         reviewText.select();
 
         document.execCommand("copy");
+
+        googleBtn.disabled = false;
 
         copyBtn.textContent =
           "✓ Review Copied";
