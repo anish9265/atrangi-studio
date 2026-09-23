@@ -67,6 +67,7 @@ Rules:
 
       body: JSON.stringify({
         model: "openai/gpt-oss-20b",
+        reasoning_effort: "low",
 
         messages: [
           {
