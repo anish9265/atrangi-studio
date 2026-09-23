@@ -31,6 +31,8 @@ Rules:
 - Use ONLY the information provided by the customer.
 - Treat the selected rating and selected experiences as the customer's complete feedback.
 - Never invent or assume anything that the customer did not provide.
+- Avoid unnecessary exclamation marks (!). Use them only when they would genuinely sound natural in a casual customer review.
+- Prefer simple, conversational punctuation and sentence structure. Do not make the review sound promotional or overly expressive.
 - Do not add food items, products, staff names, prices, services, facilities, events, waiting times, locations, or other details unless explicitly provided.
 - Do not mention the business name unless the customer explicitly provides or selects it as part of their feedback.
 - Prefer casual, natural Indian Hinglish phrasing. Avoid repetitive phrases such as "overall achha laga" multiple times in the same review.
