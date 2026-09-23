@@ -53,29 +53,50 @@ Rules:
 - The customer can edit the review before posting.
 `;
 
-    const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=" +
-        process.env.GEMINI_API_KEY,
-      {
-        method: "POST",
+    const maxRetries = 3;
+let response;
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+for (let attempt = 0; attempt < maxRetries; attempt++) {
 
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: prompt
-                }
-              ]
-            }
-          ]
-        })
-      }
-    );
+  response = await fetch(
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=" +
+      process.env.GEMINI_API_KEY,
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt
+              }
+            ]
+          }
+        ]
+      })
+    }
+  );
+
+  if (response.ok) {
+    break;
+  }
+
+  if (response.status !== 429 && response.status !== 503) {
+    break;
+  }
+
+  console.log(`Gemini attempt ${attempt + 1} failed. Retrying...`);
+
+  await new Promise(resolve =>
+    setTimeout(resolve, 1000 * Math.pow(2, attempt))
+  );
+}
+
 
 if (!response.ok) {
   const errorText = await response.text();
