@@ -91,12 +91,16 @@ Rules:
 
   const groqData = await groqResponse.json();
 
-  const groqReview =
-    groqData?.choices?.[0]?.message?.content?.trim();
+console.log("Groq response:", JSON.stringify(groqData));
 
-  if (!groqReview) {
-    throw new Error("Groq did not generate a review");
-  }
+const groqReview =
+  groqData?.choices?.[0]?.message?.content?.trim();
+
+if (!groqReview) {
+  throw new Error(
+    "Groq returned no text. Check Vercel logs for the full response."
+  );
+}
 
   return groqReview;
 };
