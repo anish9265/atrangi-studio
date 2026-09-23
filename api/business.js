@@ -14,7 +14,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // Supabase URL ko safely normalize kar rahe hain
     const rawUrl = process.env.SUPABASE_URL;
 
     if (!rawUrl) {
@@ -34,7 +33,7 @@ export default async function handler(req, res) {
       `${supabaseUrl}/businesses` +
       `?slug=eq.${encodeURIComponent(slug)}` +
       `&active=eq.true` +
-      `&select=name,slug,google_review_url,category,language` +
+      `&select=*` +
       `&limit=1`;
 
     const response = await fetch(url, {
@@ -61,7 +60,9 @@ export default async function handler(req, res) {
 
     if (!businesses.length) {
       return res.status(404).json({
-        error: "Business not found"
+        error: "Business not found",
+        searchedSlug: slug,
+        returnedData: businesses
       });
     }
 
