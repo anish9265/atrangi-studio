@@ -32,6 +32,8 @@ Rules:
 - Treat the selected rating and selected experiences as the customer's complete feedback.
 - Never invent or assume anything that the customer did not provide.
 - Do not add food items, products, staff names, prices, services, facilities, events, waiting times, locations, or other details unless explicitly provided.
+- Do not mention the business name unless the customer explicitly provides or selects it as part of their feedback.
+- Prefer casual, natural Indian Hinglish phrasing. Avoid repetitive phrases such as "overall achha laga" multiple times in the same review.
 - Do not turn a general selection into a specific claim.
 - The review must honestly match the selected rating.
 - For 1–2 star ratings, keep the review genuinely negative or critical when the selected experiences are negative. Do not make it sound positive.
