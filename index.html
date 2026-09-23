@@ -642,8 +642,39 @@
 
       button.addEventListener("click", () => {
 
-        selectedRating =
-          Number(button.dataset.rating);
+    selectedRating =
+      Number(button.dataset.rating);
+
+    const experienceGroups =
+      document.querySelectorAll(".experience-group");
+
+    experienceGroups.forEach(group => {
+
+      const ratings =
+        group.dataset.ratings
+          .split(",")
+          .map(Number);
+
+      const showGroup =
+        ratings.includes(selectedRating);
+
+      group.classList.toggle(
+        "show",
+        showGroup
+      );
+
+      if (!showGroup) {
+
+        group
+          .querySelectorAll(".chip.selected")
+          .forEach(chip => {
+            chip.classList.remove("selected");
+          });
+
+      }
+
+    });
+        
 
         starButtons.forEach(star => {
 
