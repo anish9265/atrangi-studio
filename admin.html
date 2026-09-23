@@ -428,23 +428,34 @@ businessSection.style.display = "block";
 
         try {
 
-          const response =
-            await fetch("/api/admin/business", {
+const {
+  data: {
+    session
+  }
+} = await supabaseClient.auth.getSession();
 
-              method: "POST",
+if (!session) {
+  throw new Error("Please login again.");
+}
 
-              headers: {
-                "Content-Type": "application/json"
-              },
+const response =
+  await fetch("/api/admin/business", {
 
-              body: JSON.stringify({
-                name,
-                googleReviewUrl,
-                category,
-                language
-              })
+    method: "POST",
 
-            });
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${session.access_token}`
+    },
+
+    body: JSON.stringify({
+      name,
+      googleReviewUrl,
+      category,
+      language
+    })
+
+  });
 
 
           const data =
