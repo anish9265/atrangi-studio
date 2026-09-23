@@ -58,15 +58,17 @@ Rules:
       }
     );
 
-    if (!response.ok) {
-      const errorText = await response.text();
+if (!response.ok) {
+  const errorText = await response.text();
 
-      console.error("Gemini API error:", errorText);
+  console.error("Gemini API error:", errorText);
 
-      return res.status(500).json({
-        error: "Gemini API request failed"
-      });
-    }
+  return res.status(500).json({
+    error: "Gemini API request failed",
+    status: response.status,
+    details: errorText
+  });
+}
 
     const data = await response.json();
 
