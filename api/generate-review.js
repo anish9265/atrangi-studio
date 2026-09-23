@@ -31,6 +31,9 @@ Rules:
 - Do not mention that AI wrote the review.
 - Do not use hashtags.
 - Keep it around 25-45 words.
+- Do not mention the star rating or write phrases like "5 stars", "3-star", "one-star", "five-star", or "I am leaving a X-star rating".
+- Do not explicitly state the numerical rating in the review.
+- Make the review sound like a natural customer-written review, not a rating explanation.
 - The customer can edit the review before posting.
 `;
 
