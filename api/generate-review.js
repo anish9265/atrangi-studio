@@ -146,15 +146,31 @@ for (let attempt = 0; attempt < maxRetries; attempt++) {
 
 
 if (!response.ok) {
-  const errorText = await response.text();
 
-  console.error("Gemini API error:", errorText);
+  console.error(
+    "Gemini failed after retries. Trying Groq backup..."
+  );
 
-  return res.status(500).json({
-    error: "Gemini API request failed",
-    status: response.status,
-    details: errorText
-  });
+  try {
+
+    const review = await generateWithGroq();
+
+    return res.status(200).json({
+      review,
+      provider: "backup"
+    });
+
+  } catch (groqError) {
+
+    console.error(
+      "Groq backup also failed:",
+      groqError
+    );
+
+    return res.status(500).json({
+      error: "Both AI services failed"
+    });
+  }
 }
 
     const data = await response.json();
