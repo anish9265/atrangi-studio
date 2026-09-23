@@ -136,9 +136,11 @@ headers: {
         errorText
       );
 
-      return res.status(500).json({
-        error: "Could not check business URL."
-      });
+return res.status(500).json({
+  error: "Could not check business URL.",
+  status: checkResponse.status,
+  details: errorText
+});
     }
 
     const existingBusinesses =
