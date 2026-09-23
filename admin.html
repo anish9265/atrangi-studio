@@ -343,6 +343,48 @@ const businessCard =
     const businessForm =
       document.getElementById("businessForm");
 
+    loginForm.addEventListener(
+  "submit",
+  async (event) => {
+
+    event.preventDefault();
+
+    loginError.classList.remove("show");
+
+    loginBtn.disabled = true;
+    loginBtn.textContent = "Logging in...";
+
+    const email =
+      document.getElementById("loginEmail").value.trim();
+
+    const password =
+      document.getElementById("loginPassword").value;
+
+    const { error } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+    if (error) {
+
+      loginError.textContent =
+        "Email ya password galat hai.";
+
+      loginError.classList.add("show");
+
+      loginBtn.disabled = false;
+      loginBtn.textContent = "🔐 Login";
+
+      return;
+    }
+
+    loginCard.style.display = "none";
+    businessCard.style.display = "block";
+
+  }
+);
+
     const addBtn =
       document.getElementById("addBtn");
 
