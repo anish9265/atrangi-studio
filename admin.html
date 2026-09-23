@@ -137,16 +137,65 @@
 
 <body>
 
-  <main class="page">
+<main class="page">
+
+  <div class="card" id="loginCard">
 
     <div class="header">
-      <h1>Admin Panel</h1>
-      <p>Add a new business to Review Assistant.</p>
+      <h1>Admin Login</h1>
+      <p>Login to manage Review Assistant businesses.</p>
     </div>
 
-    <div class="card">
+    <form id="loginForm">
 
-      <form id="businessForm">
+      <div class="field">
+        <label for="loginEmail">Email</label>
+
+        <input
+          id="loginEmail"
+          type="email"
+          placeholder="Your admin email"
+          required
+        />
+      </div>
+
+      <div class="field">
+        <label for="loginPassword">Password</label>
+
+        <input
+          id="loginPassword"
+          type="password"
+          placeholder="Your password"
+          required
+        />
+      </div>
+
+      <button
+        class="add-btn"
+        id="loginBtn"
+        type="submit"
+      >
+        🔐 Login
+      </button>
+
+    </form>
+
+    <div
+      class="message error"
+      id="loginError"
+    ></div>
+
+  </div>
+
+
+  <div class="header">
+    <h1>Admin Panel</h1>
+    <p>Add a new business to Review Assistant.</p>
+  </div>
+
+<div class="card" id="businessCard">
+
+  <form id="businessForm">
 
         <div class="field">
           <label for="name">Business Name</label>
