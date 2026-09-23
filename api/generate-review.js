@@ -53,6 +53,53 @@ Rules:
 - The customer can edit the review before posting.
 `;
 
+    const generateWithGroq = async () => {
+
+  const groqResponse = await fetch(
+    "https://api.groq.com/openai/v1/chat/completions",
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.GROQ_API_KEY}`
+      },
+
+      body: JSON.stringify({
+        model: "openai/gpt-oss-20b",
+
+        messages: [
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+
+        temperature: 0.7,
+        max_tokens: 100
+      })
+    }
+  );
+
+  if (!groqResponse.ok) {
+    const errorText = await groqResponse.text();
+
+    console.error("Groq API error:", errorText);
+
+    throw new Error("Groq API request failed");
+  }
+
+  const groqData = await groqResponse.json();
+
+  const groqReview =
+    groqData?.choices?.[0]?.message?.content?.trim();
+
+  if (!groqReview) {
+    throw new Error("Groq did not generate a review");
+  }
+
+  return groqReview;
+};
     const maxRetries = 3;
 let response;
 
