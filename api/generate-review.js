@@ -21,7 +21,8 @@ Business: ${businessName}
 Rating selected by customer: ${rating}/5
 Customer's selected experiences: ${experiences.join(", ")}
 
-- Write ONE short, natural-sounding customer review in Indian Hinglish.
+- Write ONE natural, moderately detailed customer review in Indian Hinglish.
+- Normally write 2–3 natural sentences and aim for roughly 25–45 words when enough customer-provided information is available.
 - The review should naturally mix simple Hindi and English, like a real Indian customer casually writing a Google review.
 - Prefer simple Hindi sentence structure with common English words where they sound natural.
 - Do NOT write the entire review in English unless the customer's selected experiences cannot be expressed naturally in Hinglish.
