@@ -186,12 +186,11 @@ headers: {
       {
         method: "POST",
 
-        headers: {
-          apikey: serviceRoleKey,
-          Authorization: `Bearer ${serviceRoleKey}`,
-          "Content-Type": "application/json",
-          Prefer: "return=representation"
-        },
+headers: {
+  apikey: serviceRoleKey,
+  "Content-Type": "application/json",
+  Prefer: "return=representation"
+}
 
         body: JSON.stringify({
           name: name.trim(),
