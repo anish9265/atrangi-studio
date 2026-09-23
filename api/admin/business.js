@@ -160,10 +160,9 @@ return res.status(500).json({
             newSlug
           )}&select=id&limit=1`,
           {
-            headers: {
-              apikey: serviceRoleKey,
-              Authorization: `Bearer ${serviceRoleKey}`
-            }
+headers: {
+  apikey: serviceRoleKey
+}
           }
         );
 
