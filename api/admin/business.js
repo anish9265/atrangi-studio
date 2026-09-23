@@ -121,10 +121,9 @@ export default async function handler(req, res) {
         slug
       )}&select=id&limit=1`,
       {
-        headers: {
-          apikey: serviceRoleKey,
-          Authorization: `Bearer ${serviceRoleKey}`
-        }
+headers: {
+  apikey: serviceRoleKey
+}
       }
     );
 
