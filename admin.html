@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Admin Panel | Review Assistant</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+      background: #f5f6fa;
+      color: #171717;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 30px 18px 50px;
+    }
+
+    .header {
+      margin-bottom: 22px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 27px;
+    }
+
+    .header p {
+      margin: 7px 0 0;
+      color: #737373;
+      font-size: 14px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    .field {
+      margin-bottom: 17px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #dcdcdc;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 15px;
+      outline: none;
+      background: #fff;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #111827;
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.07);
+    }
+
+    .hint {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #8a8a8a;
+      line-height: 1.4;
+    }
+
+    .add-btn {
+      width: 100%;
+      border: 0;
+      border-radius: 13px;
+      padding: 14px;
+      background: #111827;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .add-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .message {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 11px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .success {
+      background: #ecfdf5;
+      color: #047857;
+    }
+
+    .error {
+      background: #fff1f2;
+      color: #be123c;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <div class="header">
+      <h1>Admin Panel</h1>
+      <p>Add a new business to Review Assistant.</p>
+    </div>
+
+    <div class="card">
+
+      <form id="businessForm">
+
+        <div class="field">
+          <label for="name">Business Name</label>
+
+          <input
+            id="name"
+            type="text"
+            placeholder="Example: Gupta Clinic"
+            required
+          />
+        </div>
+
+
+        <div class="field">
+          <label for="googleReviewUrl">
+            Google Review URL
+          </label>
+
+          <input
+            id="googleReviewUrl"
+            type="url"
+            placeholder="https://search.google.com/local/writereview?..."
+            required
+          />
+
+          <div class="hint">
+            Paste the direct Google review link for this business.
+          </div>
+        </div>
+
+
+        <div class="field">
+          <label for="category">Business Category</label>
+
+          <select id="category">
+
+            <option value="restaurant">
+              Restaurant
+            </option>
+
+            <option value="clinic">
+              Clinic
+            </option>
+
+            <option value="doctor">
+              Doctor
+            </option>
+
+            <option value="hospital">
+              Hospital
+            </option>
+
+            <option value="hotel">
+              Hotel
+            </option>
+
+            <option value="salon">
+              Salon
+            </option>
+
+            <option value="shop">
+              Shop
+            </option>
+
+            <option value="other">
+              Other
+            </option>
+
+          </select>
+        </div>
+
+
+        <div class="field">
+          <label for="language">Review Language</label>
+
+          <select id="language">
+
+            <option value="en">
+              Hinglish
+            </option>
+
+            <option value="hi">
+              Hindi
+            </option>
+
+            <option value="english">
+              English
+            </option>
+
+          </select>
+        </div>
+
+
+        <button
+          class="add-btn"
+          id="addBtn"
+          type="submit"
+        >
+          ➕ Add Business
+        </button>
+
+      </form>
+
+
+      <div
+        class="message success"
+        id="successMessage"
+      ></div>
+
+
+      <div
+        class="message error"
+        id="errorMessage"
+      ></div>
+
+    </div>
+
+  </main>
+
+
+  <script>
+
+    const businessForm =
+      document.getElementById("businessForm");
+
+    const addBtn =
+      document.getElementById("addBtn");
+
+    const successMessage =
+      document.getElementById("successMessage");
+
+    const errorMessage =
+      document.getElementById("errorMessage");
+
+
+    businessForm.addEventListener(
+      "submit",
+      async (event) => {
+
+        event.preventDefault();
+
+        successMessage.classList.remove("show");
+        errorMessage.classList.remove("show");
+
+        addBtn.disabled = true;
+        addBtn.textContent = "Adding Business...";
+
+
+        const name =
+          document.getElementById("name").value.trim();
+
+        const googleReviewUrl =
+          document
+            .getElementById("googleReviewUrl")
+            .value
+            .trim();
+
+        const category =
+          document.getElementById("category").value;
+
+        const language =
+          document.getElementById("language").value;
+
+
+        try {
+
+          const response =
+            await fetch("/api/admin/business", {
+
+              method: "POST",
+
+              headers: {
+                "Content-Type": "application/json"
+              },
+
+              body: JSON.stringify({
+                name,
+                googleReviewUrl,
+                category,
+                language
+              })
+
+            });
+
+
+          const data =
+            await response.json();
+
+
+          if (!response.ok) {
+
+            throw new Error(
+              data.error ||
+              "Could not add business."
+            );
+
+          }
+
+
+          successMessage.textContent =
+            `Business added successfully. URL: /r/${data.slug}`;
+
+          successMessage.classList.add("show");
+
+
+          businessForm.reset();
+
+
+        } catch (error) {
+
+          errorMessage.textContent =
+            error.message ||
+            "Something went wrong.";
+
+          errorMessage.classList.add("show");
+
+
+        } finally {
+
+          addBtn.disabled = false;
+          addBtn.textContent =
+            "➕ Add Business";
+
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
