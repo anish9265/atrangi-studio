@@ -120,7 +120,7 @@ if (!groqReview) {
 
   return groqReview;
 };
-    const maxRetries = 3;
+const maxRetries = 3;
 let response;
 
 for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -153,15 +153,47 @@ for (let attempt = 0; attempt < maxRetries; attempt++) {
     break;
   }
 
+  const errorText = await response.text();
+
+  console.error(
+    `Gemini attempt ${attempt + 1} failed:`,
+    errorText
+  );
+
+  // Daily quota exceeded → retry mat karo
+  if (
+    response.status === 429 &&
+    (
+      errorText.includes("PerDay") ||
+      errorText.includes("per_day") ||
+      errorText.includes("daily") ||
+      errorText.includes("quota")
+    )
+  ) {
+    console.log(
+      "Gemini daily quota exceeded. Switching to Groq..."
+    );
+    break;
+  }
+
+  // Sirf temporary 429/503 par retry
   if (response.status !== 429 && response.status !== 503) {
     break;
   }
 
-  console.log(`Gemini attempt ${attempt + 1} failed. Retrying...`);
+  if (attempt < maxRetries - 1) {
 
-  await new Promise(resolve =>
-    setTimeout(resolve, 1000 * Math.pow(2, attempt))
-  );
+    const delay =
+      1000 * Math.pow(2, attempt);
+
+    console.log(
+      `Retrying Gemini in ${delay}ms...`
+    );
+
+    await new Promise(resolve =>
+      setTimeout(resolve, delay)
+    );
+  }
 }
 
 
