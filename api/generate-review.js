@@ -21,7 +21,12 @@ Business: ${businessName}
 Rating selected by customer: ${rating}/5
 Customer's selected experiences: ${experiences.join(", ")}
 
-Write ONE short, natural-sounding customer review in natural Indian Hinglish.
+- Write ONE short, natural-sounding customer review in Indian Hinglish.
+- The review should naturally mix simple Hindi and English, like a real Indian customer casually writing a Google review.
+- Prefer simple Hindi sentence structure with common English words where they sound natural.
+- Do NOT write the entire review in English unless the customer's selected experiences cannot be expressed naturally in Hinglish.
+- Do NOT force Hindi translations of common English words such as staff, service, clean, quality, price, or experience.
+- Example style: "Staff friendly the, service bhi achhi lagi aur place clean tha."
 
 Use a natural mix of simple Hindi and English, like a real Indian customer would casually write in a Google review.
 
