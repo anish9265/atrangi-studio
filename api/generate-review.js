@@ -59,7 +59,12 @@ Rules:
 - Keep the review as short as possible while naturally including the selected experiences.
 - Do not add extra sentences just to make the review longer.
 - Do not add unnecessary sentences just to reach a word count.
-- Make it sound like a real customer wrote it, not like an AI-generated advertisement.
+- When the same rating and experience selections are provided repeatedly, vary the wording and sentence structure naturally.
+- Do not use the exact same sentence pattern every time.
+- You may change the order of the selected experience points when it sounds natural.
+- You may use natural variations such as "achhi lagi", "achhi thi", "friendly the", "kaafi friendly the", "clean tha", or similar wording, as long as the meaning remains exactly the same.
+- Variation must NEVER introduce a new fact, experience, feeling, opinion, or recommendation that the customer did not provide.
+- Do not deliberately make the review unusual or complicated just to create variation. Keep it simple and natural.
 - The customer can edit the review before posting.
 `;
 
