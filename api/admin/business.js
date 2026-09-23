@@ -190,9 +190,8 @@ headers: {
   apikey: serviceRoleKey,
   "Content-Type": "application/json",
   Prefer: "return=representation"
-}
-
-        body: JSON.stringify({
+},
+body: JSON.stringify({
           name: name.trim(),
           slug,
           google_review_url:
