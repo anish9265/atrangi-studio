@@ -147,33 +147,13 @@ VERY IMPORTANT:
 Natural language must NEVER be created by adding new facts.
 
 LENGTH AND NATURAL DETAIL:
-- Do not make the review unnecessarily short just because only a few experiences were selected.
 - Normally write 2–3 natural sentences.
 - Aim for roughly 20–35 words when 2–3 experiences are selected.
-- Do not add information just to reach the target length.
-- Accuracy is more important than review length.
-You may make the review longer ONLY by:
-- Rephrasing the exact selected experiences.
-- Combining two or more selected experiences into natural sentences.
-- Expressing the same selected experience in slightly different natural wording.
-- Adding natural connecting words between selected experiences.
-
-You MUST NOT expand a selected experience into a more specific detail.
-
-For example:
-"Good quality" does NOT mean food quality, product quality, taste, or any specific type of quality unless that exact detail was selected.
-
-"Friendly staff" does NOT mean smiling, helping, taking orders, paying attention, or being polite unless those details were selected.
-
-"Good service" does NOT mean fast service, attentive service, smooth service, quick ordering, or good staff behavior unless those details were selected.
-
-"Clean" does NOT mean clean tables, clean rooms, clean washrooms, clean surroundings, or well-maintained unless that detail was selected.
-
-Never create examples, reasons, situations, actions, people, objects, or specific details that are not explicitly present in the customer's selected experiences.
-- This elaboration must NOT introduce a new factual detail, new event, new product, new facility, new person, new feeling, new recommendation, or new conclusion.
-- Never repeat the exact same selected experience just to increase word count.
-- If there is not enough information to naturally reach 30–50 words, write a shorter review rather than inventing information.
-
+- Use the available selected experiences fully and naturally.
+- You may rephrase, combine, or expand the wording of selected experiences without changing their meaning.
+- Do NOT add new facts, specific details, actions, feelings, opinions, reasons, recommendations, or conclusions to make the review longer.
+- Do NOT force the review to reach 20–35 words if doing so would require adding information.
+- Accuracy and factual consistency are more important than length.
 OUTPUT:
 Return ONLY the final review.
 No introduction.
