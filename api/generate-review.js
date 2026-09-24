@@ -80,6 +80,40 @@ OUTPUT FORMAT:
 - Stop immediately after the final review.
 `;
 
+    function cleanReviewText(text) {
+
+  if (!text) return "";
+
+  let cleaned = text.trim();
+
+  // Remove model end-of-text marker and everything after it
+  const endMarkers = [
+    "<|endoftext|>",
+    "<|end_of_text|>",
+    "</s>"
+  ];
+
+  for (const marker of endMarkers) {
+
+    const index =
+      cleaned.indexOf(marker);
+
+    if (index !== -1) {
+      cleaned =
+        cleaned.substring(0, index).trim();
+    }
+
+  }
+
+  // Remove accidental "Review:" prefix
+  cleaned =
+    cleaned.replace(
+      /^Review:\s*/i,
+      ""
+    ).trim();
+
+  return cleaned;
+}
     const generateWithGroq = async () => {
 
   const groqResponse = await fetch(
