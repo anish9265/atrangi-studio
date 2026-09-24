@@ -597,6 +597,95 @@ const response =
       }
     );
 
+        async function loadBusinesses() {
+      const businessList =
+        document.getElementById("businessList");
+
+      const businessCount =
+        document.getElementById("businessCount");
+
+      try {
+
+        const {
+          data: {
+            session
+          }
+        } = await supabaseClient.auth.getSession();
+
+        if (!session) {
+          businessList.innerHTML =
+            `<div class="business-loading">
+              Please login again.
+            </div>`;
+          return;
+        }
+
+        const response =
+          await fetch("/api/admin/businesses", {
+            headers: {
+              "Authorization":
+                `Bearer ${session.access_token}`
+            }
+          });
+
+        const data =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.error ||
+            "Could not load businesses."
+          );
+        }
+
+        businessCount.textContent =
+          data.businesses.length;
+
+        if (data.businesses.length === 0) {
+
+          businessList.innerHTML =
+            `<div class="business-loading">
+              No businesses added yet.
+            </div>`;
+
+          return;
+        }
+
+        businessList.innerHTML =
+          data.businesses.map((business) => `
+            <div class="business-item">
+
+              <div class="business-info">
+
+                <strong>
+                  ${business.name}
+                </strong>
+
+                <span>
+                  ${business.category || "Other"}
+                  • ${business.active ? "Active" : "Inactive"}
+                </span>
+
+                <span class="business-url">
+                  /r/${business.slug}
+                </span>
+
+              </div>
+
+            </div>
+          `).join("");
+
+      } catch (error) {
+
+        businessList.innerHTML =
+          `<div class="business-loading">
+            ${error.message || "Could not load businesses."}
+          </div>`;
+
+      }
+    }
+
+    loadBusinesses();
   </script>
 
 </body>
