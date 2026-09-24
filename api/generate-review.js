@@ -181,129 +181,159 @@ if (!groqReview) {
       console.log("AI PROVIDER USED: GROQ");
   return groqReview;
 };
-const maxRetries = 3;
-let response;
+const generateWithGemini = async () => {
 
-for (let attempt = 0; attempt < maxRetries; attempt++) {
+  const maxRetries = 3;
+  let response;
 
-  response = await fetch(
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=" +
-      process.env.GEMINI_API_KEY,
-    {
-      method: "POST",
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
 
-      headers: {
-        "Content-Type": "application/json"
-      },
+    response = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=" +
+        process.env.GEMINI_API_KEY,
+      {
+        method: "POST",
 
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: prompt
-              }
-            ]
-          }
-        ]
-      })
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: prompt
+                }
+              ]
+            }
+          ]
+        })
+      }
+    );
+
+    if (response.ok) {
+      break;
     }
-  );
 
-  if (response.ok) {
-    break;
-  }
-
-  const errorText = await response.text();
-
-  console.error(
-    `Gemini attempt ${attempt + 1} failed:`,
-    errorText
-  );
-
-  // Daily quota exceeded → retry mat karo
-  if (
-    response.status === 429 &&
-    (
-      errorText.includes("PerDay") ||
-      errorText.includes("per_day") ||
-      errorText.includes("daily") ||
-      errorText.includes("quota")
-    )
-  ) {
-    console.log(
-      "Gemini daily quota exceeded. Switching to Groq..."
-    );
-    break;
-  }
-
-  // Sirf temporary 429/503 par retry
-  if (response.status !== 429 && response.status !== 503) {
-    break;
-  }
-
-  if (attempt < maxRetries - 1) {
-
-    const delay =
-      1000 * Math.pow(2, attempt);
-
-    console.log(
-      `Retrying Gemini in ${delay}ms...`
-    );
-
-    await new Promise(resolve =>
-      setTimeout(resolve, delay)
-    );
-  }
-}
-
-
-if (!response.ok) {
-
-  console.error(
-    "Gemini failed after retries. Trying Groq backup..."
-  );
-
-  try {
-
-    const review = await generateWithGroq();
-
-return res.status(200).json({
-  review,
-  provider: "groq"
-});
-
-  } catch (groqError) {
+    const errorText = await response.text();
 
     console.error(
-      "Groq backup also failed:",
-      groqError
+      `Gemini attempt ${attempt + 1} failed:`,
+      errorText
     );
 
-    return res.status(500).json({
-      error: "Both AI services failed"
-    });
-  }
-}
-
-    const data = await response.json();
-
-const rawReview =
-  data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-const review =
-  cleanReviewText(rawReview);
-
-    if (!review) {
-      return res.status(500).json({
-        error: "No review generated"
-      });
+    // Daily quota exceeded → retry mat karo
+    if (
+      response.status === 429 &&
+      (
+        errorText.includes("PerDay") ||
+        errorText.includes("per_day") ||
+        errorText.includes("daily") ||
+        errorText.includes("quota")
+      )
+    ) {
+      console.log(
+        "Gemini daily quota exceeded."
+      );
+      break;
     }
 
-return res.status(200).json({
-  review,
-  provider: "gemini"
-});
+    // Sirf temporary 429/503 par retry
+    if (
+      response.status !== 429 &&
+      response.status !== 503
+    ) {
+      break;
+    }
+
+    if (attempt < maxRetries - 1) {
+
+      const delay =
+        1000 * Math.pow(2, attempt);
+
+      console.log(
+        `Retrying Gemini in ${delay}ms...`
+      );
+
+      await new Promise(resolve =>
+        setTimeout(resolve, delay)
+      );
+    }
+  }
+
+  if (!response || !response.ok) {
+
+    throw new Error(
+      "Gemini API request failed"
+    );
+  }
+
+  const data = await response.json();
+
+  const rawReview =
+    data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+  const review =
+    cleanReviewText(rawReview);
+
+  if (!review) {
+
+    throw new Error(
+      "Gemini returned no review"
+    );
+  }
+
+  console.log("AI PROVIDER USED: GEMINI");
+
+  return review;
+};
+
+
+// GROQ PRIMARY
+try {
+
+  const review =
+    await generateWithGroq();
+
+  return res.status(200).json({
+    review,
+    provider: "groq"
+  });
+
+} catch (groqError) {
+
+  console.error(
+    "Groq primary failed. Trying Gemini backup...",
+    groqError
+  );
+
+}
+
+
+// GEMINI BACKUP
+try {
+
+  const review =
+    await generateWithGemini();
+
+  return res.status(200).json({
+    review,
+    provider: "gemini"
+  });
+
+} catch (geminiError) {
+
+  console.error(
+    "Gemini backup also failed:",
+    geminiError
+  );
+
+  return res.status(500).json({
+    error: "Both AI services failed"
+  });
+
+}
 
   } catch (error) {
 
