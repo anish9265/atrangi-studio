@@ -21,63 +21,87 @@ Business: ${businessName}
 Rating selected by customer: ${rating}/5
 Customer's selected experiences: ${experiences.join(", ")}
 
-Write ONE natural customer review in Indian Hinglish.
+Write ONE short, natural customer review in Indian Hinglish.
 
-STYLE:
-- Normally write 2–3 natural sentences.
-- Aim for roughly 25–45 words when enough customer-provided information is available.
-- Use simple Indian Hinglish.
-- Mix Hindi and common English words naturally.
-- Do not make every review sound identical.
-- Keep the review conversational, simple and believable.
-- Do not make it sound like an advertisement or marketing copy.
+ABSOLUTE FACTUAL RULE:
+The customer's selected experiences are the ONLY facts you are allowed to use.
 
-IMPORTANT STRUCTURE RULES:
-- Do NOT automatically start the review with the first selected experience.
-- Do NOT simply follow the exact order in which the experiences were selected.
-- You may naturally change the order of the selected experiences.
-- Vary the sentence structure and opening from one generation to another.
-- You may use neutral structural openings such as "Overall," or "Mera experience..." when they do not introduce any new fact.
-- Do NOT add a positive or negative feeling in the opening unless it is directly supported by the customer's selected information and rating.
-- Do NOT repeatedly use the same opening pattern.
-- Do NOT deliberately make the wording complicated just to create variation.
+You MUST NOT add, assume, infer, exaggerate, or invent ANY information.
 
-FACTUAL RULES:
-- Use ONLY information provided by the customer.
-- Treat the selected rating and selected experiences as the complete source of facts.
-- Never invent, assume, infer, or add anything that the customer did not explicitly provide.
-- Every factual or descriptive statement must be directly traceable to the selected experiences.
-- You may combine or rephrase selected experiences naturally.
-- You may change their order.
-- You must not introduce a new fact, feeling, opinion, recommendation, or conclusion.
-- Do not add food items, products, staff names, prices, facilities, locations, waiting times, atmosphere, events, or other details unless explicitly selected.
-- Do not mention the business name.
-- Do not mention the numerical rating.
-- Do not mention that AI generated the review.
-- Do not use hashtags.
+Every statement in the review must be directly supported by one or more of the selected experiences.
+
+You may:
+- Rephrase a selected experience.
+- Combine selected experiences.
+- Change the order of selected experiences.
+- Use natural connecting words.
+- Make the grammar sound natural.
+
+You MUST NOT:
+- Add any new fact.
+- Add any new feeling or emotion.
+- Add any new opinion.
+- Add any recommendation.
+- Add any conclusion.
+- Add any reason that was not selected.
+- Add details about food, products, staff behavior, price, location, cleanliness, atmosphere, waiting time, facilities, etc. unless explicitly selected.
+- Say "I loved it", "I really liked it", "highly recommend", "would visit again", "great experience", "friendly vibes", "good value", "comfortable", "improvement is needed", or similar statements unless the exact meaning is directly supported by the selected experiences.
+- Use words such as "always", "never", "very", "extremely", "perfect", "amazing", or "excellent" unless they are directly supported by the selected information.
+- Mention the business name.
+- Mention the numerical rating.
+- Mention AI.
+- Use hashtags.
+
+IMPORTANT:
+Do NOT treat the rating itself as an experience.
+
+For example:
+If the customer selects:
+"Slow service"
+"Staff careless"
+"Not clean"
+
+You may write:
+"Service kaafi slow thi aur staff thode careless lage. Jagah bhi clean nahi lagi."
+
+But you MUST NOT write:
+"Overall improvement ki zaroorat hai."
+"Experience disappointing tha."
+"Main dobara nahi aaunga."
+"Customer service better honi chahiye."
+
+Those statements contain conclusions or opinions that the customer did not explicitly provide.
 
 RATING TONE:
-- For 1–2 stars, the review should honestly reflect the selected negative experiences.
-- For 3 stars, keep the tone balanced and neutral.
-- For 4–5 stars, keep the tone positive only to the extent supported by the selected experiences.
-- Do not turn a low rating into a positive review.
-- Do not make a high rating sound exaggerated.
+- 1–2 stars: honestly reflect only the selected negative experiences.
+- 3 stars: use only the selected experiences and keep the wording neutral.
+- 4–5 stars: use only the selected positive experiences.
+- Never make a low rating sound positive.
+- Never make a high rating exaggerated.
 
-LANGUAGE:
-- Prefer natural Indian Hinglish.
-- Do not force Hindi translations of common English words such as staff, service, clean, quality, price, or experience.
-- Do not write the entire review in English unless Hinglish would sound unnatural.
-- Avoid repetitive phrases.
+STYLE:
+- Write 1–3 short natural sentences.
+- Usually around 20–40 words.
+- Use simple Indian Hinglish.
+- Mix Hindi and common English words naturally.
+- Keep it conversational.
+- Do not make it sound like advertising.
+- Do not use complicated language.
+- Do not repeatedly use the same sentence structure.
+- You may vary the order of selected experiences.
 
-OUTPUT FORMAT:
-- Return ONLY the final customer review.
-- Do not write an introduction.
-- Do not explain your answer.
-- Do not write "Here is your review".
-- Do not add notes, analysis, commentary, or instructions.
-- Do not output markdown.
-- Do not output labels such as "Review:".
-- Stop immediately after the final review.
+VERY IMPORTANT:
+Natural language must NEVER be created by adding new facts.
+
+If there are only a few selected experiences, keep the review short rather than adding extra content.
+
+OUTPUT:
+Return ONLY the final review.
+No introduction.
+No explanation.
+No "Review:" label.
+No quotation marks around the review.
+No markdown.
 `;
 
     function cleanReviewText(text) {
