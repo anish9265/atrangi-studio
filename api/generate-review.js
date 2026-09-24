@@ -299,9 +299,10 @@ const review =
       });
     }
 
-    return res.status(200).json({
-      review
-    });
+return res.status(200).json({
+  review,
+  provider: "gemini"
+});
 
   } catch (error) {
 
