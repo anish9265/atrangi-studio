@@ -273,8 +273,11 @@ if (!response.ok) {
 
     const data = await response.json();
 
-    const review =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+const rawReview =
+  data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+const review =
+  cleanReviewText(rawReview);
 
     if (!review) {
       return res.status(500).json({
