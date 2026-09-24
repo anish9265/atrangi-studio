@@ -267,10 +267,10 @@ if (!response.ok) {
 
     const review = await generateWithGroq();
 
-    return res.status(200).json({
-      review,
-      provider: "backup"
-    });
+return res.status(200).json({
+  review,
+  provider: "groq"
+});
 
   } catch (groqError) {
 
