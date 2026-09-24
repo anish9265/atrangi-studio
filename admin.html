@@ -780,15 +780,56 @@ document.addEventListener("click", async (event) => {
   const editButton =
     event.target.closest(".edit-business-btn");
 
-  if (editButton) {
+if (editButton) {
 
-    const businessId =
-      editButton.getAttribute("data-id");
+  const businessId =
+    editButton.getAttribute("data-id");
 
-    alert("Edit button clicked: " + businessId);
+  const business =
+    data.businesses.find(
+      (item) => String(item.id) === String(businessId)
+    );
 
+  if (!business) {
+    alert("Business details could not be found.");
     return;
   }
+
+  editingBusinessId = business.id;
+
+  document.getElementById("name").value =
+    business.name || "";
+
+  document.getElementById("googleReviewUrl").value =
+    business.google_review_url || "";
+
+  document.getElementById("category").value =
+    business.category || "other";
+
+  document.getElementById("language").value =
+    business.language || "en";
+
+  document.getElementById("addBtn").textContent =
+    "✓ Save Changes";
+
+  document.getElementById("cancelEditBtn").style.display =
+    "block";
+
+  document.getElementById("errorMessage").textContent =
+    "";
+
+  document.getElementById("successMessage").textContent =
+    "";
+
+  document
+    .getElementById("businessCard")
+    .scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+  return;
+}
 
   const button =
     event.target.closest(".copy-business-btn");
