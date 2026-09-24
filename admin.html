@@ -929,6 +929,29 @@ const business =
 
   return;
 }
+    const cancelEditButton =
+    event.target.closest("#cancelEditBtn");
+
+  if (cancelEditButton) {
+
+    editingBusinessId = null;
+
+    businessForm.reset();
+
+    document.getElementById("cancelEditBtn").style.display =
+      "none";
+
+    document.getElementById("addBtn").textContent =
+      "➕ Add Business";
+
+    document.getElementById("successMessage").textContent =
+      "";
+
+    document.getElementById("errorMessage").textContent =
+      "";
+
+    return;
+  }
     const statusButton =
     event.target.closest(".status-business-btn");
 
