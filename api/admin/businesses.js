@@ -69,7 +69,7 @@ module.exports = async function handler(req, res) {
 
     const businessesResponse =
       await fetch(
-        `${supabaseUrl}/rest/v1/businesses?select=id,name,slug,category,language,active,created_at&order=created_at.desc`,
+`${supabaseUrl}/rest/v1/businesses?select=id,name,slug,google_review_url,category,language,active,created_at&order=created_at.desc`,
         {
           headers: {
             apikey: serviceRoleKey
