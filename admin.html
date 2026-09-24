@@ -787,8 +787,8 @@ if (editButton) {
   const businessId =
     editButton.getAttribute("data-id");
 
-  const business =
-    data.businesses.find(
+const business =
+  businessesData.find(
       (item) => String(item.id) === String(businessId)
     );
 
