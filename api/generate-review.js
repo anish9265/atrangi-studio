@@ -23,6 +23,10 @@ const prompt = `
 You are helping a customer write a genuine Google review.
 
 Business: ${businessName}
+
+Verified business information:
+${businessInfo || "No additional business information is available."}
+
 Rating selected by customer: ${rating}/5
 Customer's selected experiences: ${experiences.join(", ")}
 
