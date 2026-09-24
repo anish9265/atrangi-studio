@@ -178,6 +178,7 @@ if (!groqReview) {
   );
 }
 
+      console.log("AI PROVIDER USED: GROQ");
   return groqReview;
 };
 const maxRetries = 3;
