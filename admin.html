@@ -811,6 +811,14 @@ await loadBusinesses();
   Edit
 </button>
 
+<button
+  type="button"
+  class="status-business-btn"
+  data-id="${business.id}"
+  data-active="${business.active}"
+>
+  ${business.active ? "Deactivate" : "Activate"}
+</button>
   </div>
 
 </div>
