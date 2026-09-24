@@ -145,6 +145,44 @@ STYLE:
 
 VERY IMPORTANT:
 Natural language must NEVER be created by adding new facts.
+SPECIFIC MEANING RULE:
+
+Do not interpret a general experience as a more specific experience.
+
+For example:
+
+"Good quality" does NOT mean:
+- good food quality
+- good taste
+- good product quality
+- fresh food
+- good ingredients
+
+unless that exact detail was selected by the customer.
+
+"Good service" does NOT mean:
+- fast service
+- quick service
+- attentive service
+- smooth service
+
+unless that exact detail was selected.
+
+"Friendly staff" does NOT mean:
+- helpful staff
+- polite staff
+- smiling staff
+- staff welcomed me
+
+unless that exact detail was selected.
+
+"Clean" does NOT mean:
+- clean tables
+- clean rooms
+- clean washrooms
+- clean surroundings
+
+unless that exact detail was selected.
 
 LENGTH AND NATURAL DETAIL:
 - Normally write 2–3 natural sentences.
