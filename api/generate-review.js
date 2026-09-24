@@ -106,13 +106,22 @@ OUTPUT FORMAT:
   }
 
   // Remove accidental "Review:" prefix
-  cleaned =
-    cleaned.replace(
-      /^Review:\s*/i,
-      ""
-    ).trim();
+cleaned =
+  cleaned.replace(
+    /^Review:\s*/i,
+    ""
+  ).trim();
 
-  return cleaned;
+// Make punctuation more natural for casual reviews
+cleaned =
+  cleaned
+    .replace(/[—–]/g, ", ")
+    .replace(/\s+,/g, ",")
+    .replace(/,\s*,/g, ",")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+
+return cleaned;
 }
     const generateWithGroq = async () => {
 
