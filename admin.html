@@ -929,6 +929,101 @@ const business =
 
   return;
 }
+    const statusButton =
+    event.target.closest(".status-business-btn");
+
+  if (statusButton) {
+
+    const businessId =
+      statusButton.getAttribute("data-id");
+
+    const currentActive =
+      statusButton.getAttribute("data-active") === "true";
+
+    const business =
+      businessesData.find(
+        (item) => String(item.id) === String(businessId)
+      );
+
+    if (!business) {
+      alert("Business details could not be found.");
+      return;
+    }
+
+    const action =
+      currentActive
+        ? "deactivate"
+        : "activate";
+
+    const confirmed =
+      confirm(
+        currentActive
+          ? `Deactivate ${business.name}?`
+          : `Activate ${business.name}?`
+      );
+
+    if (!confirmed) return;
+
+    try {
+
+      const {
+        data: {
+          session
+        }
+      } = await supabaseClient.auth.getSession();
+
+      if (!session) {
+        alert("Please login again.");
+        return;
+      }
+
+      statusButton.disabled = true;
+      statusButton.textContent =
+        currentActive
+          ? "Deactivating..."
+          : "Activating...";
+
+      const response =
+        await fetch(
+          "/api/admin/business-status",
+          {
+            method: "PATCH",
+
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization":
+                `Bearer ${session.access_token}`
+            },
+
+            body: JSON.stringify({
+              id: businessId,
+              active: !currentActive
+            })
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "Could not update business status."
+        );
+      }
+
+      await loadBusinesses();
+
+    } catch (error) {
+
+      alert(
+        error.message ||
+        "Something went wrong."
+      );
+
+    }
+
+  }
 
   const button =
     event.target.closest(".copy-business-btn");
