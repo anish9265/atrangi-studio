@@ -192,6 +192,53 @@
   font-size: 13px;
   padding: 10px 0;
 }
+    .business-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.open-business-btn,
+.copy-business-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 13px;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: 0.15s ease;
+}
+
+.open-business-btn {
+  background: #111827;
+  color: #ffffff;
+  border: 1px solid #111827;
+}
+
+.open-business-btn:hover {
+  background: #1f2937;
+}
+
+.copy-business-btn {
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #d1d5db;
+}
+
+.copy-business-btn:hover {
+  background: #f3f4f6;
+}
+
+.copy-business-btn:active,
+.open-business-btn:active {
+  transform: scale(0.97);
+}
 
 
 
