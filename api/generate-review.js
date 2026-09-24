@@ -6,7 +6,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { businessName, rating, experiences } = req.body;
+const {
+  businessName,
+  businessInfo,
+  rating,
+  experiences
+} = req.body;
 
     if (!businessName || !rating || !Array.isArray(experiences)) {
       return res.status(400).json({
