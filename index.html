@@ -862,11 +862,12 @@ const copyGoogleBtn =
               "Content-Type": "application/json"
             },
 
-            body: JSON.stringify({
-              businessName: business?.name || "this business",
-              rating: selectedRating,
-              experiences
-            })
+body: JSON.stringify({
+  businessName: business?.name || "this business",
+  businessInfo: business?.business_info || "",
+  rating: selectedRating,
+  experiences
+})
           }
         );
 
