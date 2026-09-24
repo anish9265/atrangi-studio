@@ -847,80 +847,61 @@ const copyGoogleBtn =
     });
 
 
-    // -------------------------
-    // Copy review
-    // -------------------------
+// -------------------------
+// Copy + Google review
+// -------------------------
 
-    copyBtn.addEventListener("click", async () => {
+copyGoogleBtn.addEventListener("click", async () => {
 
-      const text =
-        reviewText.value.trim();
+  const text =
+    reviewText.value.trim();
 
-      if (!text) return;
+  if (!text) return;
 
+  if (
+    !business ||
+    !business.google_review_url
+  ) {
 
-      try {
+    showError(
+      "Google review link is not available yet."
+    );
 
-        await navigator.clipboard.writeText(text);
+    return;
+  }
 
-        googleBtn.disabled = false;
+  try {
 
-        copyBtn.textContent =
-          "✓ Review Copied";
+    await navigator.clipboard.writeText(text);
 
-        copyBtn.classList.add("copied");
+    copyGoogleBtn.textContent =
+      "✓ Copied — Opening Google...";
 
+    setTimeout(() => {
 
-        setTimeout(() => {
+      window.location.href =
+        business.google_review_url;
 
-          copyBtn.textContent =
-            "📋 Copy Review";
+    }, 300);
 
-          copyBtn.classList.remove("copied");
+  } catch (error) {
 
-        }, 1800);
+    reviewText.select();
+    document.execCommand("copy");
 
+    copyGoogleBtn.textContent =
+      "✓ Copied — Opening Google...";
 
-      } catch (error) {
+    setTimeout(() => {
 
-        reviewText.select();
+      window.location.href =
+        business.google_review_url;
 
-        document.execCommand("copy");
+    }, 300);
 
-        googleBtn.disabled = false;
+  }
 
-        copyBtn.textContent =
-          "✓ Review Copied";
-
-      }
-
-    });
-
-
-    // -------------------------
-    // Google review
-    // -------------------------
-
-    googleBtn.addEventListener("click", () => {
-
-      if (
-        !business ||
-        !business.google_review_url
-      ) {
-
-        showError(
-          "Google review link is not available yet."
-        );
-
-        return;
-
-      }
-
-
-window.location.href = business.google_review_url;
-
-    });
-
+});
 
     // -------------------------
     // Error helper
