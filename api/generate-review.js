@@ -96,7 +96,9 @@ Natural language must NEVER be created by adding new facts.
 LENGTH AND NATURAL DETAIL:
 - Do not make the review unnecessarily short just because only a few experiences were selected.
 - Normally write 2–3 natural sentences.
-- Aim for roughly 30–50 words when 2–3 experiences are selected.
+- Aim for roughly 20–35 words when 2–3 experiences are selected.
+- Do not add information just to reach the target length.
+- Accuracy is more important than review length.
 You may make the review longer ONLY by:
 - Rephrasing the exact selected experiences.
 - Combining two or more selected experiences into natural sentences.
