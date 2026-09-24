@@ -662,15 +662,31 @@ if (editingBusinessId) {
           }
 
 
-          successMessage.textContent =
-            `Business added successfully. URL: /r/${data.slug}`;
+if (editingBusinessId) {
 
-          successMessage.classList.add("show");
+  successMessage.textContent =
+    "Business updated successfully.";
 
+} else {
 
-          businessForm.reset();
+  successMessage.textContent =
+    `Business added successfully. URL: /r/${data.slug}`;
 
-          await loadBusinesses();
+}
+
+successMessage.classList.add("show");
+
+businessForm.reset();
+
+editingBusinessId = null;
+
+document.getElementById("cancelEditBtn").style.display =
+  "none";
+
+addBtn.textContent =
+  "➕ Add Business";
+
+await loadBusinesses();
 
 
         } catch (error) {
