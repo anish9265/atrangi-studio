@@ -692,6 +692,7 @@ const response =
 
         const data =
           await response.json();
+        businessesData = data.businesses;
 
         if (!response.ok) {
           throw new Error(
