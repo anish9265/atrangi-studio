@@ -714,6 +714,36 @@ const response =
     }
 
     loadBusinesses();
+    document.addEventListener("click", async (event) => {
+
+  const button =
+    event.target.closest(".copy-business-btn");
+
+  if (!button) return;
+
+  const url =
+    button.getAttribute("data-url");
+
+  try {
+
+    await navigator.clipboard.writeText(url);
+
+    const originalText =
+      button.textContent;
+
+    button.textContent = "✓ Copied";
+
+    setTimeout(() => {
+      button.textContent = originalText;
+    }, 1500);
+
+  } catch (error) {
+
+    alert("Could not copy the link. Please copy it manually.");
+
+  }
+
+});
   </script>
 
 </body>
