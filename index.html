@@ -886,6 +886,8 @@ const copyGoogleBtn =
 
         reviewText.value = data.review;
 
+        trackEvent("review_generated", selectedRating);
+
         reviewSection.classList.add("show");
 
         reviewSection.scrollIntoView({
