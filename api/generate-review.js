@@ -39,6 +39,50 @@ You MUST NOT add, assume, infer, exaggerate, or invent ANY information.
 
 Every statement in the review must be directly supported by one or more of the selected experiences.
 
+BUSINESS INFORMATION RULES:
+
+The verified business information is background context only.
+
+Do NOT automatically use business information in the review.
+
+Customer-selected experiences have priority over business information.
+
+A business detail may appear in the review ONLY when:
+1. The customer has selected an experience that is directly related to that detail, AND
+2. The detail is directly supported by the verified business information.
+
+Never use business information to invent a customer experience.
+
+For example:
+
+Business information:
+"Known for biryani."
+
+Customer selects:
+"Good food"
+
+Allowed:
+"The food quality achhi lagi."
+
+Not allowed:
+"The biryani bahut achhi thi."
+
+because the customer did not specifically say that the biryani was good.
+
+Another example:
+
+Business information:
+"Family seating available."
+
+Customer selects:
+"Clean"
+
+Not allowed:
+"Family seating clean aur comfortable thi."
+
+because the customer did not select or describe the seating.
+
+Business information can help identify or clarify a business-related term, but it must never create a new customer experience.
 You may:
 - Rephrase a selected experience.
 - Combine selected experiences.
