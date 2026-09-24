@@ -279,7 +279,70 @@
   transform: scale(0.97);
 }
 
+    /* Mobile layout */
+    @media (max-width: 640px) {
 
+      .page {
+        padding: 22px 14px 40px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .card {
+        padding: 18px;
+        border-radius: 17px;
+      }
+
+      .business-list-header {
+        align-items: flex-start;
+      }
+
+      .business-list-header h2 {
+        font-size: 18px;
+      }
+
+      .business-list-header p {
+        font-size: 12px;
+      }
+
+      .business-count {
+        min-width: 58px;
+        padding: 8px 10px;
+      }
+
+      .business-count span {
+        font-size: 19px;
+      }
+
+      .business-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .business-info {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .business-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+
+      .open-business-btn,
+      .copy-business-btn,
+      .edit-business-btn,
+      .status-business-btn {
+        width: 100%;
+        min-height: 40px;
+      }
+
+    }
 
 
     .message.show {
