@@ -589,6 +589,68 @@
     let selectedRating = null;
     let business = null;
 
+    // -------------------------
+// Usage tracking
+// -------------------------
+
+function getSessionId() {
+
+  let sessionId =
+    sessionStorage.getItem("review_session_id");
+
+  if (!sessionId) {
+
+    sessionId =
+      crypto.randomUUID();
+
+    sessionStorage.setItem(
+      "review_session_id",
+      sessionId
+    );
+  }
+
+  return sessionId;
+}
+
+
+async function trackEvent(
+  eventType,
+  rating = null
+) {
+
+  if (!business?.id) return;
+
+  try {
+
+    await fetch(
+      "/api/track",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+
+        body: JSON.stringify({
+          business_id: business.id,
+          event_type: eventType,
+          session_id: getSessionId(),
+          rating: rating
+        })
+      }
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Tracking failed:",
+      error
+    );
+
+  }
+}
+
     const ratingText = document.getElementById("ratingText");
     const businessNameEl = document.getElementById("businessName");
     const generateBtn = document.getElementById("generateBtn");
