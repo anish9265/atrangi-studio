@@ -653,26 +653,47 @@ const response =
 
         businessList.innerHTML =
           data.businesses.map((business) => `
-            <div class="business-item">
+<div class="business-item">
 
-              <div class="business-info">
+  <div class="business-info">
 
-                <strong>
-                  ${business.name}
-                </strong>
+    <strong>
+      ${business.name}
+    </strong>
 
-                <span>
-                  ${business.category || "Other"}
-                  • ${business.active ? "Active" : "Inactive"}
-                </span>
+    <span>
+      ${business.category || "Other"}
+      • ${business.active ? "Active" : "Inactive"}
+    </span>
 
-                <span class="business-url">
-                  /r/${business.slug}
-                </span>
+    <span class="business-url">
+      ${window.location.origin}/r/${business.slug}
+    </span>
 
-              </div>
+  </div>
 
-            </div>
+  <div class="business-actions">
+
+    <a
+      class="open-business-btn"
+      href="/r/${business.slug}"
+      target="_blank"
+      rel="noopener"
+    >
+      Open
+    </a>
+
+    <button
+      type="button"
+      class="copy-business-btn"
+      data-url="${window.location.origin}/r/${business.slug}"
+    >
+      Copy Link
+    </button>
+
+  </div>
+
+</div>
           `).join("");
 
       } catch (error) {
