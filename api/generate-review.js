@@ -147,7 +147,9 @@ return cleaned;
         ],
 
         temperature: 0.7,
-        max_tokens: 150
+max_completion_tokens: 500,
+reasoning_effort: "low",
+include_reasoning: false,
       })
     }
   );
