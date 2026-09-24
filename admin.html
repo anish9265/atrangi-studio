@@ -562,8 +562,12 @@ businessSection.style.display = "block";
         successMessage.classList.remove("show");
         errorMessage.classList.remove("show");
 
-        addBtn.disabled = true;
-        addBtn.textContent = "Adding Business...";
+addBtn.disabled = true;
+
+addBtn.textContent =
+  editingBusinessId
+    ? "Saving Changes..."
+    : "Adding Business...";
 
 
         const name =
