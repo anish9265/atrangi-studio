@@ -93,7 +93,14 @@ STYLE:
 VERY IMPORTANT:
 Natural language must NEVER be created by adding new facts.
 
-If there are only a few selected experiences, keep the review short rather than adding extra content.
+LENGTH AND NATURAL DETAIL:
+- Do not make the review unnecessarily short just because only a few experiences were selected.
+- Normally write 2–3 natural sentences.
+- Aim for roughly 30–50 words when 2–3 experiences are selected.
+- You may elaborate on the selected experiences by naturally rephrasing them, connecting them, describing the same selected experience in slightly different words, or mentioning its direct effect only when that effect is clearly implied by the selected experience.
+- This elaboration must NOT introduce a new factual detail, new event, new product, new facility, new person, new feeling, new recommendation, or new conclusion.
+- Never repeat the exact same selected experience just to increase word count.
+- If there is not enough information to naturally reach 30–50 words, write a shorter review rather than inventing information.
 
 OUTPUT:
 Return ONLY the final review.
