@@ -155,8 +155,11 @@ OUTPUT FORMAT:
 
 console.log("Groq response:", JSON.stringify(groqData));
 
+const rawGroqReview =
+  groqData?.choices?.[0]?.message?.content;
+
 const groqReview =
-  groqData?.choices?.[0]?.message?.content?.trim();
+  cleanReviewText(rawGroqReview);
 
 if (!groqReview) {
   throw new Error(
