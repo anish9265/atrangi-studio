@@ -157,6 +157,21 @@ For example:
 - good product quality
 - fresh food
 - good ingredients
+Also, do not strengthen or intensify the meaning of an experience.
+
+For example:
+
+"Good quality" should remain a simple statement about quality.
+
+Do NOT change it into:
+- very good quality
+- extremely good quality
+- excellent quality
+- really good quality
+- kaafi achhi quality
+- bahut achhi quality
+
+unless the customer explicitly selected a stronger meaning.
 
 unless that exact detail was selected by the customer.
 
