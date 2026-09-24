@@ -594,24 +594,54 @@ if (!session) {
   throw new Error("Please login again.");
 }
 
-const response =
-  await fetch("/api/admin/business", {
+let response;
 
-    method: "POST",
+if (editingBusinessId) {
 
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${session.access_token}`
-    },
+  response = await fetch(
+    "/api/admin/business-update",
+    {
+      method: "PATCH",
 
-    body: JSON.stringify({
-      name,
-      googleReviewUrl,
-      category,
-      language
-    })
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization":
+          `Bearer ${session.access_token}`
+      },
 
-  });
+      body: JSON.stringify({
+        id: editingBusinessId,
+        name,
+        googleReviewUrl,
+        category,
+        language
+      })
+    }
+  );
+
+} else {
+
+  response = await fetch(
+    "/api/admin/business",
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization":
+          `Bearer ${session.access_token}`
+      },
+
+      body: JSON.stringify({
+        name,
+        googleReviewUrl,
+        category,
+        language
+      })
+    }
+  );
+
+}
 
 
           const data =
