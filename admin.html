@@ -766,7 +766,20 @@ const response =
     }
 
     loadBusinesses();
-    document.addEventListener("click", async (event) => {
+document.addEventListener("click", async (event) => {
+
+  const editButton =
+    event.target.closest(".edit-business-btn");
+
+  if (editButton) {
+
+    const businessId =
+      editButton.getAttribute("data-id");
+
+    alert("Edit button clicked: " + businessId);
+
+    return;
+  }
 
   const button =
     event.target.closest(".copy-business-btn");
