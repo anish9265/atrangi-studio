@@ -1186,6 +1186,169 @@ const business =
   }
 
 });
+    // ==========================================
+// MONTHLY SUMMARY
+// ==========================================
+
+const summaryMonth =
+  document.getElementById("summaryMonth");
+
+const generateSummaryBtn =
+  document.getElementById(
+    "generateSummaryBtn"
+  );
+
+const summarySuccessMessage =
+  document.getElementById(
+    "summarySuccessMessage"
+  );
+
+const summaryErrorMessage =
+  document.getElementById(
+    "summaryErrorMessage"
+  );
+
+
+// Set current month automatically
+const now =
+  new Date();
+
+const currentYear =
+  now.getFullYear();
+
+const currentMonth =
+  String(
+    now.getMonth() + 1
+  ).padStart(2, "0");
+
+summaryMonth.value =
+  `${currentYear}-${currentMonth}`;
+
+
+// Generate monthly summary
+generateSummaryBtn.addEventListener(
+  "click",
+  async () => {
+
+    summarySuccessMessage.classList.remove(
+      "show"
+    );
+
+    summaryErrorMessage.classList.remove(
+      "show"
+    );
+
+    const month =
+      summaryMonth.value;
+
+    if (!month) {
+
+      summaryErrorMessage.textContent =
+        "Please select a month.";
+
+      summaryErrorMessage.classList.add(
+        "show"
+      );
+
+      return;
+    }
+
+    try {
+
+      const {
+        data: {
+          session
+        }
+      } =
+        await supabaseClient.auth.getSession();
+
+      if (!session) {
+
+        throw new Error(
+          "Please login again."
+        );
+
+      }
+
+      generateSummaryBtn.disabled =
+        true;
+
+      generateSummaryBtn.textContent =
+        "Generating Summary...";
+
+      const response =
+        await fetch(
+          "/api/admin/monthly-summary",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+
+              "Authorization":
+                `Bearer ${session.access_token}`
+            },
+
+            body:
+              JSON.stringify({
+                month
+              })
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.error ||
+          "Could not generate monthly summary."
+        );
+
+      }
+
+      if (
+        data.summaries_created === 0
+      ) {
+
+        summarySuccessMessage.textContent =
+          `No usage events found for ${month}.`;
+
+      } else {
+
+        summarySuccessMessage.textContent =
+          `✓ Monthly summary generated successfully for ${month}. ${data.summaries_created} business summary saved.`;
+
+      }
+
+      summarySuccessMessage.classList.add(
+        "show"
+      );
+
+    } catch (error) {
+
+      summaryErrorMessage.textContent =
+        error.message ||
+        "Something went wrong.";
+
+      summaryErrorMessage.classList.add(
+        "show"
+      );
+
+    } finally {
+
+      generateSummaryBtn.disabled =
+        false;
+
+      generateSummaryBtn.textContent =
+        "📊 Generate Monthly Summary";
+
+    }
+
+  }
+);
   </script>
 
 </body>
