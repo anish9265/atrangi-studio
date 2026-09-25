@@ -1,28 +1,14 @@
 export default async function handler(req, res) {
 
-  if (req.method !== "POST") {
+  // Vercel Cron sends GET.
+  // Admin panel button sends POST.
+  if (req.method !== "GET" && req.method !== "POST") {
     return res.status(405).json({
       error: "Method not allowed"
     });
   }
 
   try {
-
-    // -------------------------
-    // Check admin login
-    // -------------------------
-
-    const authorization =
-      req.headers.authorization || "";
-
-    if (!authorization.startsWith("Bearer ")) {
-      return res.status(401).json({
-        error: "Unauthorized"
-      });
-    }
-
-    const accessToken =
-      authorization.replace("Bearer ", "");
 
     // -------------------------
     // Supabase settings
@@ -50,45 +36,113 @@ export default async function handler(req, res) {
     const supabaseRestUrl =
       `${baseUrl}/rest/v1`;
 
+
     // -------------------------
-    // Verify logged-in user
+    // Authentication
     // -------------------------
 
-    const userResponse = await fetch(
-      `${baseUrl}/auth/v1/user`,
-      {
-        headers: {
-          apikey: serviceRoleKey,
-          Authorization:
-            `Bearer ${accessToken}`
-        }
+    const authorization =
+      req.headers.authorization || "";
+
+
+    // Vercel Cron authentication
+    const cronSecret =
+      process.env.CRON_SECRET;
+
+    const isCronRequest =
+      cronSecret &&
+      authorization ===
+        `Bearer ${cronSecret}`;
+
+
+    // Admin panel authentication
+    let isAdminRequest = false;
+
+
+    if (!isCronRequest) {
+
+      // Admin button must use POST
+      if (req.method !== "POST") {
+        return res.status(401).json({
+          error: "Unauthorized"
+        });
       }
-    );
 
-    if (!userResponse.ok) {
+
+      if (!authorization.startsWith("Bearer ")) {
+        return res.status(401).json({
+          error: "Unauthorized"
+        });
+      }
+
+
+      const accessToken =
+        authorization.replace(
+          "Bearer ",
+          ""
+        );
+
+
+      // -------------------------
+      // Verify logged-in user
+      // -------------------------
+
+      const userResponse =
+        await fetch(
+          `${baseUrl}/auth/v1/user`,
+          {
+            headers: {
+              apikey: serviceRoleKey,
+              Authorization:
+                `Bearer ${accessToken}`
+            }
+          }
+        );
+
+
+      if (!userResponse.ok) {
+        return res.status(401).json({
+          error: "Invalid session"
+        });
+      }
+
+
+      const user =
+        await userResponse.json();
+
+
+      // -------------------------
+      // Admin email check
+      // -------------------------
+
+      const adminEmail =
+        process.env.ADMIN_EMAIL;
+
+
+      if (
+        !adminEmail ||
+        user.email !== adminEmail
+      ) {
+        return res.status(403).json({
+          error: "Access denied"
+        });
+      }
+
+
+      isAdminRequest = true;
+    }
+
+
+    // -------------------------
+    // Safety check
+    // -------------------------
+
+    if (!isCronRequest && !isAdminRequest) {
       return res.status(401).json({
-        error: "Invalid session"
+        error: "Unauthorized"
       });
     }
 
-    const user =
-      await userResponse.json();
-
-    // -------------------------
-    // Admin email check
-    // -------------------------
-
-    const adminEmail =
-      process.env.ADMIN_EMAIL;
-
-    if (
-      !adminEmail ||
-      user.email !== adminEmail
-    ) {
-      return res.status(403).json({
-        error: "Access denied"
-      });
-    }
 
     // -------------------------
     // Calculate cleanup date
@@ -98,6 +152,7 @@ export default async function handler(req, res) {
       new Date();
 
     cleanupDate.setUTCDate(1);
+
     cleanupDate.setUTCMonth(
       cleanupDate.getUTCMonth() - 2
     );
@@ -123,6 +178,7 @@ export default async function handler(req, res) {
         }
       );
 
+
     if (!countResponse.ok) {
 
       const errorText =
@@ -140,7 +196,9 @@ export default async function handler(req, res) {
         "content-range"
       );
 
+
     let eventsFound = 0;
+
 
     if (contentRange) {
 
@@ -164,13 +222,19 @@ export default async function handler(req, res) {
     if (eventsFound === 0) {
 
       return res.status(200).json({
+
         success: true,
+
         message:
           "No old usage events found.",
+
         events_found: 0,
+
         events_deleted: 0,
+
         cleanup_before:
           cleanupDateString
+
       });
 
     }
@@ -188,9 +252,12 @@ export default async function handler(req, res) {
 
           headers: {
             apikey: serviceRoleKey,
+
             Authorization:
               `Bearer ${serviceRoleKey}`,
-            Prefer: "return=representation"
+
+            Prefer:
+              "return=representation"
           }
         }
       );
@@ -236,7 +303,12 @@ export default async function handler(req, res) {
         eventsDeleted,
 
       cleanup_before:
-        cleanupDateString
+        cleanupDateString,
+
+      triggered_by:
+        isCronRequest
+          ? "cron"
+          : "admin"
 
     });
 
