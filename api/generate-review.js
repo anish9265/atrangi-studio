@@ -492,6 +492,7 @@ CORE RULES:
 2. Use the selected experiences naturally. You may rewrite, combine, reorder and connect them so the review sounds like a real customer wrote it.
 
 3. Verified business facts may be used to make a selected experience more specific, but only when the fact is relevant to that selected experience.
+Keep elaboration natural and moderate. Do not add several extra specific details when a simple expression of the selected experience is enough.
 
 4. Do not invent new specific experiences or details that the customer did not select and that are not supported by the verified facts.
 
