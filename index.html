@@ -934,7 +934,7 @@ copyGoogleBtn.addEventListener("click", async () => {
 
     return;
   }
-
+trackEvent("google_click", selectedRating);
   try {
 
     await navigator.clipboard.writeText(text);
