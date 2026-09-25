@@ -67,9 +67,8 @@ return res.status(404).json({
   } catch (error) {
     console.error("Server error:", error);
 
-    return res.status(500).json({
-      error: "Something went wrong",
-      details: error.message
-    });
+return res.status(500).json({
+  error: "Something went wrong"
+});
   }
 }
