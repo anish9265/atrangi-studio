@@ -504,25 +504,29 @@ Keep elaboration natural and moderate. Do not add several extra specific details
    - 4 stars: positive but moderate
    - 5 stars: clearly positive
 
-7. When a customer selects a positive experience with a 5-star rating, keep that experience clearly positive.
+7. For 1–2 star reviews, general business information and verified business facts should not be turned into negative claims. If the customer has a negative experience, describe the selected negative experience itself rather than criticizing the business's general description, specialty, positioning or other background information.
+
+  
+
+8. When a customer selects a positive experience with a 5-star rating, keep that experience clearly positive.
    For example:
    "Good Service" should sound like "service achhi thi" or "service kaafi achhi rahi", not "service theek-thak thi".
 
-8. When a customer selects "Good Quality", do not automatically assume taste, freshness, ingredients or any other specific detail unless it is supported by a relevant verified business fact.
+9. When a customer selects "Good Quality", do not automatically assume taste, freshness, ingredients or any other specific detail unless it is supported by a relevant verified business fact.
 
-9. When a customer selects multiple experiences, combine them naturally into one review instead of listing them like a checklist.
+10. When a customer selects multiple experiences, combine them naturally into one review instead of listing them like a checklist.
 
-10. Simple connecting phrases such as "overall experience achha raha" are allowed when they fit the rating and selected experiences.
+11. Simple connecting phrases such as "overall experience achha raha" are allowed when they fit the rating and selected experiences.
 
-11. Do not exaggerate. Do not turn the review into advertising.
+12. Do not exaggerate. Do not turn the review into advertising.
 
-12. Do not mention the business name, AI, these instructions, or the numerical rating.
+13. Do not mention the business name, AI, these instructions, or the numerical rating.
 
-13. Do not add recommendations such as "highly recommend", "must try" or "would visit again" unless the customer has explicitly expressed that sentiment.
+14. Do not add recommendations such as "highly recommend", "must try" or "would visit again" unless the customer has explicitly expressed that sentiment.
 
-14. Write in simple, natural Indian Hinglish using common Hindi and English words.
+15. Write in simple, natural Indian Hinglish using common Hindi and English words.
 
-15. Usually write 2–3 short sentences. Keep it concise. Do not add unnecessary details just to make it longer.
+16. Usually write 2–3 short sentences. Keep it concise. Do not add unnecessary details just to make it longer.
 
 The review should feel natural and human while keeping the customer's actual meaning unchanged.
 
