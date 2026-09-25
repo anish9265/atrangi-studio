@@ -37,10 +37,13 @@ export default async function handler(req, res) {
       });
     }
 
-    // Rating is only relevant for review_generated
+    // -------------------------
+    // Validate rating
+    // -------------------------
+
     if (
-      event_type === "review_generated" &&
       rating !== undefined &&
+      rating !== null &&
       (
         !Number.isInteger(Number(rating)) ||
         Number(rating) < 1 ||
@@ -98,8 +101,9 @@ export default async function handler(req, res) {
           session_id:
             session_id || null,
           rating:
-            event_type === "review_generated"
-              ? Number(rating) || null
+            rating !== undefined &&
+            rating !== null
+              ? Number(rating)
               : null
         })
       }
