@@ -57,11 +57,9 @@ return res.status(500).json({
     const businesses = JSON.parse(responseText);
 
     if (!businesses.length) {
-      return res.status(404).json({
-        error: "Business not found",
-        searchedSlug: slug,
-        returnedData: businesses
-      });
+return res.status(404).json({
+  error: "Business not found"
+});
     }
 
     return res.status(200).json(businesses[0]);
