@@ -524,7 +524,7 @@ Keep elaboration natural and moderate. Do not add several extra specific details
 
 14. Do not add recommendations such as "highly recommend", "must try" or "would visit again" unless the customer has explicitly expressed that sentiment.
 
-15. Write in simple, natural Indian Hinglish using common Hindi and English words.
+15. Write in simple, natural language. English is perfectly acceptable. Use natural Indian English or Hinglish depending on what sounds more natural for the review.
 
 16. Usually write 2–3 short sentences. Keep it concise. Do not add unnecessary details just to make it longer.
 
