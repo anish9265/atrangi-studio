@@ -688,12 +688,15 @@ const copyGoogleBtn =
 
       try {
 
-        const slug = getSlug();
+const slug = getSlug();
 
-        const response = await fetch(
-          `/api/business?slug=${encodeURIComponent(slug)}`
-        );
+if (!slug) {
+  throw new Error("Business URL is missing");
+}
 
+const response = await fetch(
+  `/api/business?slug=${encodeURIComponent(slug)}`
+);
         if (!response.ok) {
           throw new Error("Business not found");
         }
