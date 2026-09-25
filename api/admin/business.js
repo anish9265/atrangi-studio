@@ -237,9 +237,8 @@ body: JSON.stringify({
       error
     );
 
-    return res.status(500).json({
-      error: "Something went wrong.",
-      details: error.message
-    });
+return res.status(500).json({
+  error: "Something went wrong."
+});
   }
 }
