@@ -106,23 +106,8 @@ export default async function handler(req, res) {
       });
     }
 
-    const startDate =
-      `${month}-01T00:00:00.000Z`;
-
-    const [year, monthNumber] =
-      month.split("-").map(Number);
-
-    const nextMonthDate =
-      new Date(
-        Date.UTC(
-          year,
-          monthNumber,
-          1
-        )
-      );
-
-    const endDate =
-      nextMonthDate.toISOString();
+    const monthDate =
+      `${month}-01`;
 
     // -------------------------
     // Get businesses
@@ -150,12 +135,12 @@ export default async function handler(req, res) {
       await businessesResponse.json();
 
     // -------------------------
-    // Get usage events
+    // Get monthly summaries
     // -------------------------
 
-    const eventsResponse =
+    const summariesResponse =
       await fetch(
-        `${supabaseRestUrl}/usage_events?created_at=gte.${encodeURIComponent(startDate)}&created_at=lt.${encodeURIComponent(endDate)}&select=business_id,event_type,rating`,
+        `${supabaseRestUrl}/monthly_summaries?month=eq.${encodeURIComponent(monthDate)}&select=business_id,month,page_views,reviews_generated,google_clicks,rating_1,rating_2,rating_3,rating_4,rating_5`,
         {
           headers: {
             apikey: serviceRoleKey,
@@ -165,90 +150,110 @@ export default async function handler(req, res) {
         }
       );
 
-    if (!eventsResponse.ok) {
+    if (!summariesResponse.ok) {
+      const errorText =
+        await summariesResponse.text();
+
       throw new Error(
-        "Could not load usage events"
+        `Could not load monthly summaries: ${errorText}`
       );
     }
 
-    const events =
-      await eventsResponse.json();
+    const summaries =
+      await summariesResponse.json();
 
     // -------------------------
-    // Calculate statistics
+    // Match businesses
+    // with monthly summaries
+    // -------------------------
+
+    const summaryMap =
+      new Map();
+
+    summaries.forEach(
+      (summary) => {
+
+        summaryMap.set(
+          Number(summary.business_id),
+          summary
+        );
+
+      }
+    );
+
+    // -------------------------
+    // Create analytics
     // -------------------------
 
     const analytics =
-      businesses.map((business) => {
+      businesses.map(
+        (business) => {
 
-        const businessEvents =
-          events.filter(
-            (event) =>
-              Number(event.business_id) ===
+          const summary =
+            summaryMap.get(
               Number(business.id)
-          );
+            );
 
-        const stats = {
-          page_views: 0,
-          reviews_generated: 0,
-          google_clicks: 0,
-          rating_1: 0,
-          rating_2: 0,
-          rating_3: 0,
-          rating_4: 0,
-          rating_5: 0
-        };
+          return {
+            business_id:
+              business.id,
 
-        businessEvents.forEach(
-          (event) => {
+            business_name:
+              business.name,
 
-            if (
-              event.event_type ===
-              "page_view"
-            ) {
-              stats.page_views++;
-            }
+            slug:
+              business.slug,
 
-            if (
-              event.event_type ===
-              "review_generated"
-            ) {
+            category:
+              business.category ||
+              "other",
 
-              stats.reviews_generated++;
+            active:
+              business.active,
 
-              const rating =
-                Number(event.rating);
+            page_views:
+              Number(
+                summary?.page_views || 0
+              ),
 
-              if (rating >= 1 &&
-                  rating <= 5) {
+            reviews_generated:
+              Number(
+                summary?.reviews_generated || 0
+              ),
 
-                stats[
-                  `rating_${rating}`
-                ]++;
-              }
-            }
+            google_clicks:
+              Number(
+                summary?.google_clicks || 0
+              ),
 
-            if (
-              event.event_type ===
-              "google_click"
-            ) {
-              stats.google_clicks++;
-            }
+            rating_1:
+              Number(
+                summary?.rating_1 || 0
+              ),
 
-          }
-        );
+            rating_2:
+              Number(
+                summary?.rating_2 || 0
+              ),
 
-        return {
-          business_id: business.id,
-          business_name: business.name,
-          slug: business.slug,
-          category:
-            business.category || "other",
-          active: business.active,
-          ...stats
-        };
+            rating_3:
+              Number(
+                summary?.rating_3 || 0
+              ),
 
-      });
+            rating_4:
+              Number(
+                summary?.rating_4 || 0
+              ),
+
+            rating_5:
+              Number(
+                summary?.rating_5 || 0
+              )
+          };
+
+        }
+      );
 
     return res.status(200).json({
       month,
@@ -267,5 +272,7 @@ export default async function handler(req, res) {
         error.message ||
         "Something went wrong"
     });
+
   }
+
 }
