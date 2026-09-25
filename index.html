@@ -863,8 +863,7 @@ const copyGoogleBtn =
             },
 
 body: JSON.stringify({
-  businessName: business?.name || "this business",
-  businessInfo: business?.business_info || "",
+  businessId: business?.id,
   rating: selectedRating,
   experiences
 })
