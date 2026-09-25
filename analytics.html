@@ -3,7 +3,10 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
 
   <title>Analytics | Review Assistant</title>
 
@@ -37,11 +40,149 @@
       padding: 30px 18px 60px;
     }
 
+    /* -------------------------
+       LOGIN
+    ------------------------- */
+
+    .login-screen {
+      min-height: 75vh;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+
+      padding: 30px;
+
+      box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    .login-icon {
+      font-size: 42px;
+      margin-bottom: 12px;
+    }
+
+    .login-card h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .login-card p {
+      margin: 7px 0 24px;
+      color: #737373;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .login-field {
+      margin-bottom: 15px;
+    }
+
+    .login-field label {
+      display: block;
+      margin-bottom: 7px;
+
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .login-field input {
+      width: 100%;
+
+      padding: 13px 14px;
+
+      border:
+        1px solid #d1d5db;
+
+      border-radius: 10px;
+
+      font-size: 15px;
+
+      outline: none;
+    }
+
+    .login-field input:focus {
+      border-color: #111827;
+
+      box-shadow:
+        0 0 0 3px rgba(
+          17,
+          24,
+          39,
+          0.08
+        );
+    }
+
+    .login-btn {
+      width: 100%;
+
+      border: none;
+
+      background: #111827;
+      color: white;
+
+      padding: 13px 18px;
+
+      border-radius: 10px;
+
+      font-size: 14px;
+      font-weight: 700;
+
+      cursor: pointer;
+
+      margin-top: 5px;
+    }
+
+    .login-btn:hover {
+      background: #000;
+    }
+
+    .login-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .login-error {
+      display: none;
+
+      padding: 12px 14px;
+
+      border-radius: 10px;
+
+      margin-bottom: 15px;
+
+      background: #fee2e2;
+      color: #991b1b;
+
+      font-size: 13px;
+
+      line-height: 1.4;
+    }
+
+    .login-error.show {
+      display: block;
+    }
+
+    /* -------------------------
+       HEADER
+    ------------------------- */
+
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+
       gap: 15px;
+
       margin-bottom: 25px;
     }
 
@@ -52,30 +193,69 @@
 
     .header p {
       margin: 6px 0 0;
+
       color: #737373;
       font-size: 14px;
     }
 
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .back-btn {
       text-decoration: none;
+
       background: #111827;
       color: white;
+
       padding: 11px 16px;
+
       border-radius: 10px;
+
       font-size: 14px;
       font-weight: 700;
     }
 
+    .logout-btn {
+      border: none;
+
+      background: #fee2e2;
+      color: #991b1b;
+
+      padding: 11px 16px;
+
+      border-radius: 10px;
+
+      font-size: 14px;
+      font-weight: 700;
+
+      cursor: pointer;
+    }
+
+    /* -------------------------
+       FILTER
+    ------------------------- */
+
     .filter-card {
       background: white;
-      border: 1px solid #e5e7eb;
+
+      border:
+        1px solid #e5e7eb;
+
       border-radius: 18px;
+
       padding: 18px;
+
       margin-bottom: 20px;
 
       display: flex;
       align-items: end;
+
       gap: 15px;
+
       flex-wrap: wrap;
     }
 
@@ -86,27 +266,39 @@
 
     .field label {
       display: block;
+
       margin-bottom: 7px;
+
       font-size: 13px;
       font-weight: 700;
     }
 
-    input {
+    .field input {
       width: 100%;
+
       padding: 12px 13px;
-      border: 1px solid #d1d5db;
+
+      border:
+        1px solid #d1d5db;
+
       border-radius: 10px;
+
       font-size: 15px;
     }
 
     .load-btn {
       border: none;
+
       background: #111827;
       color: white;
+
       padding: 12px 20px;
+
       border-radius: 10px;
+
       font-size: 14px;
       font-weight: 700;
+
       cursor: pointer;
     }
 
@@ -115,11 +307,19 @@
       cursor: not-allowed;
     }
 
+    /* -------------------------
+       MESSAGES
+    ------------------------- */
+
     .message {
       display: none;
+
       padding: 13px 15px;
+
       border-radius: 10px;
+
       margin-bottom: 18px;
+
       font-size: 14px;
     }
 
@@ -134,58 +334,87 @@
 
     .loading {
       text-align: center;
+
       padding: 40px;
+
       color: #737373;
     }
 
+    /* -------------------------
+       SUMMARY
+    ------------------------- */
+
     .summary-grid {
       display: grid;
+
       grid-template-columns:
         repeat(3, minmax(0, 1fr));
 
       gap: 15px;
+
       margin-bottom: 20px;
     }
 
     .summary-card {
       background: white;
-      border: 1px solid #e5e7eb;
+
+      border:
+        1px solid #e5e7eb;
+
       border-radius: 18px;
+
       padding: 20px;
     }
 
     .summary-card span {
       display: block;
+
       color: #737373;
+
       font-size: 13px;
+
       margin-bottom: 8px;
     }
 
     .summary-card strong {
       display: block;
+
       font-size: 28px;
     }
 
+    /* -------------------------
+       TABLE
+    ------------------------- */
+
     .table-card {
       background: white;
-      border: 1px solid #e5e7eb;
+
+      border:
+        1px solid #e5e7eb;
+
       border-radius: 18px;
+
       overflow: hidden;
     }
 
     .table-header {
       padding: 20px;
-      border-bottom: 1px solid #e5e7eb;
+
+      border-bottom:
+        1px solid #e5e7eb;
     }
 
     .table-header h2 {
       margin: 0;
+
       font-size: 19px;
     }
 
     .table-header p {
       margin: 5px 0 0;
+
       color: #737373;
+
       font-size: 13px;
     }
 
@@ -195,23 +424,33 @@
 
     table {
       width: 100%;
+
       border-collapse: collapse;
+
       min-width: 850px;
     }
 
     th,
     td {
       padding: 14px 16px;
-      border-bottom: 1px solid #f0f0f0;
+
+      border-bottom:
+        1px solid #f0f0f0;
+
       text-align: left;
+
       font-size: 14px;
+
       white-space: nowrap;
     }
 
     th {
       background: #fafafa;
+
       font-size: 12px;
+
       color: #666;
+
       text-transform: uppercase;
     }
 
@@ -221,33 +460,60 @@
 
     .rating-row {
       display: flex;
+
       gap: 8px;
+
       flex-wrap: wrap;
+
       margin-top: 10px;
     }
 
     .rating {
       background: #f5f6fa;
+
       border-radius: 8px;
+
       padding: 6px 9px;
+
       font-size: 12px;
     }
 
     .empty {
       padding: 35px;
+
       text-align: center;
+
       color: #737373;
     }
+
+    /* -------------------------
+       MOBILE
+    ------------------------- */
 
     @media (max-width: 700px) {
 
       .page {
-        padding: 22px 14px 40px;
+        padding:
+          22px
+          14px
+          40px;
       }
 
       .header {
         align-items: flex-start;
+
         flex-direction: column;
+      }
+
+      .header-actions {
+        width: 100%;
+      }
+
+      .back-btn,
+      .logout-btn {
+        flex: 1;
+
+        text-align: center;
       }
 
       .summary-grid {
@@ -262,31 +528,152 @@
         width: 100%;
       }
 
+      .login-screen {
+        min-height: 70vh;
+      }
+
+      .login-card {
+        padding: 24px;
+      }
+
     }
 
   </style>
+
 </head>
+
 
 <body>
 
-  <main class="page">
+  <!-- ==================================================
+       LOGIN SCREEN
+  ================================================== -->
+
+  <div
+    id="loginScreen"
+    class="login-screen"
+  >
+
+    <div class="login-card">
+
+      <div class="login-icon">
+        🔐
+      </div>
+
+      <h1>
+        Admin Login
+      </h1>
+
+      <p>
+        Login to access your Review Assistant analytics.
+      </p>
+
+
+      <div
+        id="loginError"
+        class="login-error"
+      ></div>
+
+
+      <form id="loginForm">
+
+        <div class="login-field">
+
+          <label for="loginEmail">
+            Email
+          </label>
+
+          <input
+            type="email"
+            id="loginEmail"
+            placeholder="Enter admin email"
+            autocomplete="email"
+            required
+          />
+
+        </div>
+
+
+        <div class="login-field">
+
+          <label for="loginPassword">
+            Password
+          </label>
+
+          <input
+            type="password"
+            id="loginPassword"
+            placeholder="Enter password"
+            autocomplete="current-password"
+            required
+          />
+
+        </div>
+
+
+        <button
+          type="submit"
+          class="login-btn"
+          id="loginBtn"
+        >
+          Login
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- ==================================================
+       ANALYTICS SCREEN
+  ================================================== -->
+
+  <main
+    class="page"
+    id="analyticsPage"
+    style="display:none;"
+  >
 
     <div class="header">
 
       <div>
-        <h1>📊 Analytics</h1>
-        <p>Monthly Review Assistant activity</p>
+
+        <h1>
+          📊 Analytics
+        </h1>
+
+        <p>
+          Monthly Review Assistant activity
+        </p>
+
       </div>
 
-      <a
-        href="/admin.html"
-        class="back-btn"
-      >
-        ← Admin
-      </a>
+
+      <div class="header-actions">
+
+        <a
+          href="/admin.html"
+          class="back-btn"
+        >
+          ← Admin
+        </a>
+
+        <button
+          type="button"
+          class="logout-btn"
+          id="logoutBtn"
+        >
+          Logout
+        </button>
+
+      </div>
 
     </div>
 
+
+    <!-- MONTH FILTER -->
 
     <div class="filter-card">
 
@@ -303,6 +690,7 @@
 
       </div>
 
+
       <button
         class="load-btn"
         id="loadBtn"
@@ -314,11 +702,15 @@
     </div>
 
 
+    <!-- ERROR -->
+
     <div
       class="message error"
       id="errorMessage"
     ></div>
 
+
+    <!-- LOADING -->
 
     <div
       id="loading"
@@ -329,36 +721,65 @@
     </div>
 
 
+    <!-- ANALYTICS CONTENT -->
+
     <div
       id="analyticsContent"
       style="display:none;"
     >
 
+      <!-- SUMMARY -->
+
       <div class="summary-grid">
 
         <div class="summary-card">
-          <span>Total Page Visits</span>
-          <strong id="totalPageViews">
+
+          <span>
+            Total Page Visits
+          </span>
+
+          <strong
+            id="totalPageViews"
+          >
             0
           </strong>
+
         </div>
 
-        <div class="summary-card">
-          <span>Total Reviews Generated</span>
-          <strong id="totalReviews">
-            0
-          </strong>
-        </div>
 
         <div class="summary-card">
-          <span>Total Google Clicks</span>
-          <strong id="totalGoogleClicks">
+
+          <span>
+            Total Reviews Generated
+          </span>
+
+          <strong
+            id="totalReviews"
+          >
             0
           </strong>
+
+        </div>
+
+
+        <div class="summary-card">
+
+          <span>
+            Total Google Clicks
+          </span>
+
+          <strong
+            id="totalGoogleClicks"
+          >
+            0
+          </strong>
+
         </div>
 
       </div>
 
+
+      <!-- BUSINESS TABLE -->
 
       <div class="table-card">
 
@@ -389,6 +810,10 @@
 
   <script>
 
+    /* ==================================================
+       SUPABASE
+    ================================================== */
+
     const SUPABASE_URL =
       "https://uhcbdclpavdgcrtultjc.supabase.co";
 
@@ -402,17 +827,69 @@
       );
 
 
+    /* ==================================================
+       ELEMENTS
+    ================================================== */
+
+    const loginScreen =
+      document.getElementById(
+        "loginScreen"
+      );
+
+    const analyticsPage =
+      document.getElementById(
+        "analyticsPage"
+      );
+
+    const loginForm =
+      document.getElementById(
+        "loginForm"
+      );
+
+    const loginEmail =
+      document.getElementById(
+        "loginEmail"
+      );
+
+    const loginPassword =
+      document.getElementById(
+        "loginPassword"
+      );
+
+    const loginBtn =
+      document.getElementById(
+        "loginBtn"
+      );
+
+    const loginError =
+      document.getElementById(
+        "loginError"
+      );
+
+    const logoutBtn =
+      document.getElementById(
+        "logoutBtn"
+      );
+
     const monthInput =
-      document.getElementById("month");
+      document.getElementById(
+        "month"
+      );
 
     const loadBtn =
-      document.getElementById("loadBtn");
+      document.getElementById(
+        "loadBtn"
+      );
 
     const errorMessage =
-      document.getElementById("errorMessage");
+      document.getElementById(
+        "errorMessage"
+      );
 
     const loading =
-      document.getElementById("loading");
+      document.getElementById(
+        "loading"
+      );
 
     const analyticsContent =
       document.getElementById(
@@ -420,9 +897,14 @@
       );
 
 
+    /* ==================================================
+       CURRENT MONTH
+    ================================================== */
+
     function getCurrentMonth() {
 
-      const now = new Date();
+      const now =
+        new Date();
 
       const year =
         now.getFullYear();
@@ -441,7 +923,40 @@
       getCurrentMonth();
 
 
-    function showError(message) {
+    /* ==================================================
+       LOGIN ERROR
+    ================================================== */
+
+    function showLoginError(
+      message
+    ) {
+
+      loginError.textContent =
+        message;
+
+      loginError.classList.add(
+        "show"
+      );
+
+    }
+
+
+    function hideLoginError() {
+
+      loginError.classList.remove(
+        "show"
+      );
+
+    }
+
+
+    /* ==================================================
+       ANALYTICS ERROR
+    ================================================== */
+
+    function showError(
+      message
+    ) {
 
       errorMessage.textContent =
         message;
@@ -462,17 +977,35 @@
     }
 
 
-    function formatNumber(number) {
+    /* ==================================================
+       FORMAT NUMBER
+    ================================================== */
 
-      return Number(number || 0)
-        .toLocaleString("en-IN");
+    function formatNumber(
+      number
+    ) {
+
+      return Number(
+        number || 0
+      ).toLocaleString(
+        "en-IN"
+      );
 
     }
 
 
-    function formatMonth(month) {
+    /* ==================================================
+       FORMAT MONTH
+    ================================================== */
 
-      const [year, monthNumber] =
+    function formatMonth(
+      month
+    ) {
+
+      const [
+        year,
+        monthNumber
+      ] =
         month.split("-");
 
       const date =
@@ -493,12 +1026,171 @@
     }
 
 
+    /* ==================================================
+       SHOW ANALYTICS
+    ================================================== */
+
+    function showAnalyticsPage() {
+
+      loginScreen.style.display =
+        "none";
+
+      analyticsPage.style.display =
+        "block";
+
+    }
+
+
+    /* ==================================================
+       SHOW LOGIN
+    ================================================== */
+
+    function showLoginPage() {
+
+      analyticsPage.style.display =
+        "none";
+
+      loginScreen.style.display =
+        "flex";
+
+      analyticsContent.style.display =
+        "none";
+
+    }
+
+
+    /* ==================================================
+       LOGIN
+    ================================================== */
+
+    async function login() {
+
+      hideLoginError();
+
+      const email =
+        loginEmail.value.trim();
+
+      const password =
+        loginPassword.value;
+
+
+      if (!email || !password) {
+
+        showLoginError(
+          "Please enter your email and password."
+        );
+
+        return;
+
+      }
+
+
+      loginBtn.disabled =
+        true;
+
+      loginBtn.textContent =
+        "Logging in...";
+
+
+      try {
+
+        const {
+          error
+        } =
+          await supabaseClient.auth
+            .signInWithPassword({
+              email,
+              password
+            });
+
+
+        if (error) {
+
+          throw error;
+
+        }
+
+
+        loginPassword.value =
+          "";
+
+        showAnalyticsPage();
+
+        await loadAnalytics();
+
+
+      } catch (error) {
+
+        console.error(
+          "Login error:",
+          error
+        );
+
+        showLoginError(
+          error.message ||
+          "Login failed. Please check your email and password."
+        );
+
+      } finally {
+
+        loginBtn.disabled =
+          false;
+
+        loginBtn.textContent =
+          "Login";
+
+      }
+
+    }
+
+
+    /* ==================================================
+       LOGOUT
+    ================================================== */
+
+    async function logout() {
+
+      try {
+
+        await supabaseClient.auth.signOut();
+
+      } catch (error) {
+
+        console.error(
+          "Logout error:",
+          error
+        );
+
+      }
+
+
+      analyticsContent.style.display =
+        "none";
+
+      hideError();
+
+      loginEmail.value =
+        "";
+
+      loginPassword.value =
+        "";
+
+      showLoginPage();
+
+    }
+
+
+    /* ==================================================
+       LOAD ANALYTICS
+    ================================================== */
+
     async function loadAnalytics() {
 
       hideError();
 
       const month =
         monthInput.value;
+
 
       if (!month) {
 
@@ -507,10 +1199,12 @@
         );
 
         return;
+
       }
 
 
-      loadBtn.disabled = true;
+      loadBtn.disabled =
+        true;
 
       loadBtn.textContent =
         "Loading...";
@@ -524,6 +1218,10 @@
 
       try {
 
+        /* -------------------------
+           Get current session
+        ------------------------- */
+
         const {
           data: {
             session
@@ -535,17 +1233,25 @@
 
         if (!session) {
 
+          showLoginPage();
+
           throw new Error(
-            "Please login again."
+            "Your session has expired. Please login again."
           );
 
         }
 
 
+        /* -------------------------
+           Call protected API
+        ------------------------- */
+
         const response =
           await fetch(
             `/api/admin/analytics?month=${encodeURIComponent(month)}`,
             {
+              method: "GET",
+
               headers: {
                 "Authorization":
                   `Bearer ${session.access_token}`
@@ -560,6 +1266,18 @@
 
         if (!response.ok) {
 
+          if (
+            response.status === 401 ||
+            response.status === 403
+          ) {
+
+            await supabaseClient.auth
+              .signOut();
+
+            showLoginPage();
+
+          }
+
           throw new Error(
             data.error ||
             "Could not load analytics."
@@ -572,8 +1290,14 @@
           data.businesses || [];
 
 
+        /* -------------------------
+           Totals
+        ------------------------- */
+
         let totalPageViews = 0;
+
         let totalReviews = 0;
+
         let totalGoogleClicks = 0;
 
 
@@ -599,6 +1323,10 @@
         );
 
 
+        /* -------------------------
+           Summary cards
+        ------------------------- */
+
         document.getElementById(
           "totalPageViews"
         ).textContent =
@@ -623,13 +1351,23 @@
           );
 
 
+        /* -------------------------
+           Month label
+        ------------------------- */
+
         document.getElementById(
           "selectedMonthText"
         ).textContent =
           formatMonth(month);
 
 
-        if (businesses.length === 0) {
+        /* -------------------------
+           Business table
+        ------------------------- */
+
+        if (
+          businesses.length === 0
+        ) {
 
           document.getElementById(
             "tableWrap"
@@ -651,15 +1389,30 @@
 
                 <tr>
 
-                  <th>Business</th>
-                  <th>Visits</th>
-                  <th>Generated</th>
-                  <th>Google Clicks</th>
-                  <th>Ratings</th>
+                  <th>
+                    Business
+                  </th>
+
+                  <th>
+                    Visits
+                  </th>
+
+                  <th>
+                    Generated
+                  </th>
+
+                  <th>
+                    Google Clicks
+                  </th>
+
+                  <th>
+                    Ratings
+                  </th>
 
                 </tr>
 
               </thead>
+
 
               <tbody>
 
@@ -674,11 +1427,13 @@
                         </strong>
                       </td>
 
+
                       <td>
                         ${formatNumber(
                           business.page_views
                         )}
                       </td>
+
 
                       <td>
                         ${formatNumber(
@@ -686,11 +1441,13 @@
                         )}
                       </td>
 
+
                       <td>
                         ${formatNumber(
                           business.google_clicks
                         )}
                       </td>
+
 
                       <td>
 
@@ -749,23 +1506,35 @@
         }
 
 
+        /* -------------------------
+           Show analytics
+        ------------------------- */
+
         analyticsContent.style.display =
           "block";
 
 
       } catch (error) {
 
+        console.error(
+          "Analytics error:",
+          error
+        );
+
+
         showError(
           error.message ||
           "Something went wrong."
         );
+
 
       } finally {
 
         loading.style.display =
           "none";
 
-        loadBtn.disabled = false;
+        loadBtn.disabled =
+          false;
 
         loadBtn.textContent =
           "Load Analytics";
@@ -775,14 +1544,90 @@
     }
 
 
+    /* ==================================================
+       LOGIN FORM
+    ================================================== */
+
+    loginForm.addEventListener(
+      "submit",
+      function(event) {
+
+        event.preventDefault();
+
+        login();
+
+      }
+    );
+
+
+    /* ==================================================
+       LOAD BUTTON
+    ================================================== */
+
     loadBtn.addEventListener(
       "click",
       loadAnalytics
     );
 
 
-    // Automatically load selected month
-    loadAnalytics();
+    /* ==================================================
+       LOGOUT BUTTON
+    ================================================== */
+
+    logoutBtn.addEventListener(
+      "click",
+      logout
+    );
+
+
+    /* ==================================================
+       CHECK EXISTING LOGIN
+    ================================================== */
+
+    async function checkLogin() {
+
+      try {
+
+        const {
+          data: {
+            session
+          }
+        } =
+          await supabaseClient.auth
+            .getSession();
+
+
+        if (session) {
+
+          showAnalyticsPage();
+
+          await loadAnalytics();
+
+        } else {
+
+          showLoginPage();
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          "Session check failed:",
+          error
+        );
+
+        showLoginPage();
+
+      }
+
+    }
+
+
+    /* ==================================================
+       START
+    ================================================== */
+
+    checkLogin();
 
   </script>
 
