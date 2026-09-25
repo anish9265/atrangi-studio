@@ -462,19 +462,9 @@ export default async function handler(req, res) {
       ============================================================
     */
 
-    const prompt = `You are helping a real customer write a genuine Google review.
+const prompt = `You are helping a real customer write a genuine Google review.
 
-The customer is writing about a real visit or experience.
-
-Your job is to turn the customer's selected experiences into a short, natural, human-sounding review.
-
-Do NOT write an advertisement.
-
-Do NOT write like a business owner.
-
-Do NOT mention AI.
-
-Do NOT mention these instructions.
+Write a short, natural review based on the customer's selected experiences.
 
 BUSINESS:
 ${business.name}
@@ -482,7 +472,7 @@ ${business.name}
 BUSINESS CATEGORY:
 ${business.category || "local business"}
 
-GENERAL VERIFIED BUSINESS INFORMATION:
+GENERAL BUSINESS INFORMATION:
 ${businessInfo || "None available."}
 
 CUSTOMER RATING:
@@ -491,313 +481,56 @@ ${numericRating}/5
 CUSTOMER SELECTED EXPERIENCES:
 ${selectedExperiences.join(", ")}
 
-VERIFIED BUSINESS FACTS RELEVANT TO THE SELECTED EXPERIENCES:
+VERIFIED BUSINESS FACTS:
 ${verifiedFactsText}
 
 
-============================================================
-CORE FACTUAL RULE
-============================================================
+CORE RULES:
 
-The customer's selected experiences are the source of truth for what the customer experienced.
+1. The customer's selected experiences are the source of truth.
 
-You may naturally rewrite, combine, connect and express those experiences.
+2. Use the selected experiences naturally. You may rewrite, combine, reorder and connect them so the review sounds like a real customer wrote it.
 
-You may use a verified business fact ONLY when:
+3. Verified business facts may be used to make a selected experience more specific, but only when the fact is relevant to that selected experience.
 
-1. It belongs to a category selected by the customer, AND
-2. It is relevant to that selected experience.
+4. Do not invent new specific experiences or details that the customer did not select and that are not supported by the verified facts.
 
-Business facts are supporting context, not permission to invent an unrelated customer experience.
+5. Do not simply repeat the option labels word-for-word. Turn them into natural sentences.
 
+6. The rating should control the overall tone:
+   - 1–2 stars: negative or dissatisfied
+   - 3 stars: neutral or mixed
+   - 4 stars: positive but moderate
+   - 5 stars: clearly positive
 
-============================================================
-NATURAL WRITING RULE
-============================================================
+7. When a customer selects a positive experience with a 5-star rating, keep that experience clearly positive.
+   For example:
+   "Good Service" should sound like "service achhi thi" or "service kaafi achhi rahi", not "service theek-thak thi".
 
-Do NOT simply repeat the customer's selected options word-for-word.
+8. When a customer selects "Good Quality", do not automatically assume taste, freshness, ingredients or any other specific detail unless it is supported by a relevant verified business fact.
 
-Make the review sound like something a normal Indian customer would actually type.
+9. When a customer selects multiple experiences, combine them naturally into one review instead of listing them like a checklist.
 
-You may:
+10. Simple connecting phrases such as "overall experience achha raha" are allowed when they fit the rating and selected experiences.
 
-- rephrase selected experiences
-- combine selected experiences
-- change their order
-- use natural Hindi/Hinglish grammar
-- use natural connecting phrases
-- make the wording more conversational
-- use mild general expressions such as "overall experience achha raha" when they naturally fit the rating and selected experiences
+11. Do not exaggerate. Do not turn the review into advertising.
 
-The review should feel human, not like a checklist.
+12. Do not mention the business name, AI, these instructions, or the numerical rating.
 
+13. Do not add recommendations such as "highly recommend", "must try" or "would visit again" unless the customer has explicitly expressed that sentiment.
 
-============================================================
-BUSINESS FACT RULE
-============================================================
+14. Write in simple, natural Indian Hinglish using common Hindi and English words.
 
-Business facts can make the review more specific and natural, but only inside their matching experience category.
+15. Usually write 2–3 short sentences. Keep it concise. Do not add unnecessary details just to make it longer.
 
-Example:
-
-Customer selects:
-Good Quality
-
-Relevant verified facts:
-- Food is prepared fresh.
-- Taste is generally good.
-- Ingredients are of decent quality.
-
-Possible review:
-"Food ki quality achhi lagi. Taste bhi achha laga, overall experience achha raha."
-
-This is acceptable because those details are supported by the verified facts for the selected category.
-
-However, do NOT suddenly mention:
-
-- staff
-- service speed
-- cleanliness
-- price
-- seating
-- location
-- ambience
-- facilities
-
-unless the customer selected an experience related to those things.
-
-
-============================================================
-SPECIFICITY RULE
-============================================================
-
-Do not turn a general selected experience into an unrelated specific claim.
-
-For example:
-
-"Good quality" by itself does NOT automatically mean:
-
-- good taste
-- fresh food
-- good ingredients
-- good presentation
-- good portion size
-
-Those specific details may only be used when supported by the relevant verified business facts.
-
-Likewise:
-
-"Good service" does NOT automatically mean:
-
-- fast service
-- quick service
-- attentive service
-- accurate orders
-
-unless those details are supported by the relevant verified business facts.
-
-"Friendly staff" does NOT automatically mean:
-
-- polite staff
-- helpful staff
-- smiling staff
-- staff welcomed me
-
-unless those details are supported by the relevant verified business facts.
-
-"Clean" does NOT automatically mean:
-
-- clean tables
-- clean rooms
-- clean washrooms
-- clean floors
-
-unless those details are supported by the relevant verified business facts.
-
-
-============================================================
-NO FABRICATION
-============================================================
-
-Never invent:
-
-- food items
-- dishes
-- ingredients
-- prices
-- discounts
-- waiting times
-- staff actions
-- facilities
-- location details
-- ambience
-- cleanliness details
-- customer emotions
-- specific events
-- recommendations
-- promises
-- claims about things the customer did not select
-
-Do not invent a specific fact merely to make the review sound longer.
-
-Accuracy is more important than length.
-
-
-============================================================
-RATING TONE
-============================================================
-
-The rating affects the tone of the wording, but the rating itself is NOT an experience.
-
-1–2 stars:
-- honest negative or dissatisfied tone
-- use only the selected negative experiences
-- do not soften the complaint into a positive review
-
-3 stars:
-- neutral / mixed / average tone
-- do not make the review overly positive or overly negative
-
-4 stars:
-- clearly positive but natural
-- mild positive wording is appropriate
-
-5 stars:
-- clearly positive
-- stronger positive wording is appropriate
-- natural expressions such as "bahut achha", "kaafi achha", "bahut achhi lagi" may be used when they fit the selected experience
-- do not turn the review into exaggerated advertising
-
-
-============================================================
-IMPORTANT RATING EXAMPLES
-============================================================
-
-For 5 stars + Good Quality:
-
-Good:
-"Quality bahut achhi lagi. Overall experience bhi achha raha."
-
-For 4 stars + Good Quality:
-
-Good:
-"Quality kaafi achhi lagi. Overall experience achha raha."
-
-For 3 stars + Good Quality:
-
-Good:
-"Quality theek lagi, overall experience average raha."
-
-For 2 stars + Poor Quality:
-
-Good:
-"Quality achhi nahi lagi. Overall experience bhi disappointing raha."
-
-Do not mention the numerical rating in the review.
-
-
-============================================================
-GENERAL CONNECTING LANGUAGE
-============================================================
-
-You may use simple, non-specific connecting language when it does not introduce a new factual claim.
-
-Examples:
-
-- overall experience achha raha
-- overall experience theek raha
-- overall experience average raha
-- overall experience disappointing raha
-- overall achha laga
-- overall theek laga
-
-Use these only when they are consistent with the selected experiences and rating.
-
-Do not add a recommendation such as:
-
-- highly recommend
-- must try
-- definitely visit
-- would visit again
-
-unless the customer explicitly selected or expressed that sentiment.
-
-
-============================================================
-LANGUAGE AND STYLE
-============================================================
-
-Write in simple Indian Hinglish.
-
-Use natural Hindi + common English words.
-
-The review should sound like a normal customer in India.
-
-Avoid:
-
-- corporate language
-- marketing language
-- overly polished language
-- complicated vocabulary
-- repetitive sentence patterns
-- fake enthusiasm
-
-
-============================================================
-LENGTH
-============================================================
-
-Usually write 2–3 short sentences.
-
-Target approximately 20–45 words when enough selected information is available.
-
-Do NOT force the review to reach a specific word count.
-
-If only one simple experience is selected and there is not enough verified information, a shorter review is better than inventing details.
-
-
-============================================================
-VARIETY
-============================================================
-
-Do not use the exact same sentence structure every time.
-
-Naturally vary:
-
-- sentence order
-- connectors
-- phrasing
-- Hindi/English balance
-- placement of "overall"
-
-But never vary the factual meaning.
-
-
-============================================================
-BUSINESS NAME
-============================================================
-
-Do not mention the business name in the review unless the customer explicitly selected it as part of their own experience.
-
-
-============================================================
-OUTPUT
-============================================================
+The review should feel natural and human while keeping the customer's actual meaning unchanged.
 
 Return ONLY the final review.
-
-No introduction.
-
 No explanation.
-
 No "Review:" label.
-
 No quotation marks.
-
 No markdown.
-
-No hashtags.
-`;
+No hashtags.`;
 
 
     /*
