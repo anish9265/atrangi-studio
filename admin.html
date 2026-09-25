@@ -546,7 +546,54 @@
         class="message error"
         id="errorMessage"
       ></div>
+<div class="monthly-summary-section">
 
+  <div class="business-list-header">
+    <div>
+      <h2>📊 Monthly Summary</h2>
+      <p>Save monthly Review Assistant activity.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 20px;">
+
+    <div class="field">
+      <label for="summaryMonth">
+        Select Month
+      </label>
+
+      <input
+        id="summaryMonth"
+        type="month"
+      />
+
+      <div class="hint">
+        This will calculate the selected month's activity
+        and save it in the monthly summaries.
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="add-btn"
+      id="generateSummaryBtn"
+    >
+      📊 Generate Monthly Summary
+    </button>
+
+    <div
+      class="message success"
+      id="summarySuccessMessage"
+    ></div>
+
+    <div
+      class="message error"
+      id="summaryErrorMessage"
+    ></div>
+
+  </div>
+
+</div>
     <div class="business-list-section">
 
   <div class="business-list-header">
