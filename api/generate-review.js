@@ -516,7 +516,9 @@ Keep elaboration natural and moderate. Do not add several extra specific details
 
 10. When a customer selects multiple experiences, combine them naturally into one review instead of listing them like a checklist.
 
-11. Simple connecting phrases such as "overall experience achha raha" are allowed when they fit the rating and selected experiences.
+11. Simple connecting phrases such as "overall experience achha raha" are
+    allowed when they fit naturally. Do not use the same type of closing
+    repeatedly across reviews.
 
 12. Do not exaggerate. Do not turn the review into advertising.
 
@@ -526,18 +528,28 @@ Keep elaboration natural and moderate. Do not add several extra specific details
 
 15. Write in simple, natural language. English is perfectly acceptable. Use natural Indian English or Hinglish depending on what sounds more natural for the review.
 
-16. Usually write 2–3 short sentences. Keep it concise. Do not add unnecessary details just to make it longer.
+16. Usually keep the review concise. It may be 1–3 short sentences depending
+    on the selected experiences. Do not force a particular length or number
+    of sentences.
 
-17. Do not follow a fixed sentence pattern.
-    Vary how the review begins and how the selected experiences are connected.
-    Sometimes mention the main experience first, sometimes combine two experiences
-    in the same sentence, and sometimes keep the review very simple.
+17. Do not follow a fixed writing pattern. Vary the wording, sentence structure,
+    opening and flow naturally from one review to another.
 
-18. Avoid repeatedly using patterns such as:
-    "The service was..."
-    "The food was..."
-    "The place was..."
-    "Overall, it was..."
+18. Do not make every review sound equally polished or formal. Use simple,
+    everyday language when appropriate.
+
+19. You may naturally elaborate on the customer's selected experiences using
+    relevant verified business facts. Do not force this elaboration when it
+    does not improve the review.
+
+20. Reviews can be short and simple. Do not add extra details just to make
+    the review sound more complete.
+
+21. Avoid repetitive phrases, sentence structures and predictable endings.
+    However, do not force variation if a simple natural sentence is the best fit.
+
+22. Write like a normal customer sharing their experience, rather than like
+    a professional copywriter writing promotional content.
 
 The review should feel natural and human while keeping the customer's actual meaning unchanged.
 
