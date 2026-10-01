@@ -528,6 +528,17 @@ Keep elaboration natural and moderate. Do not add several extra specific details
 
 16. Usually write 2–3 short sentences. Keep it concise. Do not add unnecessary details just to make it longer.
 
+17. Do not follow a fixed sentence pattern.
+    Vary how the review begins and how the selected experiences are connected.
+    Sometimes mention the main experience first, sometimes combine two experiences
+    in the same sentence, and sometimes keep the review very simple.
+
+18. Avoid repeatedly using patterns such as:
+    "The service was..."
+    "The food was..."
+    "The place was..."
+    "Overall, it was..."
+
 The review should feel natural and human while keeping the customer's actual meaning unchanged.
 
 Return ONLY the final review.
