@@ -559,6 +559,14 @@ implicit if the overall meaning is already clear.
 22. Write like a normal customer sharing their experience, rather than like
     a professional copywriter writing promotional content.
 
+23. Do not assume that the same selected experiences should be expressed with
+the same details or wording every time. For example, "Good Quality" does not
+always need to become "fresh and tasty", and "Good Value" does not always
+need to become "reasonable prices".
+
+Choose the most natural way to express the customer's experience based on
+the available context.
+
 The review should feel natural and human while keeping the customer's actual meaning unchanged.
 
 Return ONLY the final review.
