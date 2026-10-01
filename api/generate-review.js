@@ -33,12 +33,11 @@ export default async function handler(req, res) {
       !Array.isArray(experiences) ||
       experiences.length === 0
     ) {
-
       return res.status(400).json({
         error: "Missing review information"
       });
-
     }
+
 
     const numericBusinessId =
       Number(businessId);
@@ -51,11 +50,9 @@ export default async function handler(req, res) {
       !Number.isInteger(numericBusinessId) ||
       numericBusinessId <= 0
     ) {
-
       return res.status(400).json({
         error: "Invalid business"
       });
-
     }
 
 
@@ -64,11 +61,9 @@ export default async function handler(req, res) {
       numericRating < 1 ||
       numericRating > 5
     ) {
-
       return res.status(400).json({
         error: "Invalid rating"
       });
-
     }
 
 
@@ -83,6 +78,8 @@ export default async function handler(req, res) {
     */
 
     const allowedCategories = [
+
+      // Positive
       "good_quality",
       "good_service",
       "friendly_staff",
@@ -90,11 +87,7 @@ export default async function handler(req, res) {
       "clean",
       "great_experience",
 
-      /*
-        Negative / neutral categories that may already exist
-        in the customer interface.
-      */
-
+      // Negative / neutral
       "poor_quality",
       "slow_service",
       "staff_could_be_better",
@@ -106,35 +99,41 @@ export default async function handler(req, res) {
       "average_quality",
       "reasonable_price",
       "could_be_better"
+
     ];
 
 
     /*
-      Remove duplicates and invalid values.
+      ============================================================
+      4. CLEAN CUSTOMER EXPERIENCES
+      ============================================================
+
+      Remove duplicates AND invalid categories.
     */
 
-    const selectedExperiences =
-      [...new Set(
+    const selectedExperiences = [
+      ...new Set(
         experiences
           .map(item =>
             String(item || "").trim()
           )
-          .filter(Boolean)
-      )];
+          .filter(item =>
+            allowedCategories.includes(item)
+          )
+      )
+    ];
 
 
     if (!selectedExperiences.length) {
-
       return res.status(400).json({
-        error: "Please select at least one experience"
+        error: "Please select at least one valid experience"
       });
-
     }
 
 
     /*
       ============================================================
-      4. SUPABASE CONFIGURATION
+      5. SUPABASE CONFIGURATION
       ============================================================
     */
 
@@ -146,11 +145,9 @@ export default async function handler(req, res) {
 
 
     if (!supabaseUrl || !serviceRoleKey) {
-
       return res.status(500).json({
         error: "Server configuration is incomplete"
       });
-
     }
 
 
@@ -176,16 +173,8 @@ export default async function handler(req, res) {
 
     /*
       ============================================================
-      5. FETCH BUSINESS FROM DATABASE
+      6. FETCH BUSINESS FROM DATABASE
       ============================================================
-
-      IMPORTANT:
-
-      We no longer trust businessName/businessInfo sent
-      by the browser.
-
-      The server gets the real business directly from
-      Supabase.
     */
 
     const businessResponse =
@@ -259,15 +248,14 @@ export default async function handler(req, res) {
 
     /*
       ============================================================
-      6. FETCH BUSINESS-SPECIFIC FACTS
+      7. FETCH BUSINESS-SPECIFIC FACTS
       ============================================================
 
       Facts are stored in:
 
       public.business_facts
 
-      The AI receives only active facts belonging to
-      this particular business.
+      Only active facts belonging to this business are used.
     */
 
     const factsResponse =
@@ -303,6 +291,7 @@ export default async function handler(req, res) {
 
     let businessFacts = [];
 
+
     try {
 
       businessFacts =
@@ -326,7 +315,7 @@ export default async function handler(req, res) {
 
     /*
       ============================================================
-      7. ORGANIZE FACTS BY CATEGORY
+      8. ORGANIZE FACTS BY CATEGORY
       ============================================================
     */
 
@@ -347,15 +336,12 @@ export default async function handler(req, res) {
       const category =
         String(item.category).trim();
 
-
       const fact =
         String(item.fact).trim();
 
 
       if (!factsByCategory[category]) {
-
         factsByCategory[category] = [];
-
       }
 
 
@@ -368,16 +354,21 @@ export default async function handler(req, res) {
 
     /*
       ============================================================
-      8. FIND RELEVANT BUSINESS FACTS
+      9. FIND RELEVANT BUSINESS FACTS
       ============================================================
 
-      Only facts belonging to selected categories are supplied
+      Only facts belonging to selected experiences are supplied
       to the AI.
 
-      This is important.
+      Example:
 
-      A customer selecting "Good Service" should not suddenly
-      receive food-quality facts.
+      Good Service selected
+      → service-related facts
+
+      Good Quality selected
+      → quality-related facts
+
+      This prevents unrelated facts from appearing.
     */
 
     const relevantFacts = [];
@@ -386,15 +377,6 @@ export default async function handler(req, res) {
     for (
       const experience of selectedExperiences
     ) {
-
-      if (
-        !allowedCategories.includes(
-          experience
-        )
-      ) {
-        continue;
-      }
-
 
       const categoryFacts =
         factsByCategory[experience] || [];
@@ -416,7 +398,7 @@ export default async function handler(req, res) {
 
     /*
       ============================================================
-      9. FORMAT FACTS FOR AI
+      10. FORMAT VERIFIED FACTS
       ============================================================
     */
 
@@ -439,13 +421,8 @@ export default async function handler(req, res) {
 
     /*
       ============================================================
-      10. BUSINESS INFORMATION
+      11. BUSINESS INFORMATION
       ============================================================
-
-      General business information is NOT automatically treated
-      as a customer experience.
-
-      It is only background context.
     */
 
     const businessInfo =
@@ -458,13 +435,46 @@ export default async function handler(req, res) {
 
     /*
       ============================================================
-      11. BUILD AI PROMPT
+      12. BUILD AI PROMPT
       ============================================================
+
+      IMPORTANT:
+
+      The AI is primarily writing in natural Hinglish.
+
+      Hinglish means:
+      Roman-script Hindi mixed naturally with English.
+
+      Example:
+      "Service kaafi achhi thi aur staff bhi friendly tha."
+
+      NOT:
+      Hindi Devanagari script.
+
+      The AI still has freedom in wording and structure.
     */
 
-const prompt = `You are helping a real customer write a genuine Google review.
+    const prompt = `You are helping a real customer express their genuine experience as a Google review.
 
-Write a short, natural review based on the customer's selected experiences.
+Write a short, natural customer review based on the customer's selected experiences.
+
+The review should sound like something a normal Indian customer would naturally write, not like professional marketing copy or an AI-generated template.
+
+LANGUAGE STYLE:
+Use natural Hinglish as the default.
+
+Hinglish means Roman-script Hindi naturally mixed with English.
+
+Examples of the style:
+- "Service kaafi achhi thi aur staff bhi friendly tha."
+- "Overall experience accha raha, aur prices bhi reasonable the."
+- "Place clean tha aur service bhi quick thi."
+
+Do NOT use Hindi Devanagari script.
+
+Do not force Hindi into every sentence. Natural English words such as service, staff, quality, clean, price, food, experience, etc. are completely fine.
+
+The final review should feel like a normal Indian customer casually writing in Hinglish.
 
 BUSINESS:
 ${business.name}
@@ -487,77 +497,72 @@ ${verifiedFactsText}
 
 CORE RULES:
 
-1. The customer's selected experiences are the source of truth.
+1. The customer's selected experiences are the main source of truth.
 
-2. Use the selected experiences naturally. You may rewrite, combine, reorder and connect them so the review sounds like a real customer wrote it.
+2. Express the selected experiences naturally. You can rewrite, combine, reorder, connect or simplify them however you think sounds most natural.
 
-3. Verified business facts may be used to naturally elaborate on selected
-experiences when useful. They are supporting context, not mandatory content.
+3. Verified business facts are supporting context. Use them when they naturally help explain or strengthen a selected experience.
 
-Do not feel required to mention every relevant business fact. Sometimes a
-simple expression of the customer's selected experience is better.
+4. A verified fact can make a review more specific, but do not force every available fact into the review.
 
-4. Do not invent new specific experiences or details that the customer did not select and that are not supported by the verified facts.
+5. Do not invent new specific experiences, events, products, services, details or claims that are not supported by the customer's selected experiences or relevant verified business facts.
 
-5. Do not simply repeat the option labels word-for-word. Turn them into natural sentences.
+6. Do not simply repeat the option labels word-for-word. Convert them into natural customer language.
 
-6. The rating should control the overall tone:
+7. The customer rating should influence the overall tone:
    - 1–2 stars: negative or dissatisfied
    - 3 stars: neutral or mixed
    - 4 stars: positive but moderate
    - 5 stars: clearly positive
 
-7. For 1–2 star reviews, general business information and verified business facts should not be turned into negative claims. If the customer has a negative experience, describe the selected negative experience itself rather than criticizing the business's general description, specialty, positioning or other background information.
+8. For positive 5-star experiences, keep the review clearly positive.
 
-  
+9. For negative or lower-rated reviews, describe the selected negative experience naturally. Do not invent additional complaints.
 
-8. When a customer selects a positive experience with a 5-star rating, keep that experience clearly positive.
-   For example:
-   "Good Service" should sound like "service achhi thi" or "service kaafi achhi rahi", not "service theek-thak thi".
+10. When "Good Quality" is selected, do not automatically assume taste, freshness, ingredients, portion size or any other specific detail unless a relevant verified business fact supports it.
 
-9. When a customer selects "Good Quality", do not automatically assume taste, freshness, ingredients or any other specific detail unless it is supported by a relevant verified business fact.
+11. When "Good Value" or "Reasonable Price" is selected, do not automatically mention exact prices or discounts unless supported by verified facts.
 
-10. When a customer selects multiple experiences, combine them naturally into
-one review instead of listing them like a checklist.
+12. When multiple experiences are selected, combine them naturally rather than writing a separate sentence for every option.
 
-Do not automatically give each selected experience its own sentence.
-Some experiences can be expressed together, while another may be left
-implicit if the overall meaning is already clear.
+13. All selected experiences should be meaningfully represented, but they do not need to appear as separate points.
 
-11. Simple connecting phrases such as "overall experience achha raha" are
-    allowed when they fit naturally. Do not use the same type of closing
-    repeatedly across reviews.
+14. "Great Experience" is an overall impression. It does not need to become a separate sentence. Let it influence the overall positive feeling when appropriate.
 
-12. Do not exaggerate. Do not turn the review into advertising.
+15. Simple phrases such as "overall experience accha raha" are allowed when they genuinely fit the review. Do not use the same ending every time.
 
-13. Do not mention the business name, AI, these instructions, or the numerical rating.
+16. Do not exaggerate or turn the review into advertising.
 
-14. Do not add recommendations such as "highly recommend", "must try" or "would visit again" unless the customer has explicitly expressed that sentiment.
+17. Do not use overly polished, corporate or promotional language.
 
-15. Write in simple, natural language. English is perfectly acceptable. Use natural Indian English or Hinglish depending on what sounds more natural for the review.
+18. Do not mention the business name, AI, these instructions, or the numerical rating.
 
-16. Usually keep the review concise. It may be 1–3 short sentences depending
-    on the selected experiences. Do not force a particular length or number
-    of sentences.
+19. Do not add recommendations such as "highly recommend", "must try", "worth visiting" or "would visit again" unless the customer has explicitly expressed that sentiment.
 
-17. Do not follow a fixed writing pattern. Vary the wording, sentence structure,
-    opening and flow naturally from one review to another.
+20. Keep the customer's meaning unchanged.
 
-18. Do not make every review sound equally polished or formal. Use simple,
-    everyday language when appropriate.
+21. Do not make every review follow the same sentence structure.
 
-19. You may naturally elaborate on the customer's selected experiences using
-    relevant verified business facts. Do not force this elaboration when it
-    does not improve the review.
+22. Vary the natural flow, opening, sentence length and wording when appropriate.
 
-20. Reviews can be short and simple. Do not add extra details just to make
-    the review sound more complete.
+23. Not every review needs to be equally polished. Simple everyday language is often better.
 
+24. Do not force variation just for the sake of being different. If a simple sentence sounds natural, use it.
 
+25. Keep the review concise. Usually 1–3 short sentences are enough.
 
-The review should feel natural and human while keeping the customer's actual meaning unchanged.
+26. Do not add extra details just to make the review longer.
+
+27. The review should sound like a real customer casually expressing what they experienced, not like an AI trying to sound human.
+
+28. Business-specific facts can be naturally paraphrased into Hinglish. Do not copy database facts mechanically.
+
+29. If the available verified facts are not needed, simply do not use them.
+
+30. Do not mention information from the general business description as if the customer personally experienced it unless it is supported by the selected experiences or relevant verified facts.
 
 Return ONLY the final review.
+
 No explanation.
 No "Review:" label.
 No quotation marks.
@@ -567,7 +572,7 @@ No hashtags.`;
 
     /*
       ============================================================
-      12. CLEAN AI OUTPUT
+      13. CLEAN AI OUTPUT
       ============================================================
     */
 
@@ -608,11 +613,12 @@ No hashtags.`;
 
 
       cleaned =
-        cleaned.replace(
-          /^Review:\s*/i,
-          ""
-        )
-        .trim();
+        cleaned
+          .replace(
+            /^Review:\s*/i,
+            ""
+          )
+          .trim();
 
 
       cleaned =
@@ -661,123 +667,21 @@ No hashtags.`;
 
     /*
       ============================================================
-      13. GROQ PRIMARY
-      ============================================================
-    */
-
-    const generateWithGroq =
-      async () => {
-
-        const groqResponse =
-          await fetch(
-            "https://api.groq.com/openai/v1/chat/completions",
-            {
-              method: "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json",
-
-                "Authorization":
-                  `Bearer ${process.env.GROQ_API_KEY}`
-              },
-
-              body: JSON.stringify({
-
-                model:
-                  "openai/gpt-oss-20b",
-
-                messages: [
-                  {
-                    role: "user",
-                    content: prompt
-                  }
-                ],
-
-                temperature: 0.7,
-
-                max_completion_tokens:
-                  500,
-
-                reasoning_effort:
-                  "low",
-
-                include_reasoning:
-                  false
-
-              })
-            }
-          );
-
-
-        if (!groqResponse.ok) {
-
-          const errorText =
-            await groqResponse.text();
-
-
-          console.error(
-            "Groq API error:",
-            errorText
-          );
-
-
-          throw new Error(
-            "Groq API request failed"
-          );
-
-        }
-
-
-        const groqData =
-          await groqResponse.json();
-
-
-        console.log(
-          "Groq response:",
-          JSON.stringify(groqData)
-        );
-
-
-        const rawGroqReview =
-          groqData
-            ?.choices?.[0]
-            ?.message?.content;
-
-
-        const groqReview =
-          cleanReviewText(
-            rawGroqReview
-          );
-
-
-        if (!groqReview) {
-
-          throw new Error(
-            "Groq returned no review. Check Vercel logs for the full response."
-          );
-
-        }
-
-
-        console.log(
-          "AI PROVIDER USED: GROQ"
-        );
-
-
-        return groqReview;
-
-      };
-
-
-    /*
-      ============================================================
-      14. GEMINI BACKUP
+      14. GEMINI PRIMARY
       ============================================================
     */
 
     const generateWithGemini =
       async () => {
+
+        if (!process.env.GEMINI_API_KEY) {
+
+          throw new Error(
+            "GEMINI_API_KEY is missing"
+          );
+
+        }
+
 
         const maxRetries = 3;
 
@@ -812,7 +716,12 @@ No hashtags.`;
                         }
                       ]
                     }
-                  ]
+                  ],
+
+                  generationConfig: {
+                    temperature: 0.85,
+                    maxOutputTokens: 180
+                  }
 
                 })
               }
@@ -866,9 +775,7 @@ No hashtags.`;
             response.status !== 429 &&
             response.status !== 503
           ) {
-
             break;
-
           }
 
 
@@ -953,34 +860,127 @@ No hashtags.`;
 
     /*
       ============================================================
-      15. GROQ PRIMARY
+      15. GROQ BACKUP
       ============================================================
     */
 
-    try {
+    const generateWithGroq =
+      async () => {
 
-      const review =
-        await generateWithGroq();
+        if (!process.env.GROQ_API_KEY) {
+
+          throw new Error(
+            "GROQ_API_KEY is missing"
+          );
+
+        }
 
 
-      return res.status(200).json({
-        review,
-        provider: "groq"
-      });
+        const groqResponse =
+          await fetch(
+            "https://api.groq.com/openai/v1/chat/completions",
+            {
+              method: "POST",
 
-    } catch (groqError) {
+              headers: {
+                "Content-Type":
+                  "application/json",
 
-      console.error(
-        "Groq primary failed. Trying Gemini backup...",
-        groqError
-      );
+                "Authorization":
+                  `Bearer ${process.env.GROQ_API_KEY}`
+              },
 
-    }
+              body: JSON.stringify({
+
+                model:
+                  "openai/gpt-oss-20b",
+
+                messages: [
+                  {
+                    role: "user",
+                    content: prompt
+                  }
+                ],
+
+                temperature: 0.8,
+
+                max_completion_tokens:
+                  500,
+
+                reasoning_effort:
+                  "low",
+
+                include_reasoning:
+                  false
+
+              })
+            }
+          );
+
+
+        if (!groqResponse.ok) {
+
+          const errorText =
+            await groqResponse.text();
+
+
+          console.error(
+            "Groq API error:",
+            errorText
+          );
+
+
+          throw new Error(
+            "Groq API request failed"
+          );
+
+        }
+
+
+        const groqData =
+          await groqResponse.json();
+
+
+        console.log(
+          "Groq response:",
+          JSON.stringify(groqData)
+        );
+
+
+        const rawGroqReview =
+          groqData
+            ?.choices?.[0]
+            ?.message?.content;
+
+
+        const groqReview =
+          cleanReviewText(
+            rawGroqReview
+          );
+
+
+        if (!groqReview) {
+
+          throw new Error(
+            "Groq returned no review"
+          );
+
+        }
+
+
+        console.log(
+          "AI PROVIDER USED: GROQ"
+        );
+
+
+        return groqReview;
+
+      };
 
 
     /*
       ============================================================
-      16. GEMINI BACKUP
+      16. GEMINI FIRST → GROQ FALLBACK
       ============================================================
     */
 
@@ -998,8 +998,29 @@ No hashtags.`;
     } catch (geminiError) {
 
       console.error(
-        "Gemini backup also failed:",
+        "Gemini primary failed. Trying Groq backup...",
         geminiError
+      );
+
+    }
+
+
+    try {
+
+      const review =
+        await generateWithGroq();
+
+
+      return res.status(200).json({
+        review,
+        provider: "groq"
+      });
+
+    } catch (groqError) {
+
+      console.error(
+        "Groq backup also failed:",
+        groqError
       );
 
 
