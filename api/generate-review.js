@@ -517,7 +517,12 @@ simple expression of the customer's selected experience is better.
 
 9. When a customer selects "Good Quality", do not automatically assume taste, freshness, ingredients or any other specific detail unless it is supported by a relevant verified business fact.
 
-10. When a customer selects multiple experiences, combine them naturally into one review instead of listing them like a checklist.
+10. When a customer selects multiple experiences, combine them naturally into
+one review instead of listing them like a checklist.
+
+Do not automatically give each selected experience its own sentence.
+Some experiences can be expressed together, while another may be left
+implicit if the overall meaning is already clear.
 
 11. Simple connecting phrases such as "overall experience achha raha" are
     allowed when they fit naturally. Do not use the same type of closing
