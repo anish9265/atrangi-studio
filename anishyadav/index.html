@@ -13,85 +13,184 @@
       padding: 0;
     }
 
+    :root {
+      --bg: #050505;
+      --card: #0d0d0d;
+      --card-hover: #121212;
+      --border: rgba(255,255,255,0.09);
+      --text: #ffffff;
+      --muted: #8f8f8f;
+      --soft: #bdbdbd;
+      --accent: #ffffff;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
-      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        Roboto, Arial, sans-serif;
-      background: #f5f5f7;
-      color: #171717;
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+      background:
+        radial-gradient(
+          circle at 50% -10%,
+          rgba(255,255,255,0.08),
+          transparent 32%
+        ),
+        var(--bg);
+
+      color: var(--text);
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
 
     .page {
       width: 100%;
       max-width: 520px;
       margin: 0 auto;
-      padding: 28px 18px 40px;
+      padding: 42px 18px 45px;
     }
+
+    /* PROFILE */
 
     .profile {
       text-align: center;
-      padding: 12px 10px 28px;
+      margin-bottom: 42px;
     }
 
-    .profile-image {
-      width: 88px;
-      height: 88px;
+    .avatar-wrap {
+      position: relative;
+      width: 94px;
+      height: 94px;
+      margin: 0 auto 20px;
+    }
+
+    .avatar {
+      width: 94px;
+      height: 94px;
       border-radius: 50%;
-      margin: 0 auto 16px;
+
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #171717;
+
+      background:
+        linear-gradient(145deg, #242424, #080808);
+
+      border: 1px solid rgba(255,255,255,0.18);
+
       color: white;
-      font-size: 28px;
-      font-weight: 700;
+      font-size: 27px;
+      font-weight: 750;
       letter-spacing: -1px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+
+      box-shadow:
+        0 0 0 7px rgba(255,255,255,0.025),
+        0 15px 45px rgba(0,0,0,0.55);
+    }
+
+    .status-dot {
+      position: absolute;
+      right: 3px;
+      bottom: 5px;
+
+      width: 16px;
+      height: 16px;
+
+      background: #38d16b;
+      border: 3px solid #050505;
+      border-radius: 50%;
     }
 
     .profile h1 {
-      font-size: 28px;
-      line-height: 1.15;
-      letter-spacing: -0.7px;
-      margin-bottom: 8px;
+      font-size: 31px;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      font-weight: 750;
+      margin-bottom: 9px;
     }
 
-    .profile p {
-      color: #707070;
+    .profile-subtitle {
+      color: var(--muted);
       font-size: 14px;
-      line-height: 1.5;
+      letter-spacing: 0.2px;
     }
+
+    /* SECTIONS */
 
     .section {
-      margin-bottom: 22px;
+      margin-bottom: 28px;
     }
 
-    .section-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #777;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin: 0 4px 10px;
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      margin: 0 5px 11px;
     }
+
+    .section-heading span {
+      font-size: 11px;
+      font-weight: 700;
+      color: #858585;
+
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.07);
+    }
+
+    /* CARD */
 
     .card {
-      background: rgba(255,255,255,0.95);
-      border: 1px solid #e8e8e8;
-      border-radius: 18px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,0.055),
+          rgba(255,255,255,0.018)
+        );
+
+      border: 1px solid var(--border);
+      border-radius: 19px;
+
       overflow: hidden;
-      box-shadow: 0 6px 25px rgba(0,0,0,0.045);
+
+      box-shadow:
+        0 15px 45px rgba(0,0,0,0.28),
+        inset 0 1px 0 rgba(255,255,255,0.025);
     }
 
+    /* LINKS */
+
     .link {
+      position: relative;
+
       display: flex;
       align-items: center;
       gap: 14px;
-      padding: 15px 16px;
+
+      padding: 16px 16px;
+
       text-decoration: none;
-      color: #171717;
-      border-bottom: 1px solid #eeeeee;
-      transition: background 0.2s ease, transform 0.15s ease;
+      color: white;
+
+      border-bottom: 1px solid rgba(255,255,255,0.065);
+
+      transition:
+        background 0.2s ease,
+        transform 0.15s ease;
     }
 
     .link:last-child {
@@ -99,23 +198,37 @@
     }
 
     .link:hover {
-      background: #fafafa;
+      background: rgba(255,255,255,0.035);
     }
 
     .link:active {
-      transform: scale(0.99);
+      transform: scale(0.985);
     }
 
+    /* ICON */
+
     .icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
+      width: 44px;
+      height: 44px;
+
+      flex-shrink: 0;
+
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #f1f1f1;
-      font-size: 18px;
-      flex-shrink: 0;
+
+      border-radius: 13px;
+
+      background: rgba(255,255,255,0.065);
+      border: 1px solid rgba(255,255,255,0.07);
+
+      color: white;
+    }
+
+    .icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
     }
 
     .link-text {
@@ -126,40 +239,82 @@
     .link-title {
       font-size: 15px;
       font-weight: 650;
-      margin-bottom: 3px;
+      margin-bottom: 4px;
+      letter-spacing: -0.1px;
     }
 
     .link-subtitle {
+      color: #777;
       font-size: 12px;
-      color: #858585;
+
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .arrow {
-      color: #999;
-      font-size: 20px;
-      flex-shrink: 0;
+      color: #686868;
+      font-size: 22px;
+      line-height: 1;
+      margin-left: 5px;
     }
+
+    /* SPECIAL CONTACT ICONS */
+
+    .whatsapp .icon {
+      color: #25D366;
+    }
+
+    .instagram .icon {
+      color: #e8e8e8;
+    }
+
+    .youtube .icon {
+      color: #ff5555;
+    }
+
+    /* FOOTER */
 
     .footer {
       text-align: center;
-      padding-top: 12px;
-      color: #999;
-      font-size: 12px;
+      padding-top: 10px;
+      color: #555;
+      font-size: 11px;
+      letter-spacing: 0.3px;
     }
 
+    .footer strong {
+      color: #777;
+      font-weight: 600;
+    }
+
+    /* MOBILE */
+
     @media (max-width: 380px) {
+
       .page {
-        padding-left: 14px;
-        padding-right: 14px;
+        padding: 32px 14px 38px;
+      }
+
+      .profile {
+        margin-bottom: 34px;
       }
 
       .profile h1 {
-        font-size: 25px;
+        font-size: 28px;
+      }
+
+      .avatar,
+      .avatar-wrap {
+        width: 86px;
+        height: 86px;
+      }
+
+      .link {
+        padding: 14px;
       }
     }
+
   </style>
 </head>
 
@@ -168,161 +323,475 @@
   <main class="page">
 
     <!-- PROFILE -->
+
     <section class="profile">
-      <div class="profile-image">AY</div>
+
+      <div class="avatar-wrap">
+        <div class="avatar">AY</div>
+        <div class="status-dot"></div>
+      </div>
 
       <h1>Anish Yadav</h1>
 
-      <p>Creator • Animator • Digital Media</p>
+      <p class="profile-subtitle">
+        Creator • Animator • Digital Media
+      </p>
+
     </section>
 
 
     <!-- DIRECT CONTACT -->
+
     <section class="section">
-      <div class="section-title">Direct Contact</div>
+
+      <div class="section-heading">
+        <span>Direct Contact</span>
+        <div class="section-line"></div>
+      </div>
 
       <div class="card">
 
-        <a class="link" href="https://wa.me/9199999" target="_blank">
-          <div class="icon">💬</div>
+        <!-- WhatsApp -->
+
+        <a
+          class="link whatsapp"
+          href="https://wa.me/9199999"
+          target="_blank"
+        >
+
+          <div class="icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke-width="1.8"
+            >
+              <path
+                d="M20 11.5a8.3 8.3 0 0 1-12.6 7.1L4 20l1.4-3.3A8.3 8.3 0 1 1 20 11.5Z"
+              />
+
+              <path
+                d="M8.5 8.5c.2-.4.4-.4.7-.4h.5c.2 0 .4.1.5.4l.6 1.4c.1.2.1.4-.1.6l-.5.6c.5 1 1.3 1.8 2.3 2.3l.6-.5c.2-.2.4-.2.6-.1l1.4.6c.3.1.4.3.4.5v.5c0 .3 0 .5-.4.7-.4.2-1 .3-1.5.1-1.4-.4-2.7-1.1-3.8-2.2-1.1-1.1-1.8-2.4-2.2-3.8-.2-.5-.1-1.1.1-1.5Z"
+              />
+            </svg>
+
+          </div>
 
           <div class="link-text">
-            <div class="link-title">WhatsApp</div>
-            <div class="link-subtitle">Message me directly</div>
+
+            <div class="link-title">
+              WhatsApp
+            </div>
+
+            <div class="link-subtitle">
+              Message me directly
+            </div>
+
           </div>
 
           <div class="arrow">›</div>
+
         </a>
 
 
-        <a class="link" href="tel:99999">
-          <div class="icon">📞</div>
+        <!-- Call -->
+
+        <a
+          class="link"
+          href="tel:99999"
+        >
+
+          <div class="icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke-width="1.8"
+            >
+              <path
+                d="M7.5 4.5 5.8 6.2c-.6.6-.7 1.5-.3 2.3 2 3.8 5 6.8 8.8 8.8.8.4 1.7.3 2.3-.3l1.7-1.7c.5-.5.5-1.3.1-1.9l-1.1-1.7c-.4-.6-1.1-.8-1.7-.5l-1.5.7c-.5.2-1 .1-1.4-.2l-2.5-2.5c-.4-.4-.5-.9-.2-1.4l.7-1.5c.3-.6.1-1.3-.5-1.7L9.4 4.4c-.6-.4-1.4-.4-1.9.1Z"
+              />
+            </svg>
+
+          </div>
 
           <div class="link-text">
-            <div class="link-title">Call</div>
-            <div class="link-subtitle">Call me directly</div>
+
+            <div class="link-title">
+              Call
+            </div>
+
+            <div class="link-subtitle">
+              Call me directly
+            </div>
+
           </div>
 
           <div class="arrow">›</div>
+
         </a>
 
 
-        <a class="link" href="mailto:anishyadav.contact@gmail.com">
-          <div class="icon">✉️</div>
+        <!-- Email -->
+
+        <a
+          class="link"
+          href="mailto:anishyadav.contact@gmail.com"
+        >
+
+          <div class="icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke-width="1.8"
+            >
+              <rect
+                x="3"
+                y="5"
+                width="18"
+                height="14"
+                rx="2"
+              />
+
+              <path d="m4 7 8 6 8-6" />
+
+            </svg>
+
+          </div>
 
           <div class="link-text">
-            <div class="link-title">Email</div>
-            <div class="link-subtitle">anishyadav.contact@gmail.com</div>
+
+            <div class="link-title">
+              Email
+            </div>
+
+            <div class="link-subtitle">
+              anishyadav.contact@gmail.com
+            </div>
+
           </div>
 
           <div class="arrow">›</div>
+
         </a>
 
       </div>
+
     </section>
 
 
     <!-- JUGAADFY MEDIA -->
+
     <section class="section">
-      <div class="section-title">Jugaadfy Media</div>
+
+      <div class="section-heading">
+        <span>Jugaadfy Media</span>
+        <div class="section-line"></div>
+      </div>
 
       <div class="card">
 
-        <a class="link" href="https://www.instagram.com/1234/" target="_blank">
-          <div class="icon">◎</div>
+        <a
+          class="link instagram"
+          href="https://www.instagram.com/1234/"
+          target="_blank"
+        >
+
+          <div class="icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke-width="1.8"
+            >
+              <rect
+                x="3"
+                y="3"
+                width="18"
+                height="18"
+                rx="5"
+              />
+
+              <circle
+                cx="12"
+                cy="12"
+                r="4"
+              />
+
+              <circle
+                cx="17.5"
+                cy="6.5"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+              />
+
+            </svg>
+
+          </div>
 
           <div class="link-text">
-            <div class="link-title">Instagram</div>
-            <div class="link-subtitle">@1234</div>
+
+            <div class="link-title">
+              Instagram
+            </div>
+
+            <div class="link-subtitle">
+              @1234
+            </div>
+
           </div>
 
           <div class="arrow">›</div>
+
         </a>
 
       </div>
+
     </section>
 
 
     <!-- ANIMATION -->
+
     <section class="section">
-      <div class="section-title">Animation</div>
+
+      <div class="section-heading">
+        <span>Animation</span>
+        <div class="section-line"></div>
+      </div>
 
       <div class="card">
 
-        <a class="link"
-           href="https://www.instagram.com/atrangi_anish/"
-           target="_blank">
+        <!-- Animation Instagram -->
 
-          <div class="icon">◎</div>
+        <a
+          class="link instagram"
+          href="https://www.instagram.com/atrangi_anish/"
+          target="_blank"
+        >
+
+          <div class="icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke-width="1.8"
+            >
+              <rect
+                x="3"
+                y="3"
+                width="18"
+                height="18"
+                rx="5"
+              />
+
+              <circle
+                cx="12"
+                cy="12"
+                r="4"
+              />
+
+              <circle
+                cx="17.5"
+                cy="6.5"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+              />
+
+            </svg>
+
+          </div>
 
           <div class="link-text">
-            <div class="link-title">Instagram</div>
-            <div class="link-subtitle">@atrangi_anish</div>
+
+            <div class="link-title">
+              Instagram
+            </div>
+
+            <div class="link-subtitle">
+              @atrangi_anish
+            </div>
+
           </div>
 
           <div class="arrow">›</div>
+
         </a>
 
 
-        <a class="link"
-           href="https://www.youtube.com/@atrangianish"
-           target="_blank">
+        <!-- Animation YouTube -->
 
-          <div class="icon">▶</div>
+        <a
+          class="link youtube"
+          href="https://www.youtube.com/@atrangianish"
+          target="_blank"
+        >
+
+          <div class="icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              stroke="none"
+            >
+              <path
+                d="M21.6 7.2a2.8 2.8 0 0 0-2-2C17.9 4.7 12 4.7 12 4.7s-5.9 0-7.6.5a2.8 2.8 0 0 0-2 2C2 8.9 2 12 2 12s0 3.1.4 4.8a2.8 2.8 0 0 0 2 2c1.7.5 7.6.5 7.6.5s5.9 0 7.6-.5a2.8 2.8 0 0 0 2-2c.4-1.7.4-4.8.4-4.8s0-3.1-.4-4.8Z"
+              />
+
+              <path
+                d="m10 15.3 5-3.3-5-3.3v6.6Z"
+                fill="#050505"
+              />
+
+            </svg>
+
+          </div>
 
           <div class="link-text">
-            <div class="link-title">YouTube</div>
-            <div class="link-subtitle">@atrangianish</div>
+
+            <div class="link-title">
+              YouTube
+            </div>
+
+            <div class="link-subtitle">
+              @atrangianish
+            </div>
+
           </div>
 
           <div class="arrow">›</div>
+
         </a>
 
       </div>
+
     </section>
 
 
     <!-- VLOGS -->
+
     <section class="section">
-      <div class="section-title">Vlogs</div>
+
+      <div class="section-heading">
+        <span>Vlogs</span>
+        <div class="section-line"></div>
+      </div>
 
       <div class="card">
 
-        <a class="link"
-           href="https://www.instagram.com/anishhh_yadav/"
-           target="_blank">
+        <!-- Vlog Instagram -->
 
-          <div class="icon">◎</div>
+        <a
+          class="link instagram"
+          href="https://www.instagram.com/anishhh_yadav/"
+          target="_blank"
+        >
+
+          <div class="icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke-width="1.8"
+            >
+              <rect
+                x="3"
+                y="3"
+                width="18"
+                height="18"
+                rx="5"
+              />
+
+              <circle
+                cx="12"
+                cy="12"
+                r="4"
+              />
+
+              <circle
+                cx="17.5"
+                cy="6.5"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+              />
+
+            </svg>
+
+          </div>
 
           <div class="link-text">
-            <div class="link-title">Instagram</div>
-            <div class="link-subtitle">@anishhh_yadav</div>
+
+            <div class="link-title">
+              Instagram
+            </div>
+
+            <div class="link-subtitle">
+              @anishhh_yadav
+            </div>
+
           </div>
 
           <div class="arrow">›</div>
+
         </a>
 
 
-        <a class="link"
-           href="https://www.youtube.com/@AnishYadavVlogs"
-           target="_blank">
+        <!-- Vlog YouTube -->
 
-          <div class="icon">▶</div>
+        <a
+          class="link youtube"
+          href="https://www.youtube.com/@AnishYadavVlogs"
+          target="_blank"
+        >
+
+          <div class="icon">
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              stroke="none"
+            >
+              <path
+                d="M21.6 7.2a2.8 2.8 0 0 0-2-2C17.9 4.7 12 4.7 12 4.7s-5.9 0-7.6.5a2.8 2.8 0 0 0-2 2C2 8.9 2 12 2 12s0 3.1.4 4.8a2.8 2.8 0 0 0 2 2c1.7.5 7.6.5 7.6.5s5.9 0 7.6-.5a2.8 2.8 0 0 0 2-2c.4-1.7.4-4.8.4-4.8s0-3.1-.4-4.8Z"
+              />
+
+              <path
+                d="m10 15.3 5-3.3-5-3.3v6.6Z"
+                fill="#050505"
+              />
+
+            </svg>
+
+          </div>
 
           <div class="link-text">
-            <div class="link-title">YouTube</div>
-            <div class="link-subtitle">@AnishYadavVlogs</div>
+
+            <div class="link-title">
+              YouTube
+            </div>
+
+            <div class="link-subtitle">
+              @AnishYadavVlogs
+            </div>
+
           </div>
 
           <div class="arrow">›</div>
+
         </a>
 
       </div>
+
     </section>
 
 
+    <!-- FOOTER -->
+
     <div class="footer">
-      © Anish Yadav
+      © <strong>Anish Yadav</strong>
     </div>
 
   </main>
