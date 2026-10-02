@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Anish Yadav | Connect</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Arial, sans-serif;
+      background: #f5f5f7;
+      color: #171717;
+      min-height: 100vh;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 28px 18px 40px;
+    }
+
+    .profile {
+      text-align: center;
+      padding: 12px 10px 28px;
+    }
+
+    .profile-image {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #171717;
+      color: white;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+
+    .profile h1 {
+      font-size: 28px;
+      line-height: 1.15;
+      letter-spacing: -0.7px;
+      margin-bottom: 8px;
+    }
+
+    .profile p {
+      color: #707070;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .section {
+      margin-bottom: 22px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #777;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 0 4px 10px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.95);
+      border: 1px solid #e8e8e8;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.045);
+    }
+
+    .link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 15px 16px;
+      text-decoration: none;
+      color: #171717;
+      border-bottom: 1px solid #eeeeee;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .link:last-child {
+      border-bottom: none;
+    }
+
+    .link:hover {
+      background: #fafafa;
+    }
+
+    .link:active {
+      transform: scale(0.99);
+    }
+
+    .icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f1f1f1;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .link-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .link-title {
+      font-size: 15px;
+      font-weight: 650;
+      margin-bottom: 3px;
+    }
+
+    .link-subtitle {
+      font-size: 12px;
+      color: #858585;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .arrow {
+      color: #999;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .footer {
+      text-align: center;
+      padding-top: 12px;
+      color: #999;
+      font-size: 12px;
+    }
+
+    @media (max-width: 380px) {
+      .page {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .profile h1 {
+        font-size: 25px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <!-- PROFILE -->
+    <section class="profile">
+      <div class="profile-image">AY</div>
+
+      <h1>Anish Yadav</h1>
+
+      <p>Creator • Animator • Digital Media</p>
+    </section>
+
+
+    <!-- DIRECT CONTACT -->
+    <section class="section">
+      <div class="section-title">Direct Contact</div>
+
+      <div class="card">
+
+        <a class="link" href="https://wa.me/9199999" target="_blank">
+          <div class="icon">💬</div>
+
+          <div class="link-text">
+            <div class="link-title">WhatsApp</div>
+            <div class="link-subtitle">Message me directly</div>
+          </div>
+
+          <div class="arrow">›</div>
+        </a>
+
+
+        <a class="link" href="tel:99999">
+          <div class="icon">📞</div>
+
+          <div class="link-text">
+            <div class="link-title">Call</div>
+            <div class="link-subtitle">Call me directly</div>
+          </div>
+
+          <div class="arrow">›</div>
+        </a>
+
+
+        <a class="link" href="mailto:anishyadav.contact@gmail.com">
+          <div class="icon">✉️</div>
+
+          <div class="link-text">
+            <div class="link-title">Email</div>
+            <div class="link-subtitle">anishyadav.contact@gmail.com</div>
+          </div>
+
+          <div class="arrow">›</div>
+        </a>
+
+      </div>
+    </section>
+
+
+    <!-- JUGAADFY MEDIA -->
+    <section class="section">
+      <div class="section-title">Jugaadfy Media</div>
+
+      <div class="card">
+
+        <a class="link" href="https://www.instagram.com/1234/" target="_blank">
+          <div class="icon">◎</div>
+
+          <div class="link-text">
+            <div class="link-title">Instagram</div>
+            <div class="link-subtitle">@1234</div>
+          </div>
+
+          <div class="arrow">›</div>
+        </a>
+
+      </div>
+    </section>
+
+
+    <!-- ANIMATION -->
+    <section class="section">
+      <div class="section-title">Animation</div>
+
+      <div class="card">
+
+        <a class="link"
+           href="https://www.instagram.com/atrangi_anish/"
+           target="_blank">
+
+          <div class="icon">◎</div>
+
+          <div class="link-text">
+            <div class="link-title">Instagram</div>
+            <div class="link-subtitle">@atrangi_anish</div>
+          </div>
+
+          <div class="arrow">›</div>
+        </a>
+
+
+        <a class="link"
+           href="https://www.youtube.com/@atrangianish"
+           target="_blank">
+
+          <div class="icon">▶</div>
+
+          <div class="link-text">
+            <div class="link-title">YouTube</div>
+            <div class="link-subtitle">@atrangianish</div>
+          </div>
+
+          <div class="arrow">›</div>
+        </a>
+
+      </div>
+    </section>
+
+
+    <!-- VLOGS -->
+    <section class="section">
+      <div class="section-title">Vlogs</div>
+
+      <div class="card">
+
+        <a class="link"
+           href="https://www.instagram.com/anishhh_yadav/"
+           target="_blank">
+
+          <div class="icon">◎</div>
+
+          <div class="link-text">
+            <div class="link-title">Instagram</div>
+            <div class="link-subtitle">@anishhh_yadav</div>
+          </div>
+
+          <div class="arrow">›</div>
+        </a>
+
+
+        <a class="link"
+           href="https://www.youtube.com/@AnishYadavVlogs"
+           target="_blank">
+
+          <div class="icon">▶</div>
+
+          <div class="link-text">
+            <div class="link-title">YouTube</div>
+            <div class="link-subtitle">@AnishYadavVlogs</div>
+          </div>
+
+          <div class="arrow">›</div>
+        </a>
+
+      </div>
+    </section>
+
+
+    <div class="footer">
+      © Anish Yadav
+    </div>
+
+  </main>
+
+</body>
+</html>
