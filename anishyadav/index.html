@@ -618,9 +618,16 @@
       box-shadow:
         0 0 0 7px rgba(255,255,255,0.025),
         0 20px 60px rgba(0,0,0,0.6);
+      overflow: hidden;
     }
 
-
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
     .avatar-wrap::before {
       content: "";
 
