@@ -2,9 +2,9 @@ const REVIEW_CATEGORY_CONFIG = {
   restaurant_food: {
     label: "Restaurant / Café / Food",
     aliases: ["restaurant", "cafe", "food", "restaurant_food"],
-    negative: ["Poor Food", "Slow Service", "Bad Staff", "Poor Cleanliness", "Poor Value", "Poor Ambience"],
-    neutral: ["Average Food", "Average Service", "Okay Staff", "Average Cleanliness", "Average Value", "Average Ambience"],
-    positive: ["Good Food", "Good Service", "Friendly Staff", "Good Cleanliness", "Good Value", "Nice Ambience"]
+    negative: ["Poor Food", "Slow Service", "Bad Staff", "Poor Cleanliness", "Poor Value", "Bad Place"],
+    neutral: ["Average Food", "Average Service", "Okay Staff", "Average Cleanliness", "Average Value", "Average Place"],
+    positive: ["Good Food", "Good Service", "Friendly Staff", "Good Cleanliness", "Good Value", "Nice Place"]
   },
   healthcare_clinic: {
     label: "Healthcare / Clinic",
