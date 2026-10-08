@@ -1,65 +1,44 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Admin Panel | Review Assistant</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family:
-        Inter,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Arial,
-        sans-serif;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Arial, sans-serif;
       background: #f5f6fa;
       color: #171717;
     }
 
     .page {
       width: 100%;
-      max-width: 620px;
+      max-width: 720px;
       margin: 0 auto;
       padding: 30px 18px 50px;
     }
 
-    .header {
-      margin-bottom: 22px;
-    }
-
-    .header h1 {
-      margin: 0;
-      font-size: 27px;
-    }
-
-    .header p {
-      margin: 7px 0 0;
-      color: #737373;
-      font-size: 14px;
-    }
+    .header { margin-bottom: 22px; }
+    .header h1 { margin: 0; font-size: 27px; }
+    .header p { margin: 7px 0 0; color: #737373; font-size: 14px; }
 
     .card {
       background: #fff;
       border: 1px solid #e5e7eb;
       border-radius: 20px;
       padding: 22px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 10px 30px rgba(0,0,0,.05);
     }
 
-    .field {
-      margin-bottom: 17px;
-    }
+    .field { margin-bottom: 17px; }
 
     label {
       display: block;
@@ -68,8 +47,7 @@
       font-weight: 700;
     }
 
-    input,
-    select {
+    input, select, textarea {
       width: 100%;
       padding: 13px 14px;
       border: 1px solid #dcdcdc;
@@ -80,17 +58,27 @@
       background: #fff;
     }
 
-    input:focus,
-    select:focus {
+    input:focus, select:focus, textarea:focus {
       border-color: #111827;
-      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.07);
+      box-shadow: 0 0 0 3px rgba(17,24,39,.07);
     }
 
     .hint {
       margin-top: 6px;
       font-size: 12px;
       color: #8a8a8a;
-      line-height: 1.4;
+      line-height: 1.5;
+    }
+
+    button, .open-business-btn {
+      font-family: inherit;
+      cursor: pointer;
+      transition: background .15s ease, transform .15s ease;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
     }
 
     .add-btn {
@@ -102,13 +90,9 @@
       color: #fff;
       font-size: 15px;
       font-weight: 700;
-      cursor: pointer;
     }
 
-    .add-btn:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-    }
+    .add-btn:hover { background: #1f2937; }
 
     .message {
       display: none;
@@ -116,2186 +100,1206 @@
       padding: 12px;
       border-radius: 11px;
       font-size: 13px;
-      line-height: 1.45;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
     }
 
-    .business-list-section {
-  margin-top: 20px;
-}
+    .message.show { display: block; }
+    .success { background: #ecfdf5; color: #047857; }
+    .error { background: #fff1f2; color: #be123c; }
 
-.business-list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
-}
+    .business-list-section, .monthly-summary-section { margin-top: 22px; }
 
-.business-list-header h2 {
-  margin: 0 0 5px;
-  font-size: 20px;
-}
+    .business-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
 
-.business-list-header p {
-  margin: 0;
-  color: #6b7280;
-  font-size: 13px;
-}
+    .business-list-header h2 {
+      margin: 0 0 5px;
+      font-size: 20px;
+    }
 
-.business-count {
-  min-width: 70px;
-  text-align: center;
-  background: #f3f4f6;
-  border-radius: 12px;
-  padding: 10px 14px;
-}
+    .business-list-header p {
+      margin: 0;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.5;
+    }
 
-.business-count span {
-  display: block;
-  font-size: 22px;
-  font-weight: 700;
-}
+    .business-count {
+      min-width: 70px;
+      text-align: center;
+      background: #f3f4f6;
+      border-radius: 12px;
+      padding: 10px 14px;
+    }
 
-.business-count small {
-  color: #6b7280;
-  font-size: 11px;
-}
+    .business-count span {
+      display: block;
+      font-size: 22px;
+      font-weight: 700;
+    }
 
-.business-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
-  padding: 15px 0;
-  border-top: 1px solid #e5e7eb;
-}
+    .business-count small { color: #6b7280; font-size: 11px; }
 
-.business-info strong {
-  display: block;
-  font-size: 15px;
-  margin-bottom: 4px;
-}
+    .business-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      padding: 16px 0;
+      border-top: 1px solid #e5e7eb;
+    }
 
-.business-info span {
-  display: block;
-  color: #6b7280;
-  font-size: 12px;
-}
+    .business-info { min-width: 0; flex: 1; }
+    .business-info strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 5px;
+      overflow-wrap: anywhere;
+    }
 
-.business-url {
-  color: #2563eb !important;
-  word-break: break-all;
-}
+    .business-info span {
+      display: block;
+      color: #6b7280;
+      font-size: 12px;
+      margin-top: 4px;
+    }
 
-.business-loading {
-  color: #6b7280;
-  font-size: 13px;
-  padding: 10px 0;
-}
+    .business-url {
+      color: #2563eb !important;
+      word-break: break-all;
+    }
+
+    .business-loading { color: #6b7280; font-size: 13px; padding: 14px 0; }
+
     .business-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      max-width: 350px;
+    }
 
-.open-business-btn,
-.copy-business-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 36px;
-  padding: 0 13px;
-  border-radius: 9px;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-  transition: 0.15s ease;
-}
+    .business-actions button, .business-actions a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-height: 36px;
+      padding: 0 11px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+    }
 
-    .edit-business-btn,
-.status-business-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 36px;
-  padding: 0 13px;
-  border-radius: 9px;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.15s ease;
-}
+    .open-business-btn {
+      background: #111827;
+      color: #fff;
+      border: 1px solid #111827;
+    }
 
-.edit-business-btn {
-  background: #ffffff;
-  color: #111827;
-  border: 1px solid #d1d5db;
-}
+    .open-business-btn:hover { background: #1f2937; }
 
-.edit-business-btn:hover {
-  background: #f3f4f6;
-}
+    .copy-business-btn, .edit-business-btn, .manage-facts-btn {
+      background: #fff;
+      color: #111827;
+      border: 1px solid #d1d5db;
+    }
 
-.status-business-btn {
-  background: #fff7ed;
-  color: #c2410c;
-  border: 1px solid #fed7aa;
-}
+    .copy-business-btn:hover, .edit-business-btn:hover,
+    .manage-facts-btn:hover { background: #f3f4f6; }
 
-.status-business-btn:hover {
-  background: #ffedd5;
-}
+    .status-business-btn {
+      background: #fff7ed;
+      color: #c2410c;
+      border: 1px solid #fed7aa;
+    }
 
-.edit-business-btn:active,
-.status-business-btn:active {
-  transform: scale(0.97);
-}
-.open-business-btn {
-  background: #111827;
-  color: #ffffff;
-  border: 1px solid #111827;
-}
+    .status-business-btn:hover { background: #ffedd5; }
 
-.open-business-btn:hover {
-  background: #1f2937;
-}
+    .manage-facts-btn svg { flex-shrink: 0; }
 
-.copy-business-btn {
-  background: #ffffff;
-  color: #111827;
-  border: 1px solid #d1d5db;
-}
+    .cancel-edit-btn {
+      width: 100%;
+      margin-top: 9px;
+      padding: 12px;
+      border-radius: 11px;
+      background: #fff;
+      border: 1px solid #d1d5db;
+      font-weight: 600;
+    }
 
-.copy-business-btn:hover {
-  background: #f3f4f6;
-}
+    /* Facts modal */
+    .facts-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(15,23,42,.58);
+      backdrop-filter: blur(4px);
+    }
 
-.copy-business-btn:active,
-.open-business-btn:active {
-  transform: scale(0.97);
-}
+    .facts-modal-box {
+      width: min(760px, 100%);
+      max-height: 92vh;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.18);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
 
-    /* Mobile layout */
-    @media (max-width: 640px) {
+    .facts-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 20px 22px;
+      border-bottom: 1px solid #e5e7eb;
+    }
 
-      .page {
-        padding: 22px 14px 40px;
-      }
+    .facts-modal-header h2 {
+      margin: 0;
+      font-size: 19px;
+      color: #111827;
+    }
 
-      .header h1 {
-        font-size: 24px;
-      }
+    .facts-modal-header p {
+      margin: 5px 0 0;
+      font-size: 13px;
+      color: #6b7280;
+      overflow-wrap: anywhere;
+    }
 
-      .card {
-        padding: 18px;
-        border-radius: 17px;
-      }
+    .facts-close-btn {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      border: 0;
+      border-radius: 9px;
+      background: #f3f4f6;
+      color: #374151;
+      font-size: 23px;
+      line-height: 1;
+    }
 
-      .business-list-header {
-        align-items: flex-start;
-      }
+    .facts-close-btn:hover { background: #e5e7eb; }
 
-      .business-list-header h2 {
-        font-size: 18px;
-      }
+    .facts-list {
+      padding: 14px 22px;
+      overflow-y: auto;
+      min-height: 90px;
+      max-height: 430px;
+    }
 
-      .business-list-header p {
-        font-size: 12px;
-      }
+    .fact-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
 
-      .business-count {
-        min-width: 58px;
-        padding: 8px 10px;
-      }
+    .fact-item:last-child { border-bottom: none; }
+    .fact-content { min-width: 0; flex: 1; }
 
-      .business-count span {
-        font-size: 19px;
-      }
+    .fact-category {
+      display: inline-block;
+      margin-bottom: 6px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #f3f4f6;
+      color: #4b5563;
+      font-size: 11px;
+      font-weight: 600;
+      overflow-wrap: anywhere;
+    }
 
-      .business-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-      }
+    .fact-text {
+      color: #111827;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
 
-      .business-info {
-        width: 100%;
-        min-width: 0;
-      }
+    .fact-actions { display: flex; gap: 7px; flex-shrink: 0; }
 
+    .fact-actions button {
+      min-height: 34px;
+      padding: 0 11px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .fact-edit-btn {
+      background: #fff;
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+
+    .fact-edit-btn:hover { background: #f3f4f6; }
+
+    .fact-delete-btn {
+      background: #fff;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .fact-delete-btn:hover { background: #fef2f2; }
+
+    .facts-empty {
+      padding: 30px 10px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .facts-add-section {
+      padding: 18px 22px 22px;
+      border-top: 1px solid #e5e7eb;
+      background: #fafafa;
+    }
+
+    .facts-add-section h3 {
+      margin: 0 0 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .facts-form {
+      display: grid;
+      grid-template-columns: 175px minmax(0,1fr) auto;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .facts-form select, .facts-form textarea {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 9px;
+      background: #fff;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .facts-form select { height: 44px; padding: 0 10px; }
+
+    .facts-form textarea {
+      min-height: 44px;
+      padding: 12px;
+      resize: vertical;
+    }
+
+    #addFactBtn {
+      min-height: 44px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 9px;
+      background: #111827;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    #addFactBtn:hover { background: #1f2937; }
+
+    @media (max-width: 700px) {
+      .page { padding: 22px 14px 40px; }
+      .header h1 { font-size: 24px; }
+      .card { padding: 18px; border-radius: 17px; }
+      .business-list-header h2 { font-size: 18px; }
+      .business-item { flex-direction: column; align-items: stretch; gap: 12px; }
       .business-actions {
         width: 100%;
+        max-width: none;
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        justify-content: stretch;
       }
-
-      .open-business-btn,
-      .copy-business-btn,
-      .edit-business-btn,
-      .status-business-btn {
-        width: 100%;
-        min-height: 40px;
-      }
-
+      .business-actions button, .business-actions a { width: 100%; min-height: 40px; }
+      .facts-modal { padding: 10px; }
+      .facts-modal-box { max-height: 96vh; border-radius: 15px; }
+      .facts-modal-header { padding: 16px; }
+      .facts-list { padding: 12px 16px; max-height: 44vh; }
+      .facts-add-section { padding: 15px 16px 17px; }
+      .facts-form { grid-template-columns: 1fr; }
+      #addFactBtn { width: 100%; }
+      .fact-item { align-items: flex-start; flex-direction: column; gap: 10px; }
+      .fact-actions { width: 100%; }
+      .fact-actions button { flex: 1; min-height: 38px; }
     }
-
-
-    .message.show {
-      display: block;
-    }
-
-    .success {
-      background: #ecfdf5;
-      color: #047857;
-    }
-
-    .error {
-      background: #fff1f2;
-      color: #be123c;
-    }
-    .manage-facts-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 36px;
-  padding: 0 13px;
-  border-radius: 9px;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  background: #ffffff;
-  color: #111827;
-  border: 1px solid #d1d5db;
-  transition: 0.15s ease;
-}
-
-.manage-facts-btn:hover {
-  background: #f3f4f6;
-  border-color: #9ca3af;
-}
-
-.manage-facts-btn:active {
-  transform: scale(0.97);
-}
-
-.manage-facts-btn svg {
-  flex-shrink: 0;
-}
-    /* =========================
-   BUSINESS FACTS MODAL
-========================= */
-
-.facts-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 24px;
-
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(4px);
-}
-
-.facts-modal-box {
-  width: min(760px, 100%);
-  max-height: 90vh;
-
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 18px;
-
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.18);
-
-  overflow: hidden;
-
-  display: flex;
-  flex-direction: column;
-}
-
-.facts-modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 20px 22px;
-
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.facts-modal-header h2 {
-  margin: 0;
-
-  font-size: 19px;
-  font-weight: 700;
-  color: #111827;
-}
-
-.facts-modal-header p {
-  margin: 5px 0 0;
-
-  font-size: 13px;
-  color: #6b7280;
-}
-
-.facts-close-btn {
-  width: 34px;
-  height: 34px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border: 0;
-  border-radius: 9px;
-
-  background: #f3f4f6;
-  color: #374151;
-
-  font-size: 22px;
-  line-height: 1;
-
-  cursor: pointer;
-}
-
-.facts-close-btn:hover {
-  background: #e5e7eb;
-}
-
-.facts-list {
-  padding: 18px 22px;
-
-  overflow-y: auto;
-
-  max-height: 430px;
-}
-
-.fact-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-
-  padding: 14px 0;
-
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.fact-item:last-child {
-  border-bottom: none;
-}
-
-.fact-content {
-  min-width: 0;
-  flex: 1;
-}
-
-.fact-category {
-  display: inline-block;
-
-  margin-bottom: 5px;
-  padding: 4px 8px;
-
-  border-radius: 6px;
-
-  background: #f3f4f6;
-  color: #4b5563;
-
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.fact-text {
-  color: #111827;
-  font-size: 14px;
-  line-height: 1.45;
-}
-
-.fact-actions {
-  display: flex;
-  gap: 7px;
-  flex-shrink: 0;
-}
-
-.fact-actions button {
-  min-height: 32px;
-  padding: 0 10px;
-
-  border-radius: 7px;
-
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 600;
-
-  cursor: pointer;
-}
-
-.fact-edit-btn {
-  background: #ffffff;
-  color: #374151;
-  border: 1px solid #d1d5db;
-}
-
-.fact-edit-btn:hover {
-  background: #f3f4f6;
-}
-
-.fact-delete-btn {
-  background: #ffffff;
-  color: #dc2626;
-  border: 1px solid #fecaca;
-}
-
-.fact-delete-btn:hover {
-  background: #fef2f2;
-}
-
-.facts-empty {
-  padding: 35px 10px;
-
-  text-align: center;
-
-  color: #6b7280;
-  font-size: 14px;
-}
-
-/* ADD FACT */
-
-.facts-add-section {
-  padding: 18px 22px 22px;
-
-  border-top: 1px solid #e5e7eb;
-  background: #fafafa;
-}
-
-.facts-add-section h3 {
-  margin: 0 0 12px;
-
-  font-size: 14px;
-  font-weight: 700;
-  color: #111827;
-}
-
-.facts-form {
-  display: grid;
-  grid-template-columns: 190px 1fr auto;
-  gap: 10px;
-  align-items: start;
-}
-
-.facts-form select,
-.facts-form textarea {
-  width: 100%;
-
-  box-sizing: border-box;
-
-  border: 1px solid #d1d5db;
-  border-radius: 9px;
-
-  background: #ffffff;
-
-  font-family: inherit;
-  font-size: 13px;
-
-  outline: none;
-}
-
-.facts-form select {
-  height: 42px;
-  padding: 0 11px;
-}
-
-.facts-form textarea {
-  min-height: 42px;
-  padding: 11px;
-
-  resize: vertical;
-}
-
-.facts-form select:focus,
-.facts-form textarea:focus {
-  border-color: #9ca3af;
-  box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.08);
-}
-
-#addFactBtn {
-  height: 42px;
-
-  padding: 0 15px;
-
-  border: 0;
-  border-radius: 9px;
-
-  background: #111827;
-  color: #ffffff;
-
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  white-space: nowrap;
-}
-
-#addFactBtn:hover {
-  background: #1f2937;
-}
-
-/* MOBILE */
-
-@media (max-width: 700px) {
-
-  .facts-modal {
-    padding: 12px;
-  }
-
-  .facts-modal-box {
-    max-height: 94vh;
-    border-radius: 15px;
-  }
-
-  .facts-list {
-    padding: 14px 16px;
-    max-height: 50vh;
-  }
-
-  .facts-add-section {
-    padding: 16px;
-  }
-
-  .facts-form {
-    grid-template-columns: 1fr;
-  }
-
-  #addFactBtn {
-    width: 100%;
-  }
-
-  .fact-item {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .fact-actions {
-    width: 100%;
-  }
-
-}
   </style>
 </head>
 
 <body>
+  <main class="page">
 
-<main class="page">
-
-  <div class="card" id="loginCard">
-
-    <div class="header">
-      <h1>Admin Login</h1>
-      <p>Login to manage Review Assistant businesses.</p>
-    </div>
-
-    <form id="loginForm">
-
-      <div class="field">
-        <label for="loginEmail">Email</label>
-
-        <input
-          id="loginEmail"
-          type="email"
-          placeholder="Your admin email"
-          required
-        />
+    <!-- LOGIN -->
+    <div class="card" id="loginCard">
+      <div class="header">
+        <h1>Admin Login</h1>
+        <p>Login to manage Review Assistant businesses.</p>
       </div>
 
-      <div class="field">
-        <label for="loginPassword">Password</label>
-
-        <input
-          id="loginPassword"
-          type="password"
-          placeholder="Your password"
-          required
-        />
-      </div>
-
-      <button
-        class="add-btn"
-        id="loginBtn"
-        type="submit"
-      >
-        🔐 Login
-      </button>
-
-    </form>
-
-    <div
-      class="message error"
-      id="loginError"
-    ></div>
-
-  </div>
-
-
-<div id="businessSection" style="display: none;">
-
-  <div class="header">
-    <h1>Admin Panel</h1>
-    <p>Add a new business to Review Assistant.</p>
-  </div>
-
-  <div class="card" id="businessCard">
-
-  <form id="businessForm">
-
+      <form id="loginForm">
         <div class="field">
-          <label for="name">Business Name</label>
-
-          <input
-            id="name"
-            type="text"
-            placeholder="Example: Gupta Clinic"
-            required
-          />
+          <label for="loginEmail">Email</label>
+          <input id="loginEmail" type="email" placeholder="Your admin email" required />
         </div>
 
-
         <div class="field">
-          <label for="googleReviewUrl">
-            Google Review URL
-          </label>
+          <label for="loginPassword">Password</label>
+          <input id="loginPassword" type="password" placeholder="Your password" required />
+        </div>
 
-          <input
-            id="googleReviewUrl"
-            type="url"
-            placeholder="https://search.google.com/local/writereview?..."
-            required
-          />
+        <button class="add-btn" id="loginBtn" type="submit">🔐 Login</button>
+      </form>
 
-          <div class="hint">
-            Paste the direct Google review link for this business.
+      <div class="message error" id="loginError"></div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="businessSection" style="display:none;">
+
+      <div class="header">
+        <h1>Admin Panel</h1>
+        <p>Add and manage Review Assistant businesses.</p>
+      </div>
+
+      <!-- BUSINESS FORM -->
+      <div class="card" id="businessCard">
+        <form id="businessForm">
+          <div class="field">
+            <label for="name">Business Name</label>
+            <input id="name" type="text" placeholder="Example: Gupta Clinic" required />
+          </div>
+
+          <div class="field">
+            <label for="googleReviewUrl">Google Review URL</label>
+            <input id="googleReviewUrl" type="url"
+              placeholder="https://search.google.com/local/writereview?..." required />
+            <div class="hint">Paste the direct Google review link for this business.</div>
+          </div>
+
+          <div class="field">
+            <label for="category">Business Category</label>
+            <select id="category">
+              <option value="restaurant_food">Restaurant / Café / Food</option>
+              <option value="healthcare_clinic">Healthcare / Clinic</option>
+              <option value="dental">Dental</option>
+              <option value="diagnostic">Diagnostic &amp; Pathology</option>
+              <option value="salon_beauty">Salon &amp; Beauty</option>
+              <option value="hotel_stay">Hotel &amp; Stay</option>
+              <option value="gym_fitness">Gym &amp; Fitness</option>
+              <option value="coaching_education">Coaching &amp; Education</option>
+              <option value="hospital">Hospital</option>
+              <option value="automobile">Automobile</option>
+              <option value="photography_creative">Photography &amp; Creative</option>
+              <option value="real_estate_property">Real Estate &amp; Property</option>
+              <option value="retail_shops">Retail / Shops</option>
+              <option value="mobile_computer">Mobile &amp; Computer / Laptop</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="language">Review Language</label>
+            <select id="language">
+              <option value="en">Hinglish</option>
+              <option value="hi">Hindi</option>
+              <option value="english">English</option>
+            </select>
+          </div>
+
+          <button class="add-btn" id="addBtn" type="submit">➕ Add Business</button>
+          <button type="button" id="cancelEditBtn" class="cancel-edit-btn" style="display:none;">
+            Cancel Edit
+          </button>
+        </form>
+
+        <div class="message success" id="successMessage"></div>
+        <div class="message error" id="errorMessage"></div>
+      </div>
+
+      <!-- MONTHLY SUMMARY -->
+      <section class="monthly-summary-section">
+        <div class="business-list-header">
+          <div>
+            <h2>📊 Monthly Summary</h2>
+            <p>Save monthly Review Assistant activity.</p>
           </div>
         </div>
 
+        <div class="card">
+          <div class="field">
+            <label for="summaryMonth">Select Month</label>
+            <input id="summaryMonth" type="month" />
+            <div class="hint">
+              Calculate the selected month's activity and save it in monthly summaries.
+            </div>
+          </div>
 
-        <div class="field">
-          <label for="category">Business Category</label>
+          <button type="button" class="add-btn" id="generateSummaryBtn">
+            📊 Generate Monthly Summary
+          </button>
+          <div class="message success" id="summarySuccessMessage"></div>
+          <div class="message error" id="summaryErrorMessage"></div>
+        </div>
+      </section>
 
-          <select id="category">
-
-            <option value="restaurant_food">Restaurant / Café / Food</option>
-            <option value="healthcare_clinic">Healthcare / Clinic</option>
-            <option value="dental">Dental</option>
-            <option value="diagnostic">Diagnostic &amp; Pathology</option>
-            <option value="salon_beauty">Salon &amp; Beauty</option>
-            <option value="hotel_stay">Hotel &amp; Stay</option>
-            <option value="gym_fitness">Gym &amp; Fitness</option>
-            <option value="coaching_education">Coaching &amp; Education</option>
-            <option value="hospital">Hospital</option>
-            <option value="automobile">Automobile</option>
-            <option value="photography_creative">Photography &amp; Creative</option>
-            <option value="real_estate_property">Real Estate &amp; Property</option>
-            <option value="retail_shops">Retail / Shops</option>
-            <option value="mobile_computer">Mobile &amp; Computer / Laptop</option>
-
-          </select>
+      <!-- CLEANUP -->
+      <section class="monthly-summary-section">
+        <div class="business-list-header">
+          <div>
+            <h2>🧹 Cleanup Old Events</h2>
+            <p>Remove raw usage data older than 2 months.</p>
+          </div>
         </div>
 
+        <div class="card">
+          <div class="hint" style="margin-bottom:14px;">
+            Monthly summaries are kept separately. This cleanup only removes old raw usage events.
+          </div>
 
-        <div class="field">
-          <label for="language">Review Language</label>
+          <button type="button" class="add-btn" id="cleanupEventsBtn">
+            🧹 Cleanup Old Events
+          </button>
+          <div class="message success" id="cleanupSuccessMessage"></div>
+          <div class="message error" id="cleanupErrorMessage"></div>
+        </div>
+      </section>
 
-          <select id="language">
-
-            <option value="en">
-              Hinglish
-            </option>
-
-            <option value="hi">
-              Hindi
-            </option>
-
-            <option value="english">
-              English
-            </option>
-
-          </select>
+      <!-- BUSINESS LIST -->
+      <section class="business-list-section">
+        <div class="business-list-header">
+          <div>
+            <h2>Your Businesses</h2>
+            <p>Manage all businesses added to Review Assistant.</p>
+          </div>
+          <div class="business-count">
+            <span id="businessCount">0</span>
+            <small>Total</small>
+          </div>
         </div>
 
-
-        <button
-          class="add-btn"
-          id="addBtn"
-          type="submit"
-        >
-          ➕ Add Business
-        </button>
-    <button
-  type="button"
-  id="cancelEditBtn"
-  class="cancel-edit-btn"
-  style="display: none;"
->
-  Cancel Edit
-</button>
-
-      </form>
-
-
-      <div
-        class="message success"
-        id="successMessage"
-      ></div>
-
-
-      <div
-        class="message error"
-        id="errorMessage"
-      ></div>
-<div class="monthly-summary-section">
-
-  <div class="business-list-header">
-    <div>
-      <h2>📊 Monthly Summary</h2>
-      <p>Save monthly Review Assistant activity.</p>
+        <div id="businessList">
+          <div class="business-loading">Login to load businesses.</div>
+        </div>
+      </section>
     </div>
-  </div>
-
-  <div class="card" style="margin-bottom: 20px;">
-
-    <div class="field">
-      <label for="summaryMonth">
-        Select Month
-      </label>
-
-      <input
-        id="summaryMonth"
-        type="month"
-      />
-
-      <div class="hint">
-        This will calculate the selected month's activity
-        and save it in the monthly summaries.
-      </div>
-    </div>
-
-    <button
-      type="button"
-      class="add-btn"
-      id="generateSummaryBtn"
-    >
-      📊 Generate Monthly Summary
-    </button>
-
-    <div
-      class="message success"
-      id="summarySuccessMessage"
-    ></div>
-
-    <div
-      class="message error"
-      id="summaryErrorMessage"
-    ></div>
-
-</div>
-
-</div>
-
-<!-- CLEANUP SECTION START -->
-
-<div class="monthly-summary-section">
-
-  <div class="business-list-header">
-    <div>
-      <h2>🧹 Cleanup Old Events</h2>
-      <p>Remove raw usage data older than 2 months.</p>
-    </div>
-  </div>
-
-  <div class="card" style="margin-bottom: 20px;">
-
-    <div class="hint" style="margin-bottom: 14px;">
-      Monthly summaries are kept separately. This cleanup only removes
-      old raw usage events.
-    </div>
-
-    <button
-      type="button"
-      class="add-btn"
-      id="cleanupEventsBtn"
-    >
-      🧹 Cleanup Old Events
-    </button>
-
-    <div
-      class="message success"
-      id="cleanupSuccessMessage"
-    ></div>
-
-    <div
-      class="message error"
-      id="cleanupErrorMessage"
-    ></div>
-
-  </div>
-
-</div>
-
-<!-- CLEANUP SECTION END -->
-
-<div class="business-list-section">
-
-  <div class="business-list-header">
-    <div>
-      <h2>Your Businesses</h2>
-      <p>Manage all businesses added to Review Assistant.</p>
-    </div>
-
-    <div class="business-count">
-      <span id="businessCount">0</span>
-      <small>Total</small>
-    </div>
-  </div>
-
-  <div id="businessList">
-    <div class="business-loading">
-      Loading businesses...
-    </div>
-  </div>
-
-</div>
-
-    </div>
-
   </main>
 
+  <!-- BUSINESS FACTS MODAL -->
+  <div id="factsModal" class="facts-modal" style="display:none;">
+    <div class="facts-modal-box">
+
+      <div class="facts-modal-header">
+        <div>
+          <h2>Manage Business Facts</h2>
+          <p id="factsBusinessName">Business Name</p>
+        </div>
+        <button type="button" id="closeFactsModal" class="facts-close-btn"
+          aria-label="Close facts modal">×</button>
+      </div>
+
+      <div id="factsList" class="facts-list"></div>
+
+      <div class="facts-add-section">
+        <h3>Add New Fact</h3>
+
+        <div class="facts-form">
+          <select id="factCategory">
+            <option value="">Select category</option>
+            <option value="good_quality">Good Quality</option>
+            <option value="good_service">Good Service</option>
+            <option value="friendly_staff">Friendly Staff</option>
+            <option value="good_value">Good Value</option>
+            <option value="clean">Clean</option>
+            <option value="great_experience">Great Experience</option>
+          </select>
+
+          <textarea id="factText" rows="3"
+            placeholder="Example: Food is prepared fresh every day."></textarea>
+
+          <button type="button" id="addFactBtn">+ Add Fact</button>
+        </div>
+        <div class="message error" id="factFormError"></div>
+        <div class="message success" id="factFormSuccess"></div>
+      </div>
+
+    </div>
+  </div>
 
   <script type="module">
-    import { REVIEW_CATEGORY_CONFIG, getReviewCategoryKey } from "/experience-config.js";
-
-    const SUPABASE_URL = "https://uhcbdclpavdgcrtultjc.supabase.co";
-const SUPABASE_KEY = "sb_publishable_uEo2RjEGEYo3uo8e7DV03w_jdXejtrV";
-let editingBusinessId = null;
-let businessesData = [];
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-    const loginForm =
-  document.getElementById("loginForm");
-
-const loginBtn =
-  document.getElementById("loginBtn");
-
-const loginError =
-  document.getElementById("loginError");
-
-const loginCard =
-  document.getElementById("loginCard");
-
-const businessSection =
-  document.getElementById("businessSection");
-
-    const businessForm =
-      document.getElementById("businessForm");
-
-    loginForm.addEventListener(
-  "submit",
-  async (event) => {
-
-    event.preventDefault();
-
-    loginError.classList.remove("show");
-
-    loginBtn.disabled = true;
-    loginBtn.textContent = "Logging in...";
-
-    const email =
-      document.getElementById("loginEmail").value.trim();
-
-    const password =
-      document.getElementById("loginPassword").value;
-
-    const { error } =
-  await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
-
-    if (error) {
-
-      loginError.textContent =
-        "Email ya password galat hai.";
-
-      loginError.classList.add("show");
-
-      loginBtn.disabled = false;
-      loginBtn.textContent = "🔐 Login";
-
-      return;
-    }
-
-loginCard.style.display = "none";
-businessSection.style.display = "block";
-
-  }
-);
-
-    const addBtn =
-      document.getElementById("addBtn");
-
-    const successMessage =
-      document.getElementById("successMessage");
-
-    const errorMessage =
-      document.getElementById("errorMessage");
-
-
-    businessForm.addEventListener(
-      "submit",
-      async (event) => {
-
-        event.preventDefault();
-
-        successMessage.classList.remove("show");
-        errorMessage.classList.remove("show");
-
-addBtn.disabled = true;
-
-addBtn.textContent =
-  editingBusinessId
-    ? "Saving Changes..."
-    : "Adding Business...";
-
-
-        const name =
-          document.getElementById("name").value.trim();
-
-        const googleReviewUrl =
-          document
-            .getElementById("googleReviewUrl")
-            .value
-            .trim();
-
-        const category =
-          document.getElementById("category").value;
-
-        const language =
-          document.getElementById("language").value;
-
-
-        try {
-
-const {
-  data: {
-    session
-  }
-} = await supabaseClient.auth.getSession();
-
-if (!session) {
-  throw new Error("Please login again.");
-}
-
-let response;
-
-if (editingBusinessId) {
-
-  response = await fetch(
-    "/api/admin/business-update",
-    {
-      method: "PATCH",
-
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization":
-          `Bearer ${session.access_token}`
-      },
-
-      body: JSON.stringify({
-        id: editingBusinessId,
-        name,
-        googleReviewUrl,
-        category,
-        language
-      })
-    }
-  );
-
-} else {
-
-  response = await fetch(
-    "/api/admin/business",
-    {
-      method: "POST",
-
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization":
-          `Bearer ${session.access_token}`
-      },
-
-      body: JSON.stringify({
-        name,
-        googleReviewUrl,
-        category,
-        language
-      })
-    }
-  );
-
-}
-
-
-          const data =
-            await response.json();
-
-
-          if (!response.ok) {
-
-            throw new Error(
-              data.error ||
-              "Could not add business."
-            );
-
-          }
-
-
-if (editingBusinessId) {
-
-  successMessage.textContent =
-    "Business updated successfully.";
-
-} else {
-
-  successMessage.textContent =
-    `Business added successfully. URL: /r/${data.slug}`;
-
-}
-
-successMessage.classList.add("show");
-
-businessForm.reset();
-
-editingBusinessId = null;
-
-document.getElementById("cancelEditBtn").style.display =
-  "none";
-
-addBtn.textContent =
-  "➕ Add Business";
-
-await loadBusinesses();
-
-
-        } catch (error) {
-
-          errorMessage.textContent =
-            error.message ||
-            "Something went wrong.";
-
-          errorMessage.classList.add("show");
-
-
-        } finally {
-
-          addBtn.disabled = false;
-          addBtn.textContent =
-            "➕ Add Business";
-
-        }
-
-      }
+    import {
+      REVIEW_CATEGORY_CONFIG,
+      getReviewCategoryKey
+    } from "/experience-config.js";
+
+    const SUPABASE_URL =
+      "https://uhcbdclpavdgcrtultjc.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_uEo2RjEGEYo3uo8e7DV03w_jdXejtrV";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
     );
 
-        async function loadBusinesses() {
-      const businessList =
-        document.getElementById("businessList");
+    const $ = (id) => document.getElementById(id);
 
-      const businessCount =
-        document.getElementById("businessCount");
+    let editingBusinessId = null;
+    let businessesData = [];
+    let currentFactsBusinessId = null;
+
+    function showMessage(element, message) {
+      element.textContent = message;
+      element.classList.add("show");
+    }
+
+    function hideMessage(element) {
+      element.textContent = "";
+      element.classList.remove("show");
+    }
+
+    async function getSessionOrThrow() {
+      const { data, error } = await supabaseClient.auth.getSession();
+
+      if (error) throw error;
+      if (!data.session) throw new Error("Please login again.");
+
+      return data.session;
+    }
+
+    async function readJsonResponse(response) {
+      let data;
 
       try {
-
-        const {
-          data: {
-            session
-          }
-        } = await supabaseClient.auth.getSession();
-
-        if (!session) {
-          businessList.innerHTML =
-            `<div class="business-loading">
-              Please login again.
-            </div>`;
-          return;
-        }
-
-        const response =
-          await fetch("/api/admin/businesses", {
-            headers: {
-              "Authorization":
-                `Bearer ${session.access_token}`
-            }
-          });
-
-        const data =
-          await response.json();
-        businessesData = data.businesses;
-
-        if (!response.ok) {
-          throw new Error(
-            data.error ||
-            "Could not load businesses."
-          );
-        }
-
-        businessCount.textContent =
-          data.businesses.length;
-
-        if (data.businesses.length === 0) {
-
-          businessList.innerHTML =
-            `<div class="business-loading">
-              No businesses added yet.
-            </div>`;
-
-          return;
-        }
-
-        businessList.innerHTML =
-          data.businesses.map((business) => `
-<div class="business-item">
-
-  <div class="business-info">
-
-    <strong>
-      ${business.name}
-    </strong>
-
-    <span>
-      ${(REVIEW_CATEGORY_CONFIG[getReviewCategoryKey(business.category)] || {}).label || business.category || "Other"}
-      • ${business.active ? "Active" : "Inactive"}
-    </span>
-
-    <span class="business-url">
-      ${window.location.origin}/r/${business.slug}
-    </span>
-
-  </div>
-
-  <div class="business-actions">
-
-    <a
-      class="open-business-btn"
-      href="/r/${business.slug}"
-      target="_blank"
-      rel="noopener"
-    >
-      Open
-    </a>
-
-    <button
-      type="button"
-      class="copy-business-btn"
-      data-url="${window.location.origin}/r/${business.slug}"
-    >
-      Copy Link
-    </button>
-    <button
-  type="button"
-  class="edit-business-btn"
-  data-id="${business.id}"
->
-  Edit
-</button>
-<button
-  type="button"
-  class="manage-facts-btn"
-  data-id="${business.id}"
-  data-name="${business.name}"
->
-  <svg
-    width="15"
-    height="15"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <rect x="3" y="4" width="18" height="16" rx="2"></rect>
-    <path d="M7 8h10"></path>
-    <path d="M7 12h10"></path>
-    <path d="M7 16h6"></path>
-  </svg>
-  Facts
-</button>
-
-<button
-  type="button"
-  class="status-business-btn"
-  data-id="${business.id}"
-  data-active="${business.active}"
->
-  ${business.active ? "Deactivate" : "Activate"}
-</button>
-  </div>
-
-</div>
-          `).join("");
-
-      } catch (error) {
-
-        businessList.innerHTML =
-          `<div class="business-loading">
-            ${error.message || "Could not load businesses."}
-          </div>`;
-
+        data = await response.json();
+      } catch {
+        throw new Error("Server returned an invalid response. Please try again.");
       }
-    }
-
-    loadBusinesses();
-document.addEventListener("click", async (event) => {
-  
-  const factDeleteButton =
-    event.target.closest(".fact-delete-btn");
-
-  if (factDeleteButton) {
-    const factId =
-      factDeleteButton.getAttribute("data-id");
-
-    const confirmed = confirm(
-      "Are you sure you want to delete this fact?"
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
-    try {
-      const {
-        data: { session }
-      } = await supabaseClient.auth.getSession();
-
-      if (!session) {
-        alert("Please login again.");
-        return;
-      }
-
-      factDeleteButton.disabled = true;
-      factDeleteButton.textContent = "Deleting...";
-
-      const response = await fetch(
-        "/api/admin/business-facts",
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${session.access_token}`
-          },
-          body: JSON.stringify({
-            id: factId
-          })
-        }
-      );
-
-      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.error || "Could not delete fact."
-        );
+        throw new Error(data.error || data.message || "Request failed.");
       }
 
-      factDeleteButton
-        .closest(".fact-item")
-        .remove();
-
-    } catch (error) {
-      alert(error.message || "Could not delete fact.");
-      factDeleteButton.disabled = false;
-      factDeleteButton.textContent = "Delete";
+      return data;
     }
 
-    return;
-  }
+    function authHeaders(session, includeJson = false) {
+      const headers = {
+        Authorization: `Bearer ${session.access_token}`
+      };
 
-  const closeFactsButton =
-  event.target.closest("#closeFactsModal");
+      if (includeJson) headers["Content-Type"] = "application/json";
 
-if (closeFactsButton) {
+      return headers;
+    }
 
-  document.getElementById("factsModal").style.display =
-    "none";
+    // LOGIN
+    $("loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
 
-  return;
-}
-      const factEditButton =
-      event.target.closest(".fact-edit-btn");
-
-    if (factEditButton) {
-
-      const factId =
-        factEditButton.getAttribute("data-id");
-
-      const factItem =
-        factEditButton.closest(".fact-item");
-
-      const currentFact =
-        factItem
-          .querySelector(".fact-text")
-          .textContent
-          .trim();
-
-      const newFact =
-        prompt(
-          "Edit business fact:",
-          currentFact
-        );
-
-      if (newFact === null) {
-        return;
-      }
-
-      const trimmedFact =
-        newFact.trim();
-
-      if (!trimmedFact) {
-        alert("Fact cannot be empty.");
-        return;
-      }
+      hideMessage($("loginError"));
+      $("loginBtn").disabled = true;
+      $("loginBtn").textContent = "Logging in...";
 
       try {
+        const email = $("loginEmail").value.trim();
+        const password = $("loginPassword").value;
 
-        const {
-          data: {
-            session
-          }
-        } =
-          await supabaseClient.auth.getSession();
+        const { error } = await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
 
-        if (!session) {
-          alert("Please login again.");
-          return;
-        }
+        if (error) throw new Error("Email ya password galat hai.");
 
-        factEditButton.disabled = true;
-        factEditButton.textContent =
-          "Saving...";
+        $("loginCard").style.display = "none";
+        $("businessSection").style.display = "block";
 
-        const response =
-          await fetch(
-            "/api/admin/business-facts",
-            {
-              method: "PATCH",
-
-              headers: {
-                "Content-Type":
-                  "application/json",
-
-                "Authorization":
-                  `Bearer ${session.access_token}`
-              },
-
-              body: JSON.stringify({
-                id: factId,
-                fact: trimmedFact
-              })
-            }
-          );
-
-        const data =
-          await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            data.error ||
-            "Could not update fact."
-          );
-        }
-
-        factItem
-          .querySelector(".fact-text")
-          .textContent =
-          trimmedFact;
-
+        await loadBusinesses();
       } catch (error) {
-
-        alert(
-          error.message ||
-          "Could not update fact."
-        );
-
+        showMessage($("loginError"), error.message || "Login failed.");
       } finally {
-
-        factEditButton.disabled = false;
-        factEditButton.textContent =
-          "Edit";
-
+        $("loginBtn").disabled = false;
+        $("loginBtn").textContent = "🔐 Login";
       }
-
-      return;
-    }
-
-  const factsButton =
-    event.target.closest(".manage-facts-btn");
-
-  if (factsButton) {
-
-    const businessId =
-      factsButton.getAttribute("data-id");
-
-    const businessName =
-      factsButton.getAttribute("data-name");
-
-    const {
-      data: {
-        session
-      }
-    } = await supabaseClient.auth.getSession();
-
-    if (!session) {
-      alert("Please login again.");
-      return;
-    }
-
-    try {
-
-      factsButton.disabled = true;
-      factsButton.innerHTML = "Loading...";
-
-      const response =
-        await fetch(
-          `/api/admin/business-facts?businessId=${encodeURIComponent(businessId)}`,
-          {
-            method: "GET",
-            headers: {
-              "Authorization":
-                `Bearer ${session.access_token}`
-            }
-          }
-        );
-
-      const data =
-        await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.error ||
-          "Could not load business facts."
-        );
-      }
-
-const factsModal =
-  document.getElementById("factsModal");
-
-const factsBusinessName =
-  document.getElementById("factsBusinessName");
-
-const factsList =
-  document.getElementById("factsList");
-
-factsBusinessName.textContent =
-  businessName;
-
-factsList.innerHTML = "";
-
-if (!data.facts || data.facts.length === 0) {
-
-  factsList.innerHTML = `
-    <div class="facts-empty">
-      No facts added yet.
-    </div>
-  `;
-
-} else {
-
-  data.facts.forEach((fact) => {
-
-    const factItem =
-      document.createElement("div");
-
-    factItem.className =
-      "fact-item";
-
-    factItem.innerHTML = `
-      <div class="fact-content">
-
-        <div class="fact-category">
-          ${fact.category}
-        </div>
-
-        <div class="fact-text">
-          ${fact.fact}
-        </div>
-
-      </div>
-
-      <div class="fact-actions">
-
-        <button
-          type="button"
-          class="fact-edit-btn"
-          data-id="${fact.id}"
-        >
-          Edit
-        </button>
-
-        <button
-          type="button"
-          class="fact-delete-btn"
-          data-id="${fact.id}"
-        >
-          Delete
-        </button>
-
-      </div>
-    `;
-
-    factsList.appendChild(factItem);
-
-  });
-}
-
-factsModal.style.display = "flex";
-
-    } catch (error) {
-
-      alert(
-        error.message ||
-        "Could not load business facts."
-      );
-
-    } finally {
-
-      factsButton.disabled = false;
-
-      factsButton.innerHTML = `
-        <svg
-          width="15"
-          height="15"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <rect x="3" y="4" width="18" height="16" rx="2"></rect>
-          <path d="M7 8h10"></path>
-          <path d="M7 12h10"></path>
-          <path d="M7 16h6"></path>
-        </svg>
-        Facts
-      `;
-
-    }
-
-    return;
-  }
-  const editButton =
-    event.target.closest(".edit-business-btn");
-
-if (editButton) {
-
-  const businessId =
-    editButton.getAttribute("data-id");
-
-const business =
-  businessesData.find(
-      (item) => String(item.id) === String(businessId)
-    );
-
-  if (!business) {
-    alert("Business details could not be found.");
-    return;
-  }
-
-  editingBusinessId = business.id;
-
-  document.getElementById("name").value =
-    business.name || "";
-
-  document.getElementById("googleReviewUrl").value =
-    business.google_review_url || "";
-
-  document.getElementById("category").value =
-    getReviewCategoryKey(business.category);
-
-  document.getElementById("language").value =
-    business.language || "en";
-
-  document.getElementById("addBtn").textContent =
-    "✓ Save Changes";
-
-  document.getElementById("cancelEditBtn").style.display =
-    "block";
-
-  document.getElementById("errorMessage").textContent =
-    "";
-
-  document.getElementById("successMessage").textContent =
-    "";
-
-  document
-    .getElementById("businessCard")
-    .scrollIntoView({
-      behavior: "smooth",
-      block: "start"
     });
 
-  return;
-}
-    const cancelEditButton =
-    event.target.closest("#cancelEditBtn");
+    // ADD / EDIT BUSINESS
+    $("businessForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
 
-  if (cancelEditButton) {
+      hideMessage($("successMessage"));
+      hideMessage($("errorMessage"));
 
-    editingBusinessId = null;
+      const button = $("addBtn");
+      button.disabled = true;
+      button.textContent = editingBusinessId ? "Saving Changes..." : "Adding Business...";
 
-    businessForm.reset();
+      try {
+        const session = await getSessionOrThrow();
 
-    document.getElementById("cancelEditBtn").style.display =
-      "none";
+        const body = {
+          name: $("name").value.trim(),
+          googleReviewUrl: $("googleReviewUrl").value.trim(),
+          category: $("category").value,
+          language: $("language").value
+        };
 
-    document.getElementById("addBtn").textContent =
-      "➕ Add Business";
+        const editing = editingBusinessId !== null;
+        if (editing) body.id = editingBusinessId;
 
-    document.getElementById("successMessage").textContent =
-      "";
+        const response = await fetch(
+          editing ? "/api/admin/business-update" : "/api/admin/business",
+          {
+            method: editing ? "PATCH" : "POST",
+            headers: authHeaders(session, true),
+            body: JSON.stringify(body)
+          }
+        );
 
-    document.getElementById("errorMessage").textContent =
-      "";
+        const data = await readJsonResponse(response);
 
-    return;
-  }
-    const statusButton =
-    event.target.closest(".status-business-btn");
+        showMessage(
+          $("successMessage"),
+          editing
+            ? "Business updated successfully."
+            : `Business added successfully. URL: /r/${data.slug}`
+        );
 
-  if (statusButton) {
+        editingBusinessId = null;
+        $("businessForm").reset();
+        $("cancelEditBtn").style.display = "none";
+        button.textContent = "➕ Add Business";
 
-    const businessId =
-      statusButton.getAttribute("data-id");
+        await loadBusinesses();
+      } catch (error) {
+        showMessage($("errorMessage"), error.message || "Could not save business.");
+      } finally {
+        button.disabled = false;
+        button.textContent = editingBusinessId ? "✓ Save Changes" : "➕ Add Business";
+      }
+    });
 
-    const currentActive =
-      statusButton.getAttribute("data-active") === "true";
+    // LOAD BUSINESS LIST
+    async function loadBusinesses() {
+      const list = $("businessList");
+      list.replaceChildren();
 
-    const business =
-      businessesData.find(
-        (item) => String(item.id) === String(businessId)
-      );
+      try {
+        const session = await getSessionOrThrow();
 
-    if (!business) {
-      alert("Business details could not be found.");
-      return;
+        const response = await fetch("/api/admin/businesses", {
+          headers: authHeaders(session)
+        });
+
+        const data = await readJsonResponse(response);
+        businessesData = Array.isArray(data.businesses) ? data.businesses : [];
+
+        $("businessCount").textContent = businessesData.length;
+
+        if (!businessesData.length) {
+          const empty = document.createElement("div");
+          empty.className = "business-loading";
+          empty.textContent = "No businesses added yet.";
+          list.appendChild(empty);
+          return;
+        }
+
+        businessesData.forEach((business) => {
+          const item = document.createElement("div");
+          item.className = "business-item";
+
+          const info = document.createElement("div");
+          info.className = "business-info";
+
+          const name = document.createElement("strong");
+          name.textContent = business.name || "Unnamed business";
+
+          const category = document.createElement("span");
+          const categoryKey = getReviewCategoryKey(business.category);
+          category.textContent =
+            `${(REVIEW_CATEGORY_CONFIG[categoryKey] || {}).label || business.category || "Other"} • ${business.active ? "Active" : "Inactive"}`;
+
+          const url = `${window.location.origin}/r/${business.slug}`;
+          const urlLabel = document.createElement("span");
+          urlLabel.className = "business-url";
+          urlLabel.textContent = url;
+
+          info.append(name, category, urlLabel);
+
+          const actions = document.createElement("div");
+          actions.className = "business-actions";
+
+          const open = document.createElement("a");
+          open.className = "open-business-btn";
+          open.href = `/r/${encodeURIComponent(business.slug)}`;
+          open.target = "_blank";
+          open.rel = "noopener";
+          open.textContent = "Open";
+
+          const copy = document.createElement("button");
+          copy.type = "button";
+          copy.className = "copy-business-btn";
+          copy.dataset.url = url;
+          copy.textContent = "Copy Link";
+
+          const edit = document.createElement("button");
+          edit.type = "button";
+          edit.className = "edit-business-btn";
+          edit.dataset.id = business.id;
+          edit.textContent = "Edit";
+
+          const facts = document.createElement("button");
+          facts.type = "button";
+          facts.className = "manage-facts-btn";
+          facts.dataset.id = business.id;
+          facts.dataset.name = business.name || "";
+          facts.innerHTML = `
+            <svg width="15" height="15" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+              <path d="M7 8h10"></path>
+              <path d="M7 12h10"></path>
+              <path d="M7 16h6"></path>
+            </svg>
+            Facts
+          `;
+
+          const status = document.createElement("button");
+          status.type = "button";
+          status.className = "status-business-btn";
+          status.dataset.id = business.id;
+          status.dataset.active = String(Boolean(business.active));
+          status.textContent = business.active ? "Deactivate" : "Activate";
+
+          actions.append(open, copy, edit, facts, status);
+          item.append(info, actions);
+          list.appendChild(item);
+        });
+      } catch (error) {
+        const errorLine = document.createElement("div");
+        errorLine.className = "business-loading";
+        errorLine.textContent = error.message || "Could not load businesses.";
+        list.appendChild(errorLine);
+      }
     }
 
-    const action =
-      currentActive
-        ? "deactivate"
-        : "activate";
+    // LOAD FACTS FOR SELECTED BUSINESS
+    async function loadBusinessFacts(businessId) {
+      const session = await getSessionOrThrow();
 
-    const confirmed =
-      confirm(
-        currentActive
-          ? `Deactivate ${business.name}?`
-          : `Activate ${business.name}?`
+      const response = await fetch(
+        `/api/admin/business-facts?businessId=${encodeURIComponent(businessId)}`,
+        { headers: authHeaders(session) }
       );
 
-    if (!confirmed) return;
+      const data = await readJsonResponse(response);
+      const list = $("factsList");
+      list.replaceChildren();
 
-    try {
+      const facts = Array.isArray(data.facts) ? data.facts : [];
 
-      const {
-        data: {
-          session
-        }
-      } = await supabaseClient.auth.getSession();
-
-      if (!session) {
-        alert("Please login again.");
+      if (!facts.length) {
+        const empty = document.createElement("div");
+        empty.className = "facts-empty";
+        empty.textContent = "No facts added yet.";
+        list.appendChild(empty);
         return;
       }
 
-      statusButton.disabled = true;
-      statusButton.textContent =
-        currentActive
-          ? "Deactivating..."
-          : "Activating...";
+      facts.forEach((fact) => {
+        const item = document.createElement("div");
+        item.className = "fact-item";
 
-      const response =
-        await fetch(
-          "/api/admin/business-status",
-          {
-            method: "PATCH",
+        const content = document.createElement("div");
+        content.className = "fact-content";
 
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization":
-                `Bearer ${session.access_token}`
-            },
+        const category = document.createElement("div");
+        category.className = "fact-category";
+        category.textContent = fact.category || "Uncategorized";
 
+        const text = document.createElement("div");
+        text.className = "fact-text";
+        text.textContent = fact.fact || "";
+
+        content.append(category, text);
+
+        const actions = document.createElement("div");
+        actions.className = "fact-actions";
+
+        const edit = document.createElement("button");
+        edit.type = "button";
+        edit.className = "fact-edit-btn";
+        edit.dataset.id = fact.id;
+        edit.textContent = "Edit";
+
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "fact-delete-btn";
+        remove.dataset.id = fact.id;
+        remove.textContent = "Delete";
+
+        actions.append(edit, remove);
+        item.append(content, actions);
+        list.appendChild(item);
+      });
+    }
+
+    // BUTTON HANDLERS
+    document.addEventListener("click", async (event) => {
+      const target = event.target;
+
+      // CLOSE FACTS MODAL
+      if (target.closest("#closeFactsModal")) {
+        $("factsModal").style.display = "none";
+        return;
+      }
+
+      // OPEN FACTS MODAL
+      const factsButton = target.closest(".manage-facts-btn");
+      if (factsButton) {
+        currentFactsBusinessId = factsButton.dataset.id;
+        $("factsBusinessName").textContent = factsButton.dataset.name || "Business";
+        $("factsModal").style.display = "flex";
+        $("factsList").innerHTML = '<div class="facts-empty">Loading facts...</div>';
+        hideMessage($("factFormError"));
+        hideMessage($("factFormSuccess"));
+
+        factsButton.disabled = true;
+
+        try {
+          await loadBusinessFacts(currentFactsBusinessId);
+        } catch (error) {
+          $("factsList").textContent = error.message || "Could not load facts.";
+        } finally {
+          factsButton.disabled = false;
+        }
+        return;
+      }
+
+      // ADD FACT
+      if (target.closest("#addFactBtn")) {
+        const button = $("addFactBtn");
+        const category = $("factCategory").value;
+        const fact = $("factText").value.trim();
+
+        hideMessage($("factFormError"));
+        hideMessage($("factFormSuccess"));
+
+        if (!currentFactsBusinessId) {
+          showMessage($("factFormError"), "Please select a business first.");
+          return;
+        }
+
+        if (!category || !fact) {
+          showMessage($("factFormError"), "Select a category and enter a fact.");
+          return;
+        }
+
+        button.disabled = true;
+        button.textContent = "Adding...";
+
+        try {
+          const session = await getSessionOrThrow();
+
+          const response = await fetch("/api/admin/business-facts", {
+            method: "POST",
+            headers: authHeaders(session, true),
             body: JSON.stringify({
-              id: businessId,
+              businessId: currentFactsBusinessId,
+              category,
+              fact
+            })
+          });
+
+          await readJsonResponse(response);
+
+          $("factText").value = "";
+          showMessage($("factFormSuccess"), "Fact added successfully.");
+          await loadBusinessFacts(currentFactsBusinessId);
+        } catch (error) {
+          showMessage($("factFormError"), error.message || "Could not add fact.");
+        } finally {
+          button.disabled = false;
+          button.textContent = "+ Add Fact";
+        }
+        return;
+      }
+
+      // EDIT FACT
+      const editFactButton = target.closest(".fact-edit-btn");
+      if (editFactButton) {
+        const factId = editFactButton.dataset.id;
+        const factItem = editFactButton.closest(".fact-item");
+        const currentFact = factItem.querySelector(".fact-text").textContent;
+        const newFact = prompt("Edit business fact:", currentFact);
+
+        if (newFact === null) return;
+        if (!newFact.trim()) {
+          alert("Fact cannot be empty.");
+          return;
+        }
+
+        editFactButton.disabled = true;
+        editFactButton.textContent = "Saving...";
+
+        try {
+          const session = await getSessionOrThrow();
+
+          const response = await fetch("/api/admin/business-facts", {
+            method: "PATCH",
+            headers: authHeaders(session, true),
+            body: JSON.stringify({
+              id: factId,
+              fact: newFact.trim()
+            })
+          });
+
+          await readJsonResponse(response);
+          await loadBusinessFacts(currentFactsBusinessId);
+        } catch (error) {
+          alert(error.message || "Could not update fact.");
+        } finally {
+          editFactButton.disabled = false;
+          editFactButton.textContent = "Edit";
+        }
+        return;
+      }
+
+      // DELETE FACT
+      const deleteFactButton = target.closest(".fact-delete-btn");
+      if (deleteFactButton) {
+        if (!confirm("Are you sure you want to delete this fact?")) return;
+
+        deleteFactButton.disabled = true;
+        deleteFactButton.textContent = "Deleting...";
+
+        try {
+          const session = await getSessionOrThrow();
+
+          const response = await fetch("/api/admin/business-facts", {
+            method: "DELETE",
+            headers: authHeaders(session, true),
+            body: JSON.stringify({ id: deleteFactButton.dataset.id })
+          });
+
+          await readJsonResponse(response);
+          await loadBusinessFacts(currentFactsBusinessId);
+        } catch (error) {
+          alert(error.message || "Could not delete fact.");
+          deleteFactButton.disabled = false;
+          deleteFactButton.textContent = "Delete";
+        }
+        return;
+      }
+
+      // EDIT BUSINESS
+      const editBusinessButton = target.closest(".edit-business-btn");
+      if (editBusinessButton) {
+        const business = businessesData.find(
+          item => String(item.id) === String(editBusinessButton.dataset.id)
+        );
+
+        if (!business) {
+          alert("Business details could not be found.");
+          return;
+        }
+
+        editingBusinessId = business.id;
+        $("name").value = business.name || "";
+        $("googleReviewUrl").value = business.google_review_url || "";
+        $("category").value = getReviewCategoryKey(business.category);
+        $("language").value = business.language || "en";
+        $("addBtn").textContent = "✓ Save Changes";
+        $("cancelEditBtn").style.display = "block";
+
+        hideMessage($("successMessage"));
+        hideMessage($("errorMessage"));
+
+        $("businessCard").scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+        return;
+      }
+
+      // CANCEL BUSINESS EDIT
+      if (target.closest("#cancelEditBtn")) {
+        editingBusinessId = null;
+        $("businessForm").reset();
+        $("cancelEditBtn").style.display = "none";
+        $("addBtn").textContent = "➕ Add Business";
+        hideMessage($("successMessage"));
+        hideMessage($("errorMessage"));
+        return;
+      }
+
+      // ACTIVATE / DEACTIVATE BUSINESS
+      const statusButton = target.closest(".status-business-btn");
+      if (statusButton) {
+        const business = businessesData.find(
+          item => String(item.id) === String(statusButton.dataset.id)
+        );
+
+        if (!business) {
+          alert("Business details could not be found.");
+          return;
+        }
+
+        const currentActive = statusButton.dataset.active === "true";
+
+        if (!confirm(
+          currentActive
+            ? `Deactivate ${business.name}?`
+            : `Activate ${business.name}?`
+        )) return;
+
+        statusButton.disabled = true;
+        statusButton.textContent = currentActive ? "Deactivating..." : "Activating...";
+
+        try {
+          const session = await getSessionOrThrow();
+
+          const response = await fetch("/api/admin/business-status", {
+            method: "PATCH",
+            headers: authHeaders(session, true),
+            body: JSON.stringify({
+              id: business.id,
               active: !currentActive
             })
-          }
-        );
+          });
 
-      const data =
-        await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.error ||
-          "Could not update business status."
-        );
-      }
-
-      await loadBusinesses();
-
-    } catch (error) {
-
-      alert(
-        error.message ||
-        "Something went wrong."
-      );
-
-    }
-
-  }
-
-  const button =
-    event.target.closest(".copy-business-btn");
-
-  if (!button) return;
-
-  const url =
-    button.getAttribute("data-url");
-
-  try {
-
-    await navigator.clipboard.writeText(url);
-
-    const originalText =
-      button.textContent;
-
-    button.textContent = "✓ Copied";
-
-    setTimeout(() => {
-      button.textContent = originalText;
-    }, 1500);
-
-  } catch (error) {
-
-    alert("Could not copy the link. Please copy it manually.");
-
-  }
-
-});
-    // ==========================================
-// MONTHLY SUMMARY
-// ==========================================
-
-const summaryMonth =
-  document.getElementById("summaryMonth");
-
-const generateSummaryBtn =
-  document.getElementById(
-    "generateSummaryBtn"
-  );
-
-const summarySuccessMessage =
-  document.getElementById(
-    "summarySuccessMessage"
-  );
-
-const summaryErrorMessage =
-  document.getElementById(
-    "summaryErrorMessage"
-  );
-
-
-// Set current month automatically
-const now =
-  new Date();
-
-const currentYear =
-  now.getFullYear();
-
-const currentMonth =
-  String(
-    now.getMonth() + 1
-  ).padStart(2, "0");
-
-summaryMonth.value =
-  `${currentYear}-${currentMonth}`;
-
-
-// Generate monthly summary
-generateSummaryBtn.addEventListener(
-  "click",
-  async () => {
-
-    summarySuccessMessage.classList.remove(
-      "show"
-    );
-
-    summaryErrorMessage.classList.remove(
-      "show"
-    );
-
-    const month =
-      summaryMonth.value;
-
-    if (!month) {
-
-      summaryErrorMessage.textContent =
-        "Please select a month.";
-
-      summaryErrorMessage.classList.add(
-        "show"
-      );
-
-      return;
-    }
-
-    try {
-
-      const {
-        data: {
-          session
+          await readJsonResponse(response);
+          await loadBusinesses();
+        } catch (error) {
+          alert(error.message || "Could not update business status.");
+          statusButton.disabled = false;
+          statusButton.textContent = currentActive ? "Deactivate" : "Activate";
         }
-      } =
-        await supabaseClient.auth.getSession();
-
-      if (!session) {
-
-        throw new Error(
-          "Please login again."
-        );
-
+        return;
       }
 
-      generateSummaryBtn.disabled =
-        true;
+      // COPY BUSINESS LINK
+      const copyButton = target.closest(".copy-business-btn");
+      if (copyButton) {
+        try {
+          await navigator.clipboard.writeText(copyButton.dataset.url);
+          const previousText = copyButton.textContent;
+          copyButton.textContent = "✓ Copied";
 
-      generateSummaryBtn.textContent =
-        "Generating Summary...";
+          setTimeout(() => {
+            copyButton.textContent = previousText;
+          }, 1500);
+        } catch {
+          prompt("Copy this business link:", copyButton.dataset.url);
+        }
+      }
+    });
 
-      const response =
-        await fetch(
-          "/api/admin/monthly-summary",
-          {
-            method: "POST",
+    // SET CURRENT MONTH
+    const now = new Date();
+    $("summaryMonth").value =
+      `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
-            headers: {
-              "Content-Type":
-                "application/json",
+    // GENERATE MONTHLY SUMMARY
+    $("generateSummaryBtn").addEventListener("click", async () => {
+      hideMessage($("summarySuccessMessage"));
+      hideMessage($("summaryErrorMessage"));
 
-              "Authorization":
-                `Bearer ${session.access_token}`
-            },
-
-            body:
-              JSON.stringify({
-                month
-              })
-          }
-        );
-
-      const data =
-        await response.json();
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.error ||
-          "Could not generate monthly summary."
-        );
-
+      const month = $("summaryMonth").value;
+      if (!month) {
+        showMessage($("summaryErrorMessage"), "Please select a month.");
+        return;
       }
 
-      if (
-        data.summaries_created === 0
-      ) {
+      const button = $("generateSummaryBtn");
+      button.disabled = true;
+      button.textContent = "Generating Summary...";
 
-        summarySuccessMessage.textContent =
-          `No usage events found for ${month}.`;
+      try {
+        const session = await getSessionOrThrow();
 
-      } else {
+        const response = await fetch("/api/admin/monthly-summary", {
+          method: "POST",
+          headers: authHeaders(session, true),
+          body: JSON.stringify({ month })
+        });
 
-        summarySuccessMessage.textContent =
-          `✓ Monthly summary generated successfully for ${month}. ${data.summaries_created} business summary saved.`;
+        const data = await readJsonResponse(response);
 
+        showMessage(
+          $("summarySuccessMessage"),
+          data.summaries_created === 0
+            ? `No usage events found for ${month}.`
+            : `Monthly summary generated for ${month}. Summaries saved: ${data.summaries_created}.`
+        );
+      } catch (error) {
+        showMessage($("summaryErrorMessage"), error.message || "Could not generate summary.");
+      } finally {
+        button.disabled = false;
+        button.textContent = "📊 Generate Monthly Summary";
       }
+    });
 
-      summarySuccessMessage.classList.add(
-        "show"
-      );
+    // CLEANUP RAW EVENTS OLDER THAN 2 MONTHS
+    $("cleanupEventsBtn").addEventListener("click", async () => {
+      hideMessage($("cleanupSuccessMessage"));
+      hideMessage($("cleanupErrorMessage"));
 
-    } catch (error) {
-
-      summaryErrorMessage.textContent =
-        error.message ||
-        "Something went wrong.";
-
-      summaryErrorMessage.classList.add(
-        "show"
-      );
-
-    } finally {
-
-      generateSummaryBtn.disabled =
-        false;
-
-      generateSummaryBtn.textContent =
-        "📊 Generate Monthly Summary";
-
-    }
-
-  }
-);
-    // ==========================================
-// CLEANUP OLD USAGE EVENTS
-// ==========================================
-
-const cleanupEventsBtn =
-  document.getElementById(
-    "cleanupEventsBtn"
-  );
-
-const cleanupSuccessMessage =
-  document.getElementById(
-    "cleanupSuccessMessage"
-  );
-
-const cleanupErrorMessage =
-  document.getElementById(
-    "cleanupErrorMessage"
-  );
-
-
-cleanupEventsBtn.addEventListener(
-  "click",
-  async () => {
-
-    cleanupSuccessMessage.classList.remove(
-      "show"
-    );
-
-    cleanupErrorMessage.classList.remove(
-      "show"
-    );
-
-
-    const confirmed =
-      confirm(
+      if (!confirm(
         "Cleanup old usage events now?\n\nOnly raw events older than 2 months will be removed."
-      );
+      )) return;
 
-    if (!confirmed) {
-      return;
-    }
+      const button = $("cleanupEventsBtn");
+      button.disabled = true;
+      button.textContent = "Cleaning up...";
 
+      try {
+        const session = await getSessionOrThrow();
 
-    try {
+        const response = await fetch("/api/admin/cleanup-events", {
+          method: "POST",
+          headers: authHeaders(session, true)
+        });
 
-      const {
-        data: {
-          session
-        }
-      } =
-        await supabaseClient.auth.getSession();
+        const data = await readJsonResponse(response);
 
-
-      if (!session) {
-
-        throw new Error(
-          "Please login again."
+        showMessage(
+          $("cleanupSuccessMessage"),
+          `Cleanup complete. Old events found: ${data.events_found}. Events deleted: ${data.events_deleted}.`
         );
-
+      } catch (error) {
+        showMessage($("cleanupErrorMessage"), error.message || "Could not cleanup old events.");
+      } finally {
+        button.disabled = false;
+        button.textContent = "🧹 Cleanup Old Events";
       }
-
-
-      cleanupEventsBtn.disabled =
-        true;
-
-      cleanupEventsBtn.textContent =
-        "Cleaning up...";
-
-
-      const response =
-        await fetch(
-          "/api/admin/cleanup-events",
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json",
-
-              "Authorization":
-                `Bearer ${session.access_token}`
-            }
-          }
-        );
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.error ||
-          "Could not cleanup old events."
-        );
-
-      }
-
-
-      cleanupSuccessMessage.textContent =
-        `✓ Cleanup complete. Old events found: ${data.events_found}. Events deleted: ${data.events_deleted}.`;
-
-
-      cleanupSuccessMessage.classList.add(
-        "show"
-      );
-
-
-    } catch (error) {
-
-      cleanupErrorMessage.textContent =
-        error.message ||
-        "Something went wrong.";
-
-      cleanupErrorMessage.classList.add(
-        "show"
-      );
-
-
-    } finally {
-
-      cleanupEventsBtn.disabled =
-        false;
-
-      cleanupEventsBtn.textContent =
-        "🧹 Cleanup Old Events";
-
-    }
-
-  }
-);
+    });
   </script>
-<div
-  id="factsModal"
-  class="facts-modal"
-  style="display: none;"
->
-
-  <div class="facts-modal-box">
-
-    <div class="facts-modal-header">
-
-      <div>
-        <h2>Manage Business Facts</h2>
-
-        <p id="factsBusinessName">
-          Business Name
-        </p>
-      </div>
-
-      <button
-        type="button"
-        id="closeFactsModal"
-        class="facts-close-btn"
-      >
-        ×
-      </button>
-
-    </div>
-
-    <div
-      id="factsList"
-      class="facts-list"
-    >
-    </div>
-
-    <div class="facts-add-section">
-
-      <h3>Add New Fact</h3>
-
-      <div class="facts-form">
-
-        <select id="factCategory">
-
-          <option value="">
-            Select category
-          </option>
-
-          <option value="good_quality">
-            Good Quality
-          </option>
-
-          <option value="good_service">
-            Good Service
-          </option>
-
-          <option value="friendly_staff">
-            Friendly Staff
-          </option>
-
-          <option value="good_value">
-            Good Value
-          </option>
-
-          <option value="clean">
-            Clean
-          </option>
-
-          <option value="great_experience">
-            Great Experience
-          </option>
-
-        </select>
-
-        <textarea
-          id="factText"
-          rows="3"
-          placeholder="Example: Food is prepared fresh every day."
-        ></textarea>
-
-        <button
-          type="button"
-          id="addFactBtn"
-        >
-          + Add Fact
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
 </body>
 </html>
