@@ -1380,6 +1380,112 @@ if (closeFactsButton) {
     "none";
 
   return;
+      const factEditButton =
+      event.target.closest(".fact-edit-btn");
+
+    if (factEditButton) {
+
+      const factId =
+        factEditButton.getAttribute("data-id");
+
+      const factItem =
+        factEditButton.closest(".fact-item");
+
+      const currentFact =
+        factItem
+          .querySelector(".fact-text")
+          .textContent
+          .trim();
+
+      const newFact =
+        prompt(
+          "Edit business fact:",
+          currentFact
+        );
+
+      if (newFact === null) {
+        return;
+      }
+
+      const trimmedFact =
+        newFact.trim();
+
+      if (!trimmedFact) {
+        alert("Fact cannot be empty.");
+        return;
+      }
+
+      try {
+
+        const {
+          data: {
+            session
+          }
+        } =
+          await supabaseClient.auth.getSession();
+
+        if (!session) {
+          alert("Please login again.");
+          return;
+        }
+
+        factEditButton.disabled = true;
+        factEditButton.textContent =
+          "Saving...";
+
+        const response =
+          await fetch(
+            "/api/admin/business-facts",
+            {
+              method: "PATCH",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+
+                "Authorization":
+                  `Bearer ${session.access_token}`
+              },
+
+              body: JSON.stringify({
+                id: factId,
+                fact: trimmedFact
+              })
+            }
+          );
+
+        const data =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.error ||
+            "Could not update fact."
+          );
+        }
+
+        factItem
+          .querySelector(".fact-text")
+          .textContent =
+          trimmedFact;
+
+      } catch (error) {
+
+        alert(
+          error.message ||
+          "Could not update fact."
+        );
+
+      } finally {
+
+        factEditButton.disabled = false;
+        factEditButton.textContent =
+          "Edit";
+
+      }
+
+      return;
+    }
 }
   const factsButton =
     event.target.closest(".manage-facts-btn");
