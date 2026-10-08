@@ -1066,7 +1066,104 @@ await loadBusinesses();
 
     loadBusinesses();
 document.addEventListener("click", async (event) => {
+  const factsButton =
+    event.target.closest(".manage-facts-btn");
 
+  if (factsButton) {
+
+    const businessId =
+      factsButton.getAttribute("data-id");
+
+    const businessName =
+      factsButton.getAttribute("data-name");
+
+    const {
+      data: {
+        session
+      }
+    } = await supabaseClient.auth.getSession();
+
+    if (!session) {
+      alert("Please login again.");
+      return;
+    }
+
+    try {
+
+      factsButton.disabled = true;
+      factsButton.innerHTML = "Loading...";
+
+      const response =
+        await fetch(
+          `/api/admin/business-facts?businessId=${encodeURIComponent(businessId)}`,
+          {
+            method: "GET",
+            headers: {
+              "Authorization":
+                `Bearer ${session.access_token}`
+            }
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "Could not load business facts."
+        );
+      }
+
+      console.log(
+        "Business:",
+        businessName
+      );
+
+      console.log(
+        "Facts:",
+        data.facts
+      );
+
+      alert(
+        `${businessName}\n\nFacts loaded: ${data.facts.length}`
+      );
+
+    } catch (error) {
+
+      alert(
+        error.message ||
+        "Could not load business facts."
+      );
+
+    } finally {
+
+      factsButton.disabled = false;
+
+      factsButton.innerHTML = `
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+          <path d="M7 8h10"></path>
+          <path d="M7 12h10"></path>
+          <path d="M7 16h6"></path>
+        </svg>
+        Facts
+      `;
+
+    }
+
+    return;
+  }
   const editButton =
     event.target.closest(".edit-business-btn");
 
