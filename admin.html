@@ -1719,6 +1719,97 @@ cleanupEventsBtn.addEventListener(
   }
 );
   </script>
+<div
+  id="factsModal"
+  class="facts-modal"
+  style="display: none;"
+>
 
+  <div class="facts-modal-box">
+
+    <div class="facts-modal-header">
+
+      <div>
+        <h2>Manage Business Facts</h2>
+
+        <p id="factsBusinessName">
+          Business Name
+        </p>
+      </div>
+
+      <button
+        type="button"
+        id="closeFactsModal"
+        class="facts-close-btn"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div
+      id="factsList"
+      class="facts-list"
+    >
+    </div>
+
+    <div class="facts-add-section">
+
+      <h3>Add New Fact</h3>
+
+      <div class="facts-form">
+
+        <select id="factCategory">
+
+          <option value="">
+            Select category
+          </option>
+
+          <option value="good_quality">
+            Good Quality
+          </option>
+
+          <option value="good_service">
+            Good Service
+          </option>
+
+          <option value="friendly_staff">
+            Friendly Staff
+          </option>
+
+          <option value="good_value">
+            Good Value
+          </option>
+
+          <option value="clean">
+            Clean
+          </option>
+
+          <option value="great_experience">
+            Great Experience
+          </option>
+
+        </select>
+
+        <textarea
+          id="factText"
+          rows="3"
+          placeholder="Example: Food is prepared fresh every day."
+        ></textarea>
+
+        <button
+          type="button"
+          id="addFactBtn"
+        >
+          + Add Fact
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 </body>
 </html>
