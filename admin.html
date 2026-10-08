@@ -388,6 +388,311 @@
 .manage-facts-btn svg {
   flex-shrink: 0;
 }
+    /* =========================
+   BUSINESS FACTS MODAL
+========================= */
+
+.facts-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.facts-modal-box {
+  width: min(760px, 100%);
+  max-height: 90vh;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.18);
+
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.facts-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 20px 22px;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.facts-modal-header h2 {
+  margin: 0;
+
+  font-size: 19px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.facts-modal-header p {
+  margin: 5px 0 0;
+
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.facts-close-btn {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  border-radius: 9px;
+
+  background: #f3f4f6;
+  color: #374151;
+
+  font-size: 22px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.facts-close-btn:hover {
+  background: #e5e7eb;
+}
+
+.facts-list {
+  padding: 18px 22px;
+
+  overflow-y: auto;
+
+  max-height: 430px;
+}
+
+.fact-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  padding: 14px 0;
+
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.fact-item:last-child {
+  border-bottom: none;
+}
+
+.fact-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.fact-category {
+  display: inline-block;
+
+  margin-bottom: 5px;
+  padding: 4px 8px;
+
+  border-radius: 6px;
+
+  background: #f3f4f6;
+  color: #4b5563;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.fact-text {
+  color: #111827;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.fact-actions {
+  display: flex;
+  gap: 7px;
+  flex-shrink: 0;
+}
+
+.fact-actions button {
+  min-height: 32px;
+  padding: 0 10px;
+
+  border-radius: 7px;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.fact-edit-btn {
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.fact-edit-btn:hover {
+  background: #f3f4f6;
+}
+
+.fact-delete-btn {
+  background: #ffffff;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.fact-delete-btn:hover {
+  background: #fef2f2;
+}
+
+.facts-empty {
+  padding: 35px 10px;
+
+  text-align: center;
+
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* ADD FACT */
+
+.facts-add-section {
+  padding: 18px 22px 22px;
+
+  border-top: 1px solid #e5e7eb;
+  background: #fafafa;
+}
+
+.facts-add-section h3 {
+  margin: 0 0 12px;
+
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.facts-form {
+  display: grid;
+  grid-template-columns: 190px 1fr auto;
+  gap: 10px;
+  align-items: start;
+}
+
+.facts-form select,
+.facts-form textarea {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  outline: none;
+}
+
+.facts-form select {
+  height: 42px;
+  padding: 0 11px;
+}
+
+.facts-form textarea {
+  min-height: 42px;
+  padding: 11px;
+
+  resize: vertical;
+}
+
+.facts-form select:focus,
+.facts-form textarea:focus {
+  border-color: #9ca3af;
+  box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.08);
+}
+
+#addFactBtn {
+  height: 42px;
+
+  padding: 0 15px;
+
+  border: 0;
+  border-radius: 9px;
+
+  background: #111827;
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+}
+
+#addFactBtn:hover {
+  background: #1f2937;
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+  .facts-modal {
+    padding: 12px;
+  }
+
+  .facts-modal-box {
+    max-height: 94vh;
+    border-radius: 15px;
+  }
+
+  .facts-list {
+    padding: 14px 16px;
+    max-height: 50vh;
+  }
+
+  .facts-add-section {
+    padding: 16px;
+  }
+
+  .facts-form {
+    grid-template-columns: 1fr;
+  }
+
+  #addFactBtn {
+    width: 100%;
+  }
+
+  .fact-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .fact-actions {
+    width: 100%;
+  }
+
+}
   </style>
 </head>
 
