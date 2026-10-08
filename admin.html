@@ -1371,6 +1371,16 @@ await loadBusinesses();
 
     loadBusinesses();
 document.addEventListener("click", async (event) => {
+  const closeFactsButton =
+  event.target.closest("#closeFactsModal");
+
+if (closeFactsButton) {
+
+  document.getElementById("factsModal").style.display =
+    "none";
+
+  return;
+}
   const factsButton =
     event.target.closest(".manage-facts-btn");
 
