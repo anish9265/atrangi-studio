@@ -218,13 +218,27 @@
     .copy-business-btn:hover, .edit-business-btn:hover,
     .manage-facts-btn:hover { background: #f3f4f6; }
 
-    .status-business-btn {
-      background: #fff7ed;
-      color: #c2410c;
-      border: 1px solid #fed7aa;
-    }
 
-    .status-business-btn:hover { background: #ffedd5; }
+.status-business-btn {
+  background: #fff1f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.status-business-btn:hover {
+  background: #ffe4e6;
+}
+
+.status-business-btn[data-active="false"] {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.status-business-btn[data-active="false"]:hover {
+  background: #bbf7d0;
+}
+
 
     .manage-facts-btn svg { flex-shrink: 0; }
 
