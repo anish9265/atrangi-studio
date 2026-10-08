@@ -1371,6 +1371,70 @@ await loadBusinesses();
 
     loadBusinesses();
 document.addEventListener("click", async (event) => {
+  
+  const factDeleteButton =
+    event.target.closest(".fact-delete-btn");
+
+  if (factDeleteButton) {
+    const factId =
+      factDeleteButton.getAttribute("data-id");
+
+    const confirmed = confirm(
+      "Are you sure you want to delete this fact?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      const {
+        data: { session }
+      } = await supabaseClient.auth.getSession();
+
+      if (!session) {
+        alert("Please login again.");
+        return;
+      }
+
+      factDeleteButton.disabled = true;
+      factDeleteButton.textContent = "Deleting...";
+
+      const response = await fetch(
+        "/api/admin/business-facts",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify({
+            id: factId
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Could not delete fact."
+        );
+      }
+
+      factDeleteButton
+        .closest(".fact-item")
+        .remove();
+
+    } catch (error) {
+      alert(error.message || "Could not delete fact.");
+      factDeleteButton.disabled = false;
+      factDeleteButton.textContent = "Delete";
+    }
+
+    return;
+  }
+
   const closeFactsButton =
   event.target.closest("#closeFactsModal");
 
