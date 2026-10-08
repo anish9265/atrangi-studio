@@ -1115,19 +1115,78 @@ document.addEventListener("click", async (event) => {
         );
       }
 
-      console.log(
-        "Business:",
-        businessName
-      );
+const factsModal =
+  document.getElementById("factsModal");
 
-      console.log(
-        "Facts:",
-        data.facts
-      );
+const factsBusinessName =
+  document.getElementById("factsBusinessName");
 
-      alert(
-        `${businessName}\n\nFacts loaded: ${data.facts.length}`
-      );
+const factsList =
+  document.getElementById("factsList");
+
+factsBusinessName.textContent =
+  businessName;
+
+factsList.innerHTML = "";
+
+if (!data.facts || data.facts.length === 0) {
+
+  factsList.innerHTML = `
+    <div class="facts-empty">
+      No facts added yet.
+    </div>
+  `;
+
+} else {
+
+  data.facts.forEach((fact) => {
+
+    const factItem =
+      document.createElement("div");
+
+    factItem.className =
+      "fact-item";
+
+    factItem.innerHTML = `
+      <div class="fact-content">
+
+        <div class="fact-category">
+          ${fact.category}
+        </div>
+
+        <div class="fact-text">
+          ${fact.fact}
+        </div>
+
+      </div>
+
+      <div class="fact-actions">
+
+        <button
+          type="button"
+          class="fact-edit-btn"
+          data-id="${fact.id}"
+        >
+          Edit
+        </button>
+
+        <button
+          type="button"
+          class="fact-delete-btn"
+          data-id="${fact.id}"
+        >
+          Delete
+        </button>
+
+      </div>
+    `;
+
+    factsList.appendChild(factItem);
+
+  });
+}
+
+factsModal.style.display = "flex";
 
     } catch (error) {
 
