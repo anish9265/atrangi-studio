@@ -442,98 +442,7 @@
           Select whatever genuinely matches your experience.
         </div>
 
-<div class="chips" id="experienceChips">
-
-  <!-- 1–2 Stars -->
-  <div class="experience-group" data-ratings="1,2">
-
-    <button class="chip" type="button" data-experience="Staff could be better">
-      👥 Staff could be better
-    </button>
-
-    <button class="chip" type="button" data-experience="Slow service">
-      🐢 Slow service
-    </button>
-
-    <button class="chip" type="button" data-experience="Poor quality">
-      ✨ Poor quality
-    </button>
-
-    <button class="chip" type="button" data-experience="Too expensive">
-      💰 Too expensive
-    </button>
-
-    <button class="chip" type="button" data-experience="Not clean">
-      🧼 Not clean
-    </button>
-
-    <button class="chip" type="button" data-experience="Overall disappointing">
-      😕 Overall disappointing
-    </button>
-
-  </div>
-
-
-  <!-- 3 Stars -->
-  <div class="experience-group" data-ratings="3">
-
-    <button class="chip" type="button" data-experience="Average service">
-      ⚡ Average service
-    </button>
-
-    <button class="chip" type="button" data-experience="Average quality">
-      ✨ Average quality
-    </button>
-
-    <button class="chip" type="button" data-experience="Reasonable price">
-      💰 Reasonable price
-    </button>
-
-    <button class="chip" type="button" data-experience="Could be better">
-      🤔 Could be better
-    </button>
-
-    <button class="chip" type="button" data-experience="Clean">
-      🧼 Clean
-    </button>
-
-    <button class="chip" type="button" data-experience="Friendly staff">
-      👥 Friendly staff
-    </button>
-
-  </div>
-
-
-  <!-- 4–5 Stars -->
-  <div class="experience-group" data-ratings="4,5">
-
-    <button class="chip" type="button" data-experience="Friendly staff">
-      👥 Friendly staff
-    </button>
-
-    <button class="chip" type="button" data-experience="Good service">
-      ⚡ Good service
-    </button>
-
-    <button class="chip" type="button" data-experience="Good quality">
-      ✨ Good quality
-    </button>
-
-    <button class="chip" type="button" data-experience="Good value">
-      💰 Good value
-    </button>
-
-    <button class="chip" type="button" data-experience="Clean">
-      🧼 Clean
-    </button>
-
-    <button class="chip" type="button" data-experience="Great experience">
-      ❤️ Great experience
-    </button>
-
-  </div>
-
-</div>
+<div class="chips" id="experienceChips"></div>
 
       </section>
 
@@ -584,7 +493,8 @@
   </main>
 
 
-  <script>
+  <script type="module">
+    import { REVIEW_CATEGORY_CONFIG, getReviewCategoryKey } from "/experience-config.js";
 
     let selectedRating = null;
     let business = null;
@@ -681,6 +591,58 @@ const copyGoogleBtn =
 
 
     // -------------------------
+    // Category experience options
+    // -------------------------
+
+    const experienceChips =
+      document.getElementById("experienceChips");
+
+    const chipIcons = {
+      "Food": "🍽️", "Service": "⚡", "Staff": "👥",
+      "Cleanliness": "🧼", "Value": "💰", "Ambience": "✨",
+      "Treatment": "🩺", "Wait": "⏱️", "Experience": "❤️",
+      "Testing": "🧪", "Quality": "✨", "Room": "🛏️",
+      "Location": "📍", "Equipment": "🏋️", "Space": "📐",
+      "Teaching": "📚", "Classes": "🏫", "Study": "📖",
+      "Management": "📋", "Photos": "📸", "Property": "🏠",
+      "Response": "💬", "Variety": "🛍️"
+    };
+
+    function getChipIcon(label) {
+      const match = Object.keys(chipIcons).find(key =>
+        label.includes(key)
+      );
+      return match ? chipIcons[match] : "•";
+    }
+
+    function renderExperienceOptions() {
+      const key = getReviewCategoryKey(business?.category);
+      const config = REVIEW_CATEGORY_CONFIG[key];
+      experienceChips.innerHTML = "";
+
+      [
+        ["1,2", config.negative],
+        ["3", config.neutral],
+        ["4,5", config.positive]
+      ].forEach(([ratings, options]) => {
+        const group = document.createElement("div");
+        group.className = "experience-group";
+        group.dataset.ratings = ratings;
+
+        options.forEach(label => {
+          const button = document.createElement("button");
+          button.className = "chip";
+          button.type = "button";
+          button.dataset.experience = label;
+          button.textContent = `${getChipIcon(label)} ${label}`;
+          group.appendChild(button);
+        });
+
+        experienceChips.appendChild(group);
+      });
+    }
+
+    // -------------------------
     // Load business
     // -------------------------
 
@@ -702,6 +664,8 @@ const response = await fetch(
         }
 
         business = await response.json();
+
+        renderExperienceOptions();
 
         businessNameEl.textContent = business.name;
 
@@ -802,17 +766,10 @@ const response = await fetch(
     // Experience chips
     // -------------------------
 
-    const chips =
-      document.querySelectorAll(".chip");
-
-    chips.forEach(chip => {
-
-      chip.addEventListener("click", () => {
-
-        chip.classList.toggle("selected");
-
-      });
-
+    experienceChips.addEventListener("click", event => {
+      const chip = event.target.closest(".chip");
+      if (!chip) return;
+      chip.classList.toggle("selected");
     });
 
 

@@ -460,37 +460,20 @@
 
           <select id="category">
 
-            <option value="restaurant">
-              Restaurant
-            </option>
-
-            <option value="clinic">
-              Clinic
-            </option>
-
-            <option value="doctor">
-              Doctor
-            </option>
-
-            <option value="hospital">
-              Hospital
-            </option>
-
-            <option value="hotel">
-              Hotel
-            </option>
-
-            <option value="salon">
-              Salon
-            </option>
-
-            <option value="shop">
-              Shop
-            </option>
-
-            <option value="other">
-              Other
-            </option>
+            <option value="restaurant_food">Restaurant / Café / Food</option>
+            <option value="healthcare_clinic">Healthcare / Clinic</option>
+            <option value="dental">Dental</option>
+            <option value="diagnostic">Diagnostic &amp; Pathology</option>
+            <option value="salon_beauty">Salon &amp; Beauty</option>
+            <option value="hotel_stay">Hotel &amp; Stay</option>
+            <option value="gym_fitness">Gym &amp; Fitness</option>
+            <option value="coaching_education">Coaching &amp; Education</option>
+            <option value="hospital">Hospital</option>
+            <option value="automobile">Automobile</option>
+            <option value="photography_creative">Photography &amp; Creative</option>
+            <option value="real_estate_property">Real Estate &amp; Property</option>
+            <option value="retail_shops">Retail / Shops</option>
+            <option value="mobile_computer">Mobile &amp; Computer / Laptop</option>
 
           </select>
         </div>
@@ -664,7 +647,8 @@
   </main>
 
 
-  <script>
+  <script type="module">
+    import { REVIEW_CATEGORY_CONFIG, getReviewCategoryKey } from "/experience-config.js";
 
     const SUPABASE_URL = "https://uhcbdclpavdgcrtultjc.supabase.co";
 const SUPABASE_KEY = "sb_publishable_uEo2RjEGEYo3uo8e7DV03w_jdXejtrV";
@@ -967,7 +951,7 @@ await loadBusinesses();
     </strong>
 
     <span>
-      ${business.category || "Other"}
+      ${(REVIEW_CATEGORY_CONFIG[getReviewCategoryKey(business.category)] || {}).label || business.category || "Other"}
       • ${business.active ? "Active" : "Inactive"}
     </span>
 
@@ -1056,7 +1040,7 @@ const business =
     business.google_review_url || "";
 
   document.getElementById("category").value =
-    business.category || "other";
+    getReviewCategoryKey(business.category);
 
   document.getElementById("language").value =
     business.language || "en";

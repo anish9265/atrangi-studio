@@ -1,3 +1,5 @@
+import { REVIEW_CATEGORY_CONFIG, getReviewCategoryKey } from "../experience-config.js";
+
 export default async function handler(req, res) {
 
   if (req.method !== "POST") {
@@ -83,50 +85,45 @@ export default async function handler(req, res) {
       We support BOTH formats so the backend remains flexible.
     */
 
-    const experienceMap = {
+    const experienceMap = {};
 
-      // Positive
+    for (const config of Object.values(REVIEW_CATEGORY_CONFIG)) {
+      for (const label of [
+        ...config.negative,
+        ...config.neutral,
+        ...config.positive
+      ]) {
+        const internal = label
+          .trim()
+          .toLowerCase()
+          .replace(/&/g, "and")
+          .replace(/[^a-z0-9]+/g, "_")
+          .replace(/^_+|_+$/g, "");
+        experienceMap[label] = internal;
+      }
+    }
+
+    // Backward compatibility with the older generic option labels.
+    Object.assign(experienceMap, {
       "Friendly staff": "friendly_staff",
       "Good service": "good_service",
       "Good quality": "good_quality",
       "Good value": "good_value",
       "Clean": "clean",
       "Great experience": "great_experience",
-
-      // Negative / neutral
       "Poor quality": "poor_quality",
       "Slow service": "slow_service",
       "Staff could be better": "staff_could_be_better",
       "Too expensive": "too_expensive",
       "Not clean": "not_clean",
       "Overall disappointing": "overall_disappointing",
-
       "Average service": "average_service",
       "Average quality": "average_quality",
       "Reasonable price": "reasonable_price",
-      "Could be better": "could_be_better",
+      "Could be better": "could_be_better"
+    });
 
-      // Also accept internal names directly
-      "friendly_staff": "friendly_staff",
-      "good_service": "good_service",
-      "good_quality": "good_quality",
-      "good_value": "good_value",
-      "clean": "clean",
-      "great_experience": "great_experience",
 
-      "poor_quality": "poor_quality",
-      "slow_service": "slow_service",
-      "staff_could_be_better": "staff_could_be_better",
-      "too_expensive": "too_expensive",
-      "not_clean": "not_clean",
-      "overall_disappointing": "overall_disappointing",
-
-      "average_service": "average_service",
-      "average_quality": "average_quality",
-      "reasonable_price": "reasonable_price",
-      "could_be_better": "could_be_better"
-
-    };
 
 
     /*
@@ -405,27 +402,15 @@ export default async function handler(req, res) {
           .trim()
           .toLowerCase();
 
-      /*
-        Direct internal category
-      */
+      // Category-specific labels use generated internal keys.
+      if (experienceMap[value]) {
+        return experienceMap[value];
+      }
 
-      if (
-        Object.values(experienceMap)
-          .includes(cleaned)
-      ) {
+      if (Object.values(experienceMap).includes(cleaned)) {
         return cleaned;
       }
 
-
-      /*
-        Customer-facing category
-      */
-
-      if (
-        experienceMap[value]
-      ) {
-        return experienceMap[value];
-      }
 
 
       /*
