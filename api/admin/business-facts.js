@@ -155,12 +155,13 @@ if (
             Prefer: "return=representation"
           },
 
-          body: JSON.stringify({
-            business_id: businessId,
-            category: category.trim(),
-            fact: fact.trim(),
-            active: true
-          })
+body: JSON.stringify({
+  business_id: businessId,
+  category: category.trim(),
+  fact: fact.trim(),
+  rating_group: ratingGroup || null,
+  active: true
+})
         }
       );
 
