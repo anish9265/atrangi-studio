@@ -1039,10 +1039,17 @@ const fact = $("factText").value.trim();
           return;
         }
 
-        if (!category || !fact) {
-          showMessage($("factFormError"), "Select a category and enter a fact.");
-          return;
-        }
+
+if (!ratingGroup) {
+  showMessage($("factFormError"), "Please select a rating group.");
+  return;
+}
+
+if (!category || !fact) {
+  showMessage($("factFormError"), "Select a category and enter a fact.");
+  return;
+}
+
 
         button.disabled = true;
         button.textContent = "Adding...";
