@@ -689,45 +689,47 @@
     const factRatingGroup = $("factRatingGroup");
     const factCategory = $("factCategory");
 
-    function updateFactCategories() {
-      const group = factRatingGroup.value;
 
-      factCategory.innerHTML =
-        '<option value="">Select category</option>';
+function updateFactCategories() {
+  const group = factRatingGroup.value;
+  const selectedBusiness = businessesData.find(
+    business =>
+      String(business.id) === String(currentFactsBusinessId)
+  );
 
-      if (!group) {
-        factCategory.innerHTML =
-          '<option value="">Select rating group first</option>';
-        return;
-      }
+  factCategory.replaceChildren();
 
-      const categories = new Set();
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = group
+    ? "Select category"
+    : "Select rating group first";
 
-      for (const config of Object.values(REVIEW_CATEGORY_CONFIG)) {
-        const labels = config[group] || [];
+  factCategory.appendChild(placeholder);
 
-        for (const label of labels) {
-          const key = getReviewCategoryKey(label);
+  if (!group || !selectedBusiness) return;
 
-          if (key) {
-            categories.add(JSON.stringify({
-              value: key,
-              label: label
-            }));
-          }
-        }
-      }
+  const businessCategory = getReviewCategoryKey(
+    selectedBusiness.category
+  );
 
-      for (const item of categories) {
-        const category = JSON.parse(item);
-        const option = document.createElement("option");
+  const config = REVIEW_CATEGORY_CONFIG[businessCategory];
 
-        option.value = category.value;
-        option.textContent = category.label;
+  if (!config) return;
 
-        factCategory.appendChild(option);
-      }
-    }
+  const labels = config[group] || [];
+
+  for (const label of labels) {
+    const key = getReviewCategoryKey(label);
+    if (!key) continue;
+
+    const option = document.createElement("option");
+    option.value = key;
+    option.textContent = label;
+    factCategory.appendChild(option);
+  }
+}
+
 
     factRatingGroup.addEventListener(
       "change",
