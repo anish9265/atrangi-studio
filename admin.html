@@ -1024,8 +1024,9 @@
       // ADD FACT
       if (target.closest("#addFactBtn")) {
         const button = $("addFactBtn");
-        const category = $("factCategory").value;
-        const fact = $("factText").value.trim();
+const category = $("factCategory").value;
+const ratingGroup = $("factRatingGroup").value;
+const fact = $("factText").value.trim();
 
         hideMessage($("factFormError"));
         hideMessage($("factFormSuccess"));
@@ -1050,9 +1051,10 @@
             method: "POST",
             headers: authHeaders(session, true),
             body: JSON.stringify({
-              businessId: currentFactsBusinessId,
-              category,
-              fact
+businessId: currentFactsBusinessId,
+category,
+fact,
+ratingGroup
             })
           });
 
