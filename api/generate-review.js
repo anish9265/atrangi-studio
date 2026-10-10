@@ -369,17 +369,7 @@ export default async function handler(req, res) {
     }
 ```
 
-      console.error(
-        "Invalid business facts response:",
-        factsResponseText
-      );
 
-      return res.status(500).json({
-        error:
-          "Invalid business facts"
-      });
-
-    }
 
 
     /*
