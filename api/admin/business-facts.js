@@ -1,18 +1,26 @@
-
 module.exports = async function handler(req, res) {
   try {
     const supabaseUrl = process.env.SUPABASE_URL;
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const serviceRoleKey =
+      process.env.SUPABASE_SERVICE_ROLE_KEY;
     const adminEmail = process.env.ADMIN_EMAIL;
 
-    if (!supabaseUrl || !serviceRoleKey || !adminEmail) {
+    if (
+      !supabaseUrl ||
+      !serviceRoleKey ||
+      !adminEmail
+    ) {
       return res.status(500).json({
         error: "Server configuration is incomplete."
       });
     }
 
+    // -----------------------------
     // 1. Check login
-    const authorization = req.headers.authorization || "";
+    // -----------------------------
+
+    const authorization =
+      req.headers.authorization || "";
 
     if (!authorization.startsWith("Bearer ")) {
       return res.status(401).json({
@@ -20,9 +28,13 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const accessToken = authorization.replace("Bearer ", "").trim();
+    const accessToken =
+      authorization.replace("Bearer ", "").trim();
 
+    // -----------------------------
     // 2. Verify logged-in user
+    // -----------------------------
+
     const userResponse = await fetch(
       `${supabaseUrl}/auth/v1/user`,
       {
@@ -43,16 +55,23 @@ module.exports = async function handler(req, res) {
 
     if (
       !user.email ||
-      user.email.toLowerCase() !== adminEmail.toLowerCase()
+      user.email.toLowerCase() !==
+        adminEmail.toLowerCase()
     ) {
       return res.status(403).json({
-        error: "You are not authorized to manage business facts."
+        error:
+          "You are not authorized to manage business facts."
       });
     }
 
+    // -----------------------------
     // GET - Load facts
+    // -----------------------------
+
     if (req.method === "GET") {
-      const businessId = req.query.businessId;
+
+      const businessId =
+        req.query.businessId;
 
       if (!businessId) {
         return res.status(400).json({
@@ -63,7 +82,7 @@ module.exports = async function handler(req, res) {
       const response = await fetch(
         `${supabaseUrl}/rest/v1/business_facts?business_id=eq.${encodeURIComponent(
           businessId
-        )}&select=id,business_id,category,fact,rating_group,active,created_at&order=id.asc`,
+        )}&select=id,business_id,category,fact,active,created_at&order=id.asc`,
         {
           headers: {
             apikey: serviceRoleKey
@@ -72,35 +91,46 @@ module.exports = async function handler(req, res) {
       );
 
       if (!response.ok) {
-        console.error("Facts fetch failed:", await response.text());
+        const errorText =
+          await response.text();
+
+        console.error(
+          "Facts fetch failed:",
+          errorText
+        );
 
         return res.status(500).json({
           error: "Could not load business facts."
         });
       }
 
+      const facts = await response.json();
+
       return res.status(200).json({
-        facts: await response.json()
+        facts
       });
     }
 
+    // -----------------------------
     // POST - Add fact
+    // -----------------------------
+
     if (req.method === "POST") {
+
       const {
         businessId,
         category,
-        ratingGroup,
         fact
       } = req.body || {};
 
       if (
         !businessId ||
         !category ||
-        !fact ||
-        !["negative", "neutral", "positive"].includes(ratingGroup)
+        !fact
       ) {
         return res.status(400).json({
-          error: "Business ID, rating group, category and fact are required."
+          error:
+            "Business ID, category and fact are required."
         });
       }
 
@@ -108,32 +138,39 @@ module.exports = async function handler(req, res) {
         `${supabaseUrl}/rest/v1/business_facts`,
         {
           method: "POST",
+
           headers: {
             apikey: serviceRoleKey,
             "Content-Type": "application/json",
             Prefer: "return=representation"
           },
+
           body: JSON.stringify({
             business_id: businessId,
             category: category.trim(),
             fact: fact.trim(),
-            rating_group: ratingGroup,
             active: true
           })
         }
       );
 
-      const responseText = await response.text();
+      const responseText =
+        await response.text();
 
       if (!response.ok) {
-        console.error("Fact insert failed:", responseText);
+        console.error(
+          "Fact insert failed:",
+          responseText
+        );
 
         return res.status(500).json({
-          error: "Could not add business fact."
+          error:
+            "Could not add business fact."
         });
       }
 
-      const insertedFact = JSON.parse(responseText);
+      const insertedFact =
+        JSON.parse(responseText);
 
       return res.status(200).json({
         success: true,
@@ -141,13 +178,16 @@ module.exports = async function handler(req, res) {
       });
     }
 
+    // -----------------------------
     // PATCH - Edit / activate / deactivate
+    // -----------------------------
+
     if (req.method === "PATCH") {
+
       const {
         id,
         category,
         fact,
-        ratingGroup,
         active
       } = req.body || {};
 
@@ -160,57 +200,61 @@ module.exports = async function handler(req, res) {
       const updateData = {};
 
       if (typeof category === "string") {
-        updateData.category = category.trim();
+        updateData.category =
+          category.trim();
       }
 
       if (typeof fact === "string") {
-        updateData.fact = fact.trim();
+        updateData.fact =
+          fact.trim();
       }
 
       if (typeof active === "boolean") {
         updateData.active = active;
       }
 
-      if (typeof ratingGroup === "string") {
-        if (!["negative", "neutral", "positive"].includes(ratingGroup)) {
-          return res.status(400).json({
-            error: "Rating group must be negative, neutral or positive."
-          });
-        }
-
-        updateData.rating_group = ratingGroup;
-      }
-
-      if (Object.keys(updateData).length === 0) {
+      if (
+        Object.keys(updateData).length === 0
+      ) {
         return res.status(400).json({
           error: "Nothing to update."
         });
       }
 
       const response = await fetch(
-        `${supabaseUrl}/rest/v1/business_facts?id=eq.${encodeURIComponent(id)}`,
+        `${supabaseUrl}/rest/v1/business_facts?id=eq.${encodeURIComponent(
+          id
+        )}`,
         {
           method: "PATCH",
+
           headers: {
             apikey: serviceRoleKey,
             "Content-Type": "application/json",
             Prefer: "return=representation"
           },
+
           body: JSON.stringify(updateData)
         }
       );
 
-      const responseText = await response.text();
+      const responseText =
+        await response.text();
 
       if (!response.ok) {
-        console.error("Fact update failed:", responseText);
+        console.error(
+          "Fact update failed:",
+          responseText
+        );
 
         return res.status(500).json({
-          error: "Could not update business fact."
+          error:
+            "Could not update business fact."
         });
       }
 
-      const updatedFact = JSON.parse(responseText);
+      const updatedFact =
+        JSON.parse(responseText);
 
       if (!updatedFact.length) {
         return res.status(404).json({
@@ -224,9 +268,15 @@ module.exports = async function handler(req, res) {
       });
     }
 
+    // -----------------------------
     // DELETE - Delete fact
+    // -----------------------------
+
     if (req.method === "DELETE") {
-      const id = req.body?.id || req.query?.id;
+
+      const id =
+        req.body?.id ||
+        req.query?.id;
 
       if (!id) {
         return res.status(400).json({
@@ -235,9 +285,12 @@ module.exports = async function handler(req, res) {
       }
 
       const response = await fetch(
-        `${supabaseUrl}/rest/v1/business_facts?id=eq.${encodeURIComponent(id)}`,
+        `${supabaseUrl}/rest/v1/business_facts?id=eq.${encodeURIComponent(
+          id
+        )}`,
         {
           method: "DELETE",
+
           headers: {
             apikey: serviceRoleKey,
             Prefer: "return=representation"
@@ -245,13 +298,18 @@ module.exports = async function handler(req, res) {
         }
       );
 
-      const responseText = await response.text();
+      const responseText =
+        await response.text();
 
       if (!response.ok) {
-        console.error("Fact delete failed:", responseText);
+        console.error(
+          "Fact delete failed:",
+          responseText
+        );
 
         return res.status(500).json({
-          error: "Could not delete business fact."
+          error:
+            "Could not delete business fact."
         });
       }
 
@@ -265,10 +323,15 @@ module.exports = async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error("Business facts API error:", error);
+
+    console.error(
+      "Business facts API error:",
+      error
+    );
 
     return res.status(500).json({
-      error: "Something went wrong while managing business facts."
+      error:
+        "Something went wrong while managing business facts."
     });
   }
 };
