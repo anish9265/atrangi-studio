@@ -494,29 +494,39 @@ export default async function handler(req, res) {
       ============================================================
     */
 
+```js
+    const ratingGroup =
+      numericRating <= 2
+        ? "negative"
+        : numericRating === 3
+          ? "neutral"
+          : "positive";
+
     const relevantFacts = [];
 
-
-    for (
-      const category of selectedCategories
-    ) {
-
+    for (const category of selectedCategories) {
       const categoryFacts =
-        factsByCategory[category] || [];
+        businessFacts.filter(item => {
+          if (normalizeCategory(item.category) !== category) {
+            return false;
+          }
 
-
-      for (
-        const fact of categoryFacts
-      ) {
-
-        relevantFacts.push({
-          category,
-          fact
+          // Purane facts, jinka rating_group NULL hai,
+          // backward compatibility ke liye allowed rahenge.
+          return (
+            !item.rating_group ||
+            item.rating_group === ratingGroup
+          );
         });
 
+      for (const item of categoryFacts) {
+        relevantFacts.push({
+          category,
+          fact: String(item.fact).trim()
+        });
       }
-
     }
+```
 
 
     /*
