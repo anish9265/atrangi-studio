@@ -82,7 +82,7 @@ module.exports = async function handler(req, res) {
       const response = await fetch(
         `${supabaseUrl}/rest/v1/business_facts?business_id=eq.${encodeURIComponent(
           businessId
-        )}&select=id,business_id,category,fact,active,created_at&order=id.asc`,
+        )}&select=id,business_id,category,fact,rating_group,active,created_at&order=id.asc`,
         {
           headers: {
             apikey: serviceRoleKey
