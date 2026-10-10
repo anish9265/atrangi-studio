@@ -195,12 +195,13 @@ body: JSON.stringify({
 
     if (req.method === "PATCH") {
 
-      const {
-        id,
-        category,
-        fact,
-        active
-      } = req.body || {};
+const {
+  id,
+  category,
+  fact,
+  active,
+  ratingGroup
+} = req.body || {};
 
       if (!id) {
         return res.status(400).json({
