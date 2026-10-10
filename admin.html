@@ -685,6 +685,57 @@
     );
 
     const $ = (id) => document.getElementById(id);
+    
+    const factRatingGroup = $("factRatingGroup");
+    const factCategory = $("factCategory");
+
+    function updateFactCategories() {
+      const group = factRatingGroup.value;
+
+      factCategory.innerHTML =
+        '<option value="">Select category</option>';
+
+      if (!group) {
+        factCategory.innerHTML =
+          '<option value="">Select rating group first</option>';
+        return;
+      }
+
+      const categories = new Set();
+
+      for (const config of Object.values(REVIEW_CATEGORY_CONFIG)) {
+        const labels = config[group] || [];
+
+        for (const label of labels) {
+          const key = getReviewCategoryKey(label);
+
+          if (key) {
+            categories.add(JSON.stringify({
+              value: key,
+              label: label
+            }));
+          }
+        }
+      }
+
+      for (const item of categories) {
+        const category = JSON.parse(item);
+        const option = document.createElement("option");
+
+        option.value = category.value;
+        option.textContent = category.label;
+
+        factCategory.appendChild(option);
+      }
+    }
+
+    factRatingGroup.addEventListener(
+      "change",
+      updateFactCategories
+    );
+
+    updateFactCategories();
+
 
     let editingBusinessId = null;
     let businessesData = [];
