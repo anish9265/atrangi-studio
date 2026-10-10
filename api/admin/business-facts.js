@@ -117,11 +117,21 @@ module.exports = async function handler(req, res) {
 
     if (req.method === "POST") {
 
-      const {
-        businessId,
-        category,
-        fact
-      } = req.body || {};
+const {
+  businessId,
+  category,
+  fact,
+  ratingGroup
+} = req.body || {};
+
+if (
+  ratingGroup != null &&
+  !["negative", "neutral", "positive"].includes(ratingGroup)
+) {
+  return res.status(400).json({
+    error: "Invalid rating group."
+  });
+}
 
       if (
         !businessId ||
