@@ -328,49 +328,46 @@ export default async function handler(req, res) {
       without breaking the system.
     */
 
-    const factsResponse =
-      await fetch(
-        `${supabaseRestUrl}/business_facts` +
-        `?business_id=eq.${encodeURIComponent(numericBusinessId)}` +
-        `&active=eq.true` +
-        `&select=category,fact` +
-        `&order=id.asc`,
-        {
-          headers: supabaseHeaders
-        }
-      );
+```js
+    const factsResponse = await fetch(
+      `${supabaseRestUrl}/business_facts` +
+      `?business_id=eq.${encodeURIComponent(numericBusinessId)}` +
+      `&active=eq.true` +
+      `&select=category,fact,rating_group` +
+      `&order=id.asc`,
+      {
+        headers: supabaseHeaders
+      }
+    );
 
-
-    const factsResponseText =
-      await factsResponse.text();
-
+    const factsResponseText = await factsResponse.text();
 
     if (!factsResponse.ok) {
-
       console.error(
         "Supabase business facts fetch failed:",
         factsResponseText
       );
 
       return res.status(500).json({
-        error:
-          "Could not load business facts"
+        error: "Could not load business facts"
       });
-
     }
-
 
     let businessFacts = [];
 
-
     try {
-
-      businessFacts =
-        JSON.parse(
-          factsResponseText
-        );
-
+      businessFacts = JSON.parse(factsResponseText);
     } catch (error) {
+      console.error(
+        "Invalid Supabase business facts response:",
+        factsResponseText
+      );
+
+      return res.status(500).json({
+        error: "Invalid business facts"
+      });
+    }
+```
 
       console.error(
         "Invalid business facts response:",
