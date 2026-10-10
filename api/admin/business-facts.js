@@ -224,6 +224,18 @@ const {
       if (typeof active === "boolean") {
         updateData.active = active;
       }
+      if (ratingGroup !== undefined) {
+  if (
+    ratingGroup !== null &&
+    !["negative", "neutral", "positive"].includes(ratingGroup)
+  ) {
+    return res.status(400).json({
+      error: "Invalid rating group."
+    });
+  }
+
+  updateData.rating_group = ratingGroup;
+}
 
       if (
         Object.keys(updateData).length === 0
