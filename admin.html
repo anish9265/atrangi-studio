@@ -720,11 +720,8 @@ function updateFactCategories() {
   const labels = config[group] || [];
 
   for (const label of labels) {
-    const key = getReviewCategoryKey(label);
-    if (!key) continue;
-
     const option = document.createElement("option");
-    option.value = key;
+    option.value = label;
     option.textContent = label;
     factCategory.appendChild(option);
   }
