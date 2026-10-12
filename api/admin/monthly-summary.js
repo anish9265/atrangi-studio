@@ -133,35 +133,58 @@ export default async function handler(req, res) {
 
     // -----------------------------
     // 6. Load usage events
+    //    (1000-1000 ke tukdon mein,
+    //     jab tak sab na aa jayein)
     // -----------------------------
 
-    const eventsResponse =
-      await fetch(
-        `${supabaseRestUrl}/usage_events?created_at=gte.${encodeURIComponent(
-          startDate.toISOString()
-        )}&created_at=lt.${encodeURIComponent(
-          endDate.toISOString()
-        )}&select=business_id,event_type,rating`,
-        {
-          headers: {
-            apikey: serviceRoleKey,
-            Authorization:
-              `Bearer ${serviceRoleKey}`
+    const events = [];
+
+    const maxPages = 200; // safety: max 2 lakh events
+
+    let offset = 0;
+
+    for (let page = 0; page < maxPages; page++) {
+
+      const eventsResponse =
+        await fetch(
+          `${supabaseRestUrl}/usage_events?created_at=gte.${encodeURIComponent(
+            startDate.toISOString()
+          )}&created_at=lt.${encodeURIComponent(
+            endDate.toISOString()
+          )}&select=business_id,event_type,rating&order=id.asc&limit=1000&offset=${offset}`,
+          {
+            headers: {
+              apikey: serviceRoleKey,
+              Authorization:
+                `Bearer ${serviceRoleKey}`
+            }
           }
-        }
-      );
+        );
 
-    if (!eventsResponse.ok) {
-      const errorText =
-        await eventsResponse.text();
+      if (!eventsResponse.ok) {
+        const errorText =
+          await eventsResponse.text();
 
-      throw new Error(
-        `Could not load usage events: ${errorText}`
-      );
+        throw new Error(
+          `Could not load usage events: ${errorText}`
+        );
+      }
+
+      const pageEvents =
+        await eventsResponse.json();
+
+      if (
+        !Array.isArray(pageEvents) ||
+        pageEvents.length === 0
+      ) {
+        break;
+      }
+
+      events.push(...pageEvents);
+
+      offset += pageEvents.length;
+
     }
-
-    const events =
-      await eventsResponse.json();
 
     // -----------------------------
     // 7. Group events by business
@@ -328,9 +351,9 @@ export default async function handler(req, res) {
       error
     );
 
-return res.status(500).json({
-  error: "Something went wrong"
-});
+    return res.status(500).json({
+      error: "Something went wrong"
+    });
 
   }
 
