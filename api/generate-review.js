@@ -7,7 +7,7 @@ import { REVIEW_CATEGORY_CONFIG, getReviewCategoryKey } from "../experience-conf
 ============================================================ */
 
 const RATE_LIMIT_MAX = 5;
-const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const RATE_LIMIT_WINDOW_MS = 4 * 60 * 1000;
 const requestLog = new Map();
 
 function getClientIp(req) {
