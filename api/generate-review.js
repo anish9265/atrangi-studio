@@ -1,8 +1,62 @@
 import { REVIEW_CATEGORY_CONFIG, getReviewCategoryKey } from "../experience-config.js";
 
+/* ============================================================
+   SPAM LIMIT
+   Ek IP se 1 minute mein maximum 5 review requests.
+   Number badalna ho to sirf RATE_LIMIT_MAX badlo.
+============================================================ */
+
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const requestLog = new Map();
+
+function getClientIp(req) {
+  const forwarded = req.headers["x-forwarded-for"];
+  if (forwarded) {
+    return String(forwarded).split(",")[0].trim();
+  }
+  return req.socket?.remoteAddress || "unknown";
+}
+
+function isRateLimited(ip) {
+  const now = Date.now();
+
+  // Purani entries saaf karo (memory bhari na ho)
+  if (requestLog.size > 1000) {
+    for (const [key, times] of requestLog.entries()) {
+      const fresh = times.filter(t => now - t < RATE_LIMIT_WINDOW_MS);
+      if (fresh.length === 0) {
+        requestLog.delete(key);
+      } else {
+        requestLog.set(key, fresh);
+      }
+    }
+  }
+
+  const recent = (requestLog.get(ip) || []).filter(
+    t => now - t < RATE_LIMIT_WINDOW_MS
+  );
+
+  if (recent.length >= RATE_LIMIT_MAX) {
+    requestLog.set(ip, recent);
+    return true;
+  }
+
+  recent.push(now);
+  requestLog.set(ip, recent);
+  return false;
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  // Spam check
+  if (isRateLimited(getClientIp(req))) {
+    return res.status(429).json({
+      error: "Too many requests. Please wait a minute and try again."
+    });
   }
 
   try {
