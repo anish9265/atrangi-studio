@@ -1,4 +1,75 @@
-import { REVIEW_CATEGORY_CONFIG, getReviewCategoryKey } from "../experience-config.js";
+/* ============================================================
+   OPTIONS KI LIST
+   Ye experience-config.js jaisi hi list hai.
+   Naya option ya category jodo to dono jagah badlo.
+============================================================ */
+
+const CLINIC_OPTIONS = {
+  negative: ["Poor Treatment", "Long Wait", "Bad Staff", "Poor Cleanliness", "Poor Service", "Poor Experience"],
+  neutral: ["Average Treatment", "Average Wait", "Okay Staff", "Average Cleanliness", "Average Service", "Okay Experience"],
+  positive: ["Good Treatment", "Short Wait", "Friendly Staff", "Good Cleanliness", "Good Service", "Good Experience"]
+};
+
+const REVIEW_CATEGORY_CONFIG = {
+  restaurant_food: {
+    negative: ["Poor Food", "Slow Service", "Bad Staff", "Poor Cleanliness", "Poor Value", "Bad Place"],
+    neutral: ["Average Food", "Average Service", "Okay Staff", "Average Cleanliness", "Average Value", "Average Place"],
+    positive: ["Good Food", "Good Service", "Friendly Staff", "Good Cleanliness", "Good Value", "Nice Place"]
+  },
+  healthcare_clinic: CLINIC_OPTIONS,
+  dental: CLINIC_OPTIONS,
+  hospital: CLINIC_OPTIONS,
+  diagnostic: {
+    negative: ["Poor Testing", "Long Wait", "Bad Staff", "Poor Cleanliness", "Poor Service", "Poor Experience"],
+    neutral: ["Average Testing", "Average Wait", "Okay Staff", "Average Cleanliness", "Average Service", "Okay Experience"],
+    positive: ["Good Testing", "Short Wait", "Friendly Staff", "Good Cleanliness", "Good Service", "Good Experience"]
+  },
+  salon_beauty: {
+    negative: ["Poor Service", "Long Wait", "Bad Staff", "Poor Cleanliness", "Poor Quality", "Poor Experience"],
+    neutral: ["Average Service", "Average Wait", "Okay Staff", "Average Cleanliness", "Average Quality", "Okay Experience"],
+    positive: ["Good Service", "Short Wait", "Friendly Staff", "Good Cleanliness", "Good Quality", "Good Experience"]
+  },
+  hotel_stay: {
+    negative: ["Poor Room", "Slow Service", "Bad Staff", "Poor Cleanliness", "Poor Value", "Poor Location"],
+    neutral: ["Average Room", "Average Service", "Okay Staff", "Average Cleanliness", "Average Value", "Okay Location"],
+    positive: ["Good Room", "Good Service", "Friendly Staff", "Good Cleanliness", "Good Value", "Good Location"]
+  },
+  gym_fitness: {
+    negative: ["Poor Equipment", "Poor Service", "Bad Staff", "Poor Cleanliness", "Poor Space", "Poor Experience"],
+    neutral: ["Average Equipment", "Average Service", "Okay Staff", "Average Cleanliness", "Average Space", "Okay Experience"],
+    positive: ["Good Equipment", "Good Service", "Friendly Staff", "Good Cleanliness", "Good Space", "Good Experience"]
+  },
+  coaching_education: {
+    negative: ["Poor Teaching", "Poor Classes", "Bad Staff", "Poor Study Material", "Poor Management", "Poor Experience"],
+    neutral: ["Average Teaching", "Average Classes", "Okay Staff", "Average Study Material", "Average Management", "Okay Experience"],
+    positive: ["Good Teaching", "Good Classes", "Friendly Staff", "Good Study Material", "Good Management", "Good Experience"]
+  },
+  automobile: {
+    negative: ["Poor Service", "Long Wait", "Bad Staff", "Poor Quality", "Poor Value", "Poor Experience"],
+    neutral: ["Average Service", "Average Wait", "Okay Staff", "Average Quality", "Average Value", "Okay Experience"],
+    positive: ["Good Service", "Short Wait", "Friendly Staff", "Good Quality", "Good Value", "Good Experience"]
+  },
+  photography_creative: {
+    negative: ["Poor Photos", "Slow Service", "Bad Staff", "Poor Quality", "Poor Value", "Poor Experience"],
+    neutral: ["Average Photos", "Average Service", "Okay Staff", "Average Quality", "Average Value", "Okay Experience"],
+    positive: ["Good Photos", "Good Service", "Friendly Staff", "Good Quality", "Good Value", "Good Experience"]
+  },
+  real_estate_property: {
+    negative: ["Poor Service", "Slow Response", "Bad Staff", "Poor Property", "Poor Value", "Poor Experience"],
+    neutral: ["Average Service", "Average Response", "Okay Staff", "Average Property", "Average Value", "Okay Experience"],
+    positive: ["Good Service", "Quick Response", "Friendly Staff", "Good Property", "Good Value", "Good Experience"]
+  },
+  retail_shops: {
+    negative: ["Poor Quality", "Poor Variety", "Bad Staff", "Poor Service", "Poor Value", "Poor Experience"],
+    neutral: ["Average Quality", "Average Variety", "Okay Staff", "Average Service", "Average Value", "Okay Experience"],
+    positive: ["Good Quality", "Good Variety", "Friendly Staff", "Good Service", "Good Value", "Good Experience"]
+  },
+  mobile_computer: {
+    negative: ["Poor Quality", "Poor Service", "Bad Staff", "Poor Variety", "Poor Value", "Poor Experience"],
+    neutral: ["Average Quality", "Average Service", "Okay Staff", "Average Variety", "Average Value", "Okay Experience"],
+    positive: ["Good Quality", "Good Service", "Friendly Staff", "Good Variety", "Good Value", "Good Experience"]
+  }
+};
 
 /* ============================================================
    SPAM LIMIT
@@ -545,4 +616,156 @@ No hashtags.`;
       return cleaned;
     }
 
-    /*
+    /* ============================================================
+       14. GEMINI PRIMARY
+    ============================================================ */
+
+    const generateWithGemini = async () => {
+      if (!process.env.GEMINI_API_KEY) {
+        throw new Error("GEMINI_API_KEY is missing");
+      }
+
+      const maxRetries = 3;
+      let response;
+
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        response = await fetch(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=" +
+            process.env.GEMINI_API_KEY,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: {
+                temperature: 0.85,
+                maxOutputTokens: 180
+              }
+            })
+          }
+        );
+
+        if (response.ok) break;
+
+        const errorText = await response.text();
+
+        console.error(`Gemini attempt ${attempt + 1} failed:`, errorText);
+
+        // Daily quota errors retry se theek nahi hote
+        if (
+          response.status === 429 &&
+          (errorText.includes("PerDay") ||
+            errorText.includes("per_day") ||
+            errorText.includes("daily") ||
+            errorText.includes("quota"))
+        ) {
+          console.log("Gemini daily quota exceeded.");
+          break;
+        }
+
+        // Sirf temporary errors retry karo
+        if (response.status !== 429 && response.status !== 503) {
+          break;
+        }
+
+        if (attempt < maxRetries - 1) {
+          const delay = 1000 * Math.pow(2, attempt);
+          console.log(`Retrying Gemini in ${delay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+
+      if (!response || !response.ok) {
+        throw new Error("Gemini API request failed");
+      }
+
+      const data = await response.json();
+
+      const rawReview = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+      const review = cleanReviewText(rawReview);
+
+      if (!review) {
+        throw new Error("Gemini returned no review");
+      }
+
+      console.log("AI PROVIDER USED: GEMINI");
+
+      return review;
+    };
+
+    /* ============================================================
+       15. GROQ BACKUP
+    ============================================================ */
+
+    const generateWithGroq = async () => {
+      if (!process.env.GROQ_API_KEY) {
+        throw new Error("GROQ_API_KEY is missing");
+      }
+
+      const groqResponse = await fetch(
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.GROQ_API_KEY}`
+          },
+          body: JSON.stringify({
+            model: "openai/gpt-oss-20b",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.85,
+            max_completion_tokens: 500,
+            reasoning_effort: "low",
+            include_reasoning: false
+          })
+        }
+      );
+
+      if (!groqResponse.ok) {
+        const errorText = await groqResponse.text();
+        console.error("Groq API error:", errorText);
+        throw new Error("Groq API request failed");
+      }
+
+      const groqData = await groqResponse.json();
+
+      const rawGroqReview = groqData?.choices?.[0]?.message?.content;
+
+      const groqReview = cleanReviewText(rawGroqReview);
+
+      if (!groqReview) {
+        throw new Error("Groq returned no review");
+      }
+
+      console.log("AI PROVIDER USED: GROQ");
+
+      return groqReview;
+    };
+
+    /* ============================================================
+       16. GEMINI FIRST -> GROQ FALLBACK
+    ============================================================ */
+
+    try {
+      const review = await generateWithGemini();
+      return res.status(200).json({ review, provider: "gemini" });
+    } catch (geminiError) {
+      console.error(
+        "Gemini primary failed. Trying Groq backup...",
+        geminiError
+      );
+    }
+
+    try {
+      const review = await generateWithGroq();
+      return res.status(200).json({ review, provider: "groq" });
+    } catch (groqError) {
+      console.error("Groq backup also failed:", groqError);
+      return res.status(500).json({ error: "Both AI services failed" });
+    }
+  } catch (error) {
+    console.error("Server error:", error);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+}
