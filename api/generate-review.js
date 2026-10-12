@@ -2,7 +2,7 @@ import { REVIEW_CATEGORY_CONFIG, getReviewCategoryKey } from "../experience-conf
 
 /* ============================================================
    SPAM LIMIT
-   Ek IP se 1 minute mein maximum 5 review requests.
+   Ek IP se 4 minute mein maximum 5 review requests.
    Number badalna ho to sirf RATE_LIMIT_MAX badlo.
 ============================================================ */
 
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
   // Spam check
   if (isRateLimited(getClientIp(req))) {
     return res.status(429).json({
-      error: "Too many requests. Please wait a minute and try again."
+      error: "Too many requests. Please wait a few minutes and try again."
     });
   }
 
@@ -233,6 +233,60 @@ export default async function handler(req, res) {
     const business = businesses[0];
 
     /* ============================================================
+       6B. REVIEW LANGUAGE
+       "english" -> simple English
+       Baaki sab ("en", "hi", khaali) -> Hinglish
+    ============================================================ */
+
+    const businessLanguage = String(business.language || "en")
+      .trim()
+      .toLowerCase();
+
+    const isEnglish = businessLanguage === "english";
+
+    const reviewLanguageName = isEnglish ? "simple English" : "Hinglish";
+
+    const overallExample = isEnglish
+      ? '"overall experience was good"'
+      : '"overall experience accha raha"';
+
+    const languageStyleText = isEnglish
+      ? `LANGUAGE STYLE:
+
+Write in simple, natural English.
+
+Do NOT use Hindi words, Roman-script Hindi or Hindi Devanagari script.
+
+Examples:
+
+"The service was quite good and the staff were friendly."
+
+"Overall a good experience, and the prices were reasonable."
+
+"The place was clean and the service was quick."
+
+The review should sound like a normal Indian customer casually writing in simple everyday English.`
+      : `LANGUAGE STYLE:
+
+Use natural Hinglish as the default.
+
+Hinglish means Roman-script Hindi naturally mixed with English.
+
+Examples:
+
+"Service kaafi achhi thi aur staff bhi friendly tha."
+
+"Overall experience accha raha, aur prices bhi reasonable the."
+
+"Place clean tha aur service bhi quick thi."
+
+Do NOT use Hindi Devanagari script.
+
+Natural English is completely fine when it sounds more natural. Do not force Hindi into every sentence.
+
+The review should sound like a normal Indian customer casually expressing their experience.`;
+
+    /* ============================================================
        7. FETCH BUSINESS-SPECIFIC FACTS
     ============================================================ */
 
@@ -355,25 +409,7 @@ Write a short, natural customer review based on the customer's selected experien
 
 The customer should remain the source of the actual experience. Your job is to help express that experience naturally and clearly.
 
-LANGUAGE STYLE:
-
-Use natural Hinglish as the default.
-
-Hinglish means Roman-script Hindi naturally mixed with English.
-
-Examples:
-
-"Service kaafi achhi thi aur staff bhi friendly tha."
-
-"Overall experience accha raha, aur prices bhi reasonable the."
-
-"Place clean tha aur service bhi quick thi."
-
-Do NOT use Hindi Devanagari script.
-
-Natural English is completely fine when it sounds more natural. Do not force Hindi into every sentence.
-
-The review should sound like a normal Indian customer casually expressing their experience.
+${languageStyleText}
 
 BUSINESS:
 ${business.name}
@@ -431,7 +467,7 @@ CORE RULES:
 
 14. Great Experience is an overall impression. It can influence the overall positive feeling without needing its own sentence.
 
-15. Simple phrases such as "overall experience accha raha" are allowed when they genuinely fit. Do not use the same ending every time.
+15. Simple phrases such as ${overallExample} are allowed when they genuinely fit. Do not use the same ending every time.
 
 16. Do not exaggerate or turn the review into advertising.
 
@@ -455,7 +491,7 @@ CORE RULES:
 
 26. Do not add extra details just to make the review longer.
 
-27. Business-specific facts may be naturally paraphrased into Hinglish. Do not mechanically copy database wording.
+27. Business-specific facts may be naturally paraphrased into ${reviewLanguageName}. Do not mechanically copy database wording.
 
 28. If a verified fact is not useful for the selected experience, simply do not use it.
 
@@ -509,156 +545,4 @@ No hashtags.`;
       return cleaned;
     }
 
-    /* ============================================================
-       14. GEMINI PRIMARY
-    ============================================================ */
-
-    const generateWithGemini = async () => {
-      if (!process.env.GEMINI_API_KEY) {
-        throw new Error("GEMINI_API_KEY is missing");
-      }
-
-      const maxRetries = 3;
-      let response;
-
-      for (let attempt = 0; attempt < maxRetries; attempt++) {
-        response = await fetch(
-          "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=" +
-            process.env.GEMINI_API_KEY,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: {
-                temperature: 0.85,
-                maxOutputTokens: 180
-              }
-            })
-          }
-        );
-
-        if (response.ok) break;
-
-        const errorText = await response.text();
-
-        console.error(`Gemini attempt ${attempt + 1} failed:`, errorText);
-
-        // Daily quota errors retry se theek nahi hote
-        if (
-          response.status === 429 &&
-          (errorText.includes("PerDay") ||
-            errorText.includes("per_day") ||
-            errorText.includes("daily") ||
-            errorText.includes("quota"))
-        ) {
-          console.log("Gemini daily quota exceeded.");
-          break;
-        }
-
-        // Sirf temporary errors retry karo
-        if (response.status !== 429 && response.status !== 503) {
-          break;
-        }
-
-        if (attempt < maxRetries - 1) {
-          const delay = 1000 * Math.pow(2, attempt);
-          console.log(`Retrying Gemini in ${delay}ms...`);
-          await new Promise(resolve => setTimeout(resolve, delay));
-        }
-      }
-
-      if (!response || !response.ok) {
-        throw new Error("Gemini API request failed");
-      }
-
-      const data = await response.json();
-
-      const rawReview = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-      const review = cleanReviewText(rawReview);
-
-      if (!review) {
-        throw new Error("Gemini returned no review");
-      }
-
-      console.log("AI PROVIDER USED: GEMINI");
-
-      return review;
-    };
-
-    /* ============================================================
-       15. GROQ BACKUP
-    ============================================================ */
-
-    const generateWithGroq = async () => {
-      if (!process.env.GROQ_API_KEY) {
-        throw new Error("GROQ_API_KEY is missing");
-      }
-
-      const groqResponse = await fetch(
-        "https://api.groq.com/openai/v1/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.GROQ_API_KEY}`
-          },
-          body: JSON.stringify({
-            model: "openai/gpt-oss-20b",
-            messages: [{ role: "user", content: prompt }],
-            temperature: 0.85,
-            max_completion_tokens: 500,
-            reasoning_effort: "low",
-            include_reasoning: false
-          })
-        }
-      );
-
-      if (!groqResponse.ok) {
-        const errorText = await groqResponse.text();
-        console.error("Groq API error:", errorText);
-        throw new Error("Groq API request failed");
-      }
-
-      const groqData = await groqResponse.json();
-
-      const rawGroqReview = groqData?.choices?.[0]?.message?.content;
-
-      const groqReview = cleanReviewText(rawGroqReview);
-
-      if (!groqReview) {
-        throw new Error("Groq returned no review");
-      }
-
-      console.log("AI PROVIDER USED: GROQ");
-
-      return groqReview;
-    };
-
-    /* ============================================================
-       16. GEMINI FIRST -> GROQ FALLBACK
-    ============================================================ */
-
-    try {
-      const review = await generateWithGemini();
-      return res.status(200).json({ review, provider: "gemini" });
-    } catch (geminiError) {
-      console.error(
-        "Gemini primary failed. Trying Groq backup...",
-        geminiError
-      );
-    }
-
-    try {
-      const review = await generateWithGroq();
-      return res.status(200).json({ review, provider: "groq" });
-    } catch (groqError) {
-      console.error("Groq backup also failed:", groqError);
-      return res.status(500).json({ error: "Both AI services failed" });
-    }
-  } catch (error) {
-    console.error("Server error:", error);
-    return res.status(500).json({ error: "Something went wrong" });
-  }
-}
+    /*
