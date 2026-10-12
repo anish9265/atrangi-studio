@@ -1,33 +1,20 @@
 import { REVIEW_CATEGORY_CONFIG, getReviewCategoryKey } from "../experience-config.js";
 
 export default async function handler(req, res) {
-
   if (req.method !== "POST") {
-    return res.status(405).json({
-      error: "Method not allowed"
-    });
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
+    /* ============================================================
+       1. READ CUSTOMER INPUT
+    ============================================================ */
 
-    /*
-      ============================================================
-      1. READ CUSTOMER INPUT
-      ============================================================
-    */
+    const { businessId, rating, experiences } = req.body || {};
 
-    const {
-      businessId,
-      rating,
-      experiences
-    } = req.body || {};
-
-
-    /*
-      ============================================================
-      2. BASIC VALIDATION
-      ============================================================
-    */
+    /* ============================================================
+       2. BASIC VALIDATION
+    ============================================================ */
 
     if (
       !businessId ||
@@ -35,55 +22,28 @@ export default async function handler(req, res) {
       !Array.isArray(experiences) ||
       experiences.length === 0
     ) {
-      return res.status(400).json({
-        error: "Missing review information"
-      });
+      return res.status(400).json({ error: "Missing review information" });
     }
 
+    const numericBusinessId = Number(businessId);
+    const numericRating = Number(rating);
 
-    const numericBusinessId =
-      Number(businessId);
-
-    const numericRating =
-      Number(rating);
-
-
-    if (
-      !Number.isInteger(numericBusinessId) ||
-      numericBusinessId <= 0
-    ) {
-      return res.status(400).json({
-        error: "Invalid business"
-      });
+    if (!Number.isInteger(numericBusinessId) || numericBusinessId <= 0) {
+      return res.status(400).json({ error: "Invalid business" });
     }
-
 
     if (
       !Number.isInteger(numericRating) ||
       numericRating < 1 ||
       numericRating > 5
     ) {
-      return res.status(400).json({
-        error: "Invalid rating"
-      });
+      return res.status(400).json({ error: "Invalid rating" });
     }
 
-
-    /*
-      ============================================================
-      3. EXPERIENCE MAPPING
-      ============================================================
-
-      Customer-facing labels come from the review page.
-
-      Example:
-      "Good quality"
-
-      Internally:
-      "good_quality"
-
-      We support BOTH formats so the backend remains flexible.
-    */
+    /* ============================================================
+       3. EXPERIENCE MAPPING
+       Label ("Good Food") -> internal key ("good_food")
+    ============================================================ */
 
     const experienceMap = {};
 
@@ -103,7 +63,7 @@ export default async function handler(req, res) {
       }
     }
 
-    // Backward compatibility with the older generic option labels.
+    // Backward compatibility with older generic labels
     Object.assign(experienceMap, {
       "Friendly staff": "friendly_staff",
       "Good service": "good_service",
@@ -123,231 +83,118 @@ export default async function handler(req, res) {
       "Could be better": "could_be_better"
     });
 
-
-
-
-    /*
-      ============================================================
-      4. CLEAN CUSTOMER EXPERIENCES
-      ============================================================
-    */
+    /* ============================================================
+       4. CLEAN CUSTOMER EXPERIENCES
+    ============================================================ */
 
     const selectedExperienceObjects = [
       ...new Map(
-
         experiences
-          .map(item =>
-            String(item || "").trim()
-          )
+          .map(item => String(item || "").trim())
           .map(label => {
-
-            const category =
-              experienceMap[label];
-
-            if (!category) {
-              return null;
-            }
-
-            return [
-              category,
-              {
-                label,
-                category
-              }
-            ];
-
+            const category = experienceMap[label];
+            if (!category) return null;
+            return [category, { label, category }];
           })
           .filter(Boolean)
-
       ).values()
     ];
 
-
-    if (
-      selectedExperienceObjects.length === 0
-    ) {
+    if (selectedExperienceObjects.length === 0) {
       return res.status(400).json({
         error: "Please select at least one valid experience"
       });
     }
 
+    const selectedCategories = selectedExperienceObjects.map(
+      item => item.category
+    );
 
-    const selectedCategories =
-      selectedExperienceObjects.map(
-        item => item.category
-      );
+    const selectedLabels = selectedExperienceObjects.map(
+      item => item.label
+    );
 
+    /* ============================================================
+       5. SUPABASE CONFIGURATION
+    ============================================================ */
 
-    const selectedLabels =
-      selectedExperienceObjects.map(
-        item => item.label
-      );
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-
-    /*
-      ============================================================
-      5. SUPABASE CONFIGURATION
-      ============================================================
-    */
-
-    const supabaseUrl =
-      process.env.SUPABASE_URL;
-
-    const serviceRoleKey =
-      process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-
-    if (
-      !supabaseUrl ||
-      !serviceRoleKey
-    ) {
+    if (!supabaseUrl || !serviceRoleKey) {
       return res.status(500).json({
         error: "Server configuration is incomplete"
       });
     }
 
+    const baseUrl = supabaseUrl
+      .trim()
+      .replace(/\/+$/, "")
+      .replace(/\/rest\/v1$/, "");
 
-    const baseUrl =
-      supabaseUrl
-        .trim()
-        .replace(/\/+$/, "")
-        .replace(/\/rest\/v1$/, "");
-
-
-    const supabaseRestUrl =
-      `${baseUrl}/rest/v1`;
-
+    const supabaseRestUrl = `${baseUrl}/rest/v1`;
 
     const supabaseHeaders = {
       apikey: serviceRoleKey,
-
-      Authorization:
-        `Bearer ${serviceRoleKey}`,
-
-      "Content-Type":
-        "application/json"
+      Authorization: `Bearer ${serviceRoleKey}`,
+      "Content-Type": "application/json"
     };
 
+    /* ============================================================
+       6. FETCH BUSINESS
+    ============================================================ */
 
-    /*
-      ============================================================
-      6. FETCH BUSINESS
-      ============================================================
-    */
-
-    const businessResponse =
-      await fetch(
-        `${supabaseRestUrl}/businesses` +
+    const businessResponse = await fetch(
+      `${supabaseRestUrl}/businesses` +
         `?id=eq.${encodeURIComponent(numericBusinessId)}` +
         `&active=eq.true` +
         `&select=id,name,slug,business_info,category,language`,
-        {
-          headers: supabaseHeaders
-        }
-      );
+      { headers: supabaseHeaders }
+    );
 
-
-    const businessResponseText =
-      await businessResponse.text();
-
+    const businessResponseText = await businessResponse.text();
 
     if (!businessResponse.ok) {
-
-      console.error(
-        "Supabase business fetch failed:",
-        businessResponseText
-      );
-
+      console.error("Supabase business fetch failed:", businessResponseText);
       return res.status(500).json({
-        error:
-          "Could not load business information"
+        error: "Could not load business information"
       });
-
     }
-
 
     let businesses;
 
-
     try {
-
-      businesses =
-        JSON.parse(
-          businessResponseText
-        );
-
+      businesses = JSON.parse(businessResponseText);
     } catch (error) {
-
-      console.error(
-        "Invalid Supabase business response:",
-        businessResponseText
-      );
-
-      return res.status(500).json({
-        error:
-          "Invalid business data"
-      });
-
+      console.error("Invalid Supabase business response:", businessResponseText);
+      return res.status(500).json({ error: "Invalid business data" });
     }
 
-
-    if (
-      !Array.isArray(businesses) ||
-      businesses.length === 0
-    ) {
-
+    if (!Array.isArray(businesses) || businesses.length === 0) {
       return res.status(404).json({
-        error:
-          "Business not found or inactive"
+        error: "Business not found or inactive"
       });
-
     }
 
+    const business = businesses[0];
 
-    const business =
-      businesses[0];
+    /* ============================================================
+       7. FETCH BUSINESS-SPECIFIC FACTS
+    ============================================================ */
 
-
-    /*
-      ============================================================
-      7. FETCH BUSINESS-SPECIFIC FACTS
-      ============================================================
-
-      We fetch all active facts for this business.
-
-      Then we normalize their categories in JavaScript.
-
-      This allows the database to contain either:
-
-      good_quality
-
-      OR
-
-      Good quality
-
-      without breaking the system.
-    */
-
-```js
     const factsResponse = await fetch(
       `${supabaseRestUrl}/business_facts` +
-      `?business_id=eq.${encodeURIComponent(numericBusinessId)}` +
-      `&active=eq.true` +
-      `&select=category,fact,rating_group` +
-      `&order=id.asc`,
-      {
-        headers: supabaseHeaders
-      }
+        `?business_id=eq.${encodeURIComponent(numericBusinessId)}` +
+        `&active=eq.true` +
+        `&select=category,fact,rating_group` +
+        `&order=id.asc`,
+      { headers: supabaseHeaders }
     );
 
     const factsResponseText = await factsResponse.text();
 
     if (!factsResponse.ok) {
-      console.error(
-        "Supabase business facts fetch failed:",
-        factsResponseText
-      );
-
+      console.error("Supabase business facts fetch failed:", factsResponseText);
       return res.status(500).json({
         error: "Could not load business facts"
       });
@@ -362,129 +209,38 @@ export default async function handler(req, res) {
         "Invalid Supabase business facts response:",
         factsResponseText
       );
-
-      return res.status(500).json({
-        error: "Invalid business facts"
-      });
+      return res.status(500).json({ error: "Invalid business facts" });
     }
-```
 
-
-
-
-    /*
-      ============================================================
-      8. NORMALIZE FACT CATEGORY
-      ============================================================
-    */
+    /* ============================================================
+       8. NORMALIZE FACT CATEGORY
+    ============================================================ */
 
     function normalizeCategory(value) {
+      if (!value) return "";
 
-      if (!value) {
-        return "";
+      const raw = String(value).trim();
+
+      // Exact label match, e.g. "Good Food"
+      if (experienceMap[raw]) {
+        return experienceMap[raw];
       }
 
-      const cleaned =
-        String(value)
-          .trim()
-          .toLowerCase();
+      const cleaned = raw.toLowerCase();
 
-      // Category-specific labels use generated internal keys.
-      if (experienceMap[value]) {
-        return experienceMap[value];
-      }
-
+      // Already an internal key, e.g. "good_food"
       if (Object.values(experienceMap).includes(cleaned)) {
         return cleaned;
       }
 
-
-
-      /*
-        Normalize common formatting
-      */
-
-      const normalized =
-        cleaned
-          .replace(/[\s-]+/g, "_");
-
-
-      if (
-        Object.values(experienceMap)
-          .includes(normalized)
-      ) {
-        return normalized;
-      }
-
-
-      return normalized;
+      // Formatting normalize, e.g. "good food" / "good-food"
+      return cleaned.replace(/[\s-]+/g, "_");
     }
 
+    /* ============================================================
+       9. FIND RELEVANT BUSINESS FACTS
+    ============================================================ */
 
-    /*
-      ============================================================
-      9. ORGANIZE FACTS BY NORMALIZED CATEGORY
-      ============================================================
-    */
-
-    const factsByCategory = {};
-
-
-    for (
-      const item of businessFacts
-    ) {
-
-      if (
-        !item ||
-        !item.category ||
-        !item.fact
-      ) {
-        continue;
-      }
-
-
-      const category =
-        normalizeCategory(
-          item.category
-        );
-
-
-      const fact =
-        String(item.fact)
-          .trim();
-
-
-      if (
-        !category ||
-        !fact
-      ) {
-        continue;
-      }
-
-
-      if (
-        !factsByCategory[category]
-      ) {
-
-        factsByCategory[category] = [];
-
-      }
-
-
-      factsByCategory[category].push(
-        fact
-      );
-
-    }
-
-
-    /*
-      ============================================================
-      10. FIND RELEVANT BUSINESS FACTS
-      ============================================================
-    */
-
-```js
     const ratingGroup =
       numericRating <= 2
         ? "negative"
@@ -495,73 +251,49 @@ export default async function handler(req, res) {
     const relevantFacts = [];
 
     for (const category of selectedCategories) {
-      const categoryFacts =
-        businessFacts.filter(item => {
-          if (normalizeCategory(item.category) !== category) {
-            return false;
-          }
+      const categoryFacts = businessFacts.filter(item => {
+        if (!item || !item.category || !item.fact) return false;
 
-          // Purane facts, jinka rating_group NULL hai,
-          // backward compatibility ke liye allowed rahenge.
-          return (
-            !item.rating_group ||
-            item.rating_group === ratingGroup
-          );
-        });
+        if (normalizeCategory(item.category) !== category) {
+          return false;
+        }
+
+        // Purane facts (rating_group NULL) backward compatibility ke liye allowed
+        return !item.rating_group || item.rating_group === ratingGroup;
+      });
 
       for (const item of categoryFacts) {
-        relevantFacts.push({
-          category,
-          fact: String(item.fact).trim()
-        });
+        const factText = String(item.fact).trim();
+        if (!factText) continue;
+
+        relevantFacts.push({ category, fact: factText });
       }
     }
-```
 
-
-    /*
-      ============================================================
-      11. FORMAT VERIFIED FACTS
-      ============================================================
-    */
+    /* ============================================================
+       10. FORMAT VERIFIED FACTS
+    ============================================================ */
 
     let verifiedFactsText =
       "No business-specific facts are available for the selected experiences.";
 
-
-    if (
-      relevantFacts.length > 0
-    ) {
-
-      verifiedFactsText =
-        relevantFacts
-          .map(item =>
-            `- ${item.category}: ${item.fact}`
-          )
-          .join("\n");
-
+    if (relevantFacts.length > 0) {
+      verifiedFactsText = relevantFacts
+        .map(item => `- ${item.category}: ${item.fact}`)
+        .join("\n");
     }
 
+    /* ============================================================
+       11. BUSINESS INFORMATION
+    ============================================================ */
 
-    /*
-      ============================================================
-      12. BUSINESS INFORMATION
-      ============================================================
-    */
+    const businessInfo = business.business_info
+      ? String(business.business_info).trim()
+      : "";
 
-    const businessInfo =
-      business.business_info
-        ? String(
-            business.business_info
-          ).trim()
-        : "";
-
-
-    /*
-      ============================================================
-      13. BUILD AI PROMPT
-      ============================================================
-    */
+    /* ============================================================
+       12. BUILD AI PROMPT
+    ============================================================ */
 
     const prompt = `You are helping a real customer express their genuine experience as a Google review.
 
@@ -685,521 +417,194 @@ No quotation marks.
 No markdown.
 No hashtags.`;
 
-
-    /*
-      ============================================================
-      14. CLEAN AI OUTPUT
-      ============================================================
-    */
+    /* ============================================================
+       13. CLEAN AI OUTPUT
+    ============================================================ */
 
     function cleanReviewText(text) {
+      if (!text) return "";
 
-      if (!text) {
-        return "";
-      }
+      let cleaned = String(text).trim();
 
+      const endMarkers = ["<|endoftext|>", "<|end_of_text|>", "</s>"];
 
-      let cleaned =
-        String(text)
-          .trim();
-
-
-      const endMarkers = [
-        "<|endoftext|>",
-        "<|end_of_text|>",
-        "</s>"
-      ];
-
-
-      for (
-        const marker of endMarkers
-      ) {
-
-        const index =
-          cleaned.indexOf(marker);
-
-
+      for (const marker of endMarkers) {
+        const index = cleaned.indexOf(marker);
         if (index !== -1) {
-
-          cleaned =
-            cleaned
-              .substring(0, index)
-              .trim();
-
+          cleaned = cleaned.substring(0, index).trim();
         }
-
       }
 
+      cleaned = cleaned.replace(/^Review:\s*/i, "").trim();
 
-      cleaned =
-        cleaned
-          .replace(
-            /^Review:\s*/i,
-            ""
-          )
-          .trim();
+      cleaned = cleaned
+        .replace(/[—–]/g, ", ")
+        .replace(/\s+,/g, ",")
+        .replace(/,\s*,/g, ",")
+        .replace(/\s{2,}/g, " ")
+        .trim();
 
-
-      cleaned =
-        cleaned
-          .replace(
-            /[—–]/g,
-            ", "
-          )
-          .replace(
-            /\s+,/g,
-            ","
-          )
-          .replace(
-            /,\s*,/g,
-            ","
-          )
-          .replace(
-            /\s{2,}/g,
-            " "
-          )
-          .trim();
-
-
-      /*
-        Remove accidental surrounding quotation marks.
-      */
-
-      if (
-        cleaned.startsWith('"') &&
-        cleaned.endsWith('"')
-      ) {
-
-        cleaned =
-          cleaned
-            .slice(1, -1)
-            .trim();
-
+      if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+        cleaned = cleaned.slice(1, -1).trim();
       }
 
-
-      if (
-        cleaned.startsWith("'") &&
-        cleaned.endsWith("'")
-      ) {
-
-        cleaned =
-          cleaned
-            .slice(1, -1)
-            .trim();
-
+      if (cleaned.startsWith("'") && cleaned.endsWith("'")) {
+        cleaned = cleaned.slice(1, -1).trim();
       }
-
 
       return cleaned;
-
     }
 
+    /* ============================================================
+       14. GEMINI PRIMARY
+    ============================================================ */
 
-    /*
-      ============================================================
-      15. GEMINI PRIMARY
-      ============================================================
-    */
+    const generateWithGemini = async () => {
+      if (!process.env.GEMINI_API_KEY) {
+        throw new Error("GEMINI_API_KEY is missing");
+      }
 
-    const generateWithGemini =
-      async () => {
+      const maxRetries = 3;
+      let response;
 
-        if (
-          !process.env.GEMINI_API_KEY
-        ) {
-
-          throw new Error(
-            "GEMINI_API_KEY is missing"
-          );
-
-        }
-
-
-        const maxRetries = 3;
-
-        let response;
-
-
-        for (
-          let attempt = 0;
-          attempt < maxRetries;
-          attempt++
-        ) {
-
-          response =
-            await fetch(
-              "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=" +
-              process.env.GEMINI_API_KEY,
-              {
-                method: "POST",
-
-                headers: {
-                  "Content-Type":
-                    "application/json"
-                },
-
-                body: JSON.stringify({
-
-                  contents: [
-                    {
-                      parts: [
-                        {
-                          text: prompt
-                        }
-                      ]
-                    }
-                  ],
-
-                  generationConfig: {
-                    temperature: 0.85,
-                    maxOutputTokens: 180
-                  }
-
-                })
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        response = await fetch(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=" +
+            process.env.GEMINI_API_KEY,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: {
+                temperature: 0.85,
+                maxOutputTokens: 180
               }
-            );
-
-
-          if (response.ok) {
-            break;
+            })
           }
-
-
-          const errorText =
-            await response.text();
-
-
-          console.error(
-            `Gemini attempt ${attempt + 1} failed:`,
-            errorText
-          );
-
-
-          /*
-            Daily quota errors will not improve
-            by retrying immediately.
-          */
-
-          if (
-            response.status === 429 &&
-            (
-              errorText.includes("PerDay") ||
-              errorText.includes("per_day") ||
-              errorText.includes("daily") ||
-              errorText.includes("quota")
-            )
-          ) {
-
-            console.log(
-              "Gemini daily quota exceeded."
-            );
-
-            break;
-
-          }
-
-
-          /*
-            Retry only temporary failures.
-          */
-
-          if (
-            response.status !== 429 &&
-            response.status !== 503
-          ) {
-
-            break;
-
-          }
-
-
-          if (
-            attempt <
-            maxRetries - 1
-          ) {
-
-            const delay =
-              1000 *
-              Math.pow(
-                2,
-                attempt
-              );
-
-
-            console.log(
-              `Retrying Gemini in ${delay}ms...`
-            );
-
-
-            await new Promise(
-              resolve =>
-                setTimeout(
-                  resolve,
-                  delay
-                )
-            );
-
-          }
-
-        }
-
-
-        if (
-          !response ||
-          !response.ok
-        ) {
-
-          throw new Error(
-            "Gemini API request failed"
-          );
-
-        }
-
-
-        const data =
-          await response.json();
-
-
-        const rawReview =
-          data
-            ?.candidates?.[0]
-            ?.content?.parts?.[0]
-            ?.text;
-
-
-        const review =
-          cleanReviewText(
-            rawReview
-          );
-
-
-        if (!review) {
-
-          throw new Error(
-            "Gemini returned no review"
-          );
-
-        }
-
-
-        console.log(
-          "AI PROVIDER USED: GEMINI"
         );
 
+        if (response.ok) break;
 
-        return review;
+        const errorText = await response.text();
 
-      };
+        console.error(`Gemini attempt ${attempt + 1} failed:`, errorText);
 
-
-    /*
-      ============================================================
-      16. GROQ BACKUP
-      ============================================================
-    */
-
-    const generateWithGroq =
-      async () => {
-
+        // Daily quota errors retry se theek nahi hote
         if (
-          !process.env.GROQ_API_KEY
+          response.status === 429 &&
+          (errorText.includes("PerDay") ||
+            errorText.includes("per_day") ||
+            errorText.includes("daily") ||
+            errorText.includes("quota"))
         ) {
-
-          throw new Error(
-            "GROQ_API_KEY is missing"
-          );
-
+          console.log("Gemini daily quota exceeded.");
+          break;
         }
 
-
-        const groqResponse =
-          await fetch(
-            "https://api.groq.com/openai/v1/chat/completions",
-            {
-              method: "POST",
-
-              headers: {
-
-                "Content-Type":
-                  "application/json",
-
-                "Authorization":
-                  `Bearer ${process.env.GROQ_API_KEY}`
-
-              },
-
-              body: JSON.stringify({
-
-                model:
-                  "openai/gpt-oss-20b",
-
-                messages: [
-                  {
-                    role: "user",
-                    content: prompt
-                  }
-                ],
-
-                temperature:
-                  0.85,
-
-                max_completion_tokens:
-                  500,
-
-                reasoning_effort:
-                  "low",
-
-                include_reasoning:
-                  false
-
-              })
-
-            }
-          );
-
-
-        if (
-          !groqResponse.ok
-        ) {
-
-          const errorText =
-            await groqResponse.text();
-
-
-          console.error(
-            "Groq API error:",
-            errorText
-          );
-
-
-          throw new Error(
-            "Groq API request failed"
-          );
-
+        // Sirf temporary errors retry karo
+        if (response.status !== 429 && response.status !== 503) {
+          break;
         }
 
-
-        const groqData =
-          await groqResponse.json();
-
-
-        const rawGroqReview =
-          groqData
-            ?.choices?.[0]
-            ?.message?.content;
-
-
-        const groqReview =
-          cleanReviewText(
-            rawGroqReview
-          );
-
-
-        if (!groqReview) {
-
-          throw new Error(
-            "Groq returned no review"
-          );
-
+        if (attempt < maxRetries - 1) {
+          const delay = 1000 * Math.pow(2, attempt);
+          console.log(`Retrying Gemini in ${delay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
         }
+      }
 
+      if (!response || !response.ok) {
+        throw new Error("Gemini API request failed");
+      }
 
-        console.log(
-          "AI PROVIDER USED: GROQ"
-        );
+      const data = await response.json();
 
+      const rawReview = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-        return groqReview;
+      const review = cleanReviewText(rawReview);
 
-      };
+      if (!review) {
+        throw new Error("Gemini returned no review");
+      }
 
+      console.log("AI PROVIDER USED: GEMINI");
 
-    /*
-      ============================================================
-      17. GEMINI FIRST → GROQ FALLBACK
-      ============================================================
-    */
+      return review;
+    };
+
+    /* ============================================================
+       15. GROQ BACKUP
+    ============================================================ */
+
+    const generateWithGroq = async () => {
+      if (!process.env.GROQ_API_KEY) {
+        throw new Error("GROQ_API_KEY is missing");
+      }
+
+      const groqResponse = await fetch(
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.GROQ_API_KEY}`
+          },
+          body: JSON.stringify({
+            model: "openai/gpt-oss-20b",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.85,
+            max_completion_tokens: 500,
+            reasoning_effort: "low",
+            include_reasoning: false
+          })
+        }
+      );
+
+      if (!groqResponse.ok) {
+        const errorText = await groqResponse.text();
+        console.error("Groq API error:", errorText);
+        throw new Error("Groq API request failed");
+      }
+
+      const groqData = await groqResponse.json();
+
+      const rawGroqReview = groqData?.choices?.[0]?.message?.content;
+
+      const groqReview = cleanReviewText(rawGroqReview);
+
+      if (!groqReview) {
+        throw new Error("Groq returned no review");
+      }
+
+      console.log("AI PROVIDER USED: GROQ");
+
+      return groqReview;
+    };
+
+    /* ============================================================
+       16. GEMINI FIRST -> GROQ FALLBACK
+    ============================================================ */
 
     try {
-
-      const review =
-        await generateWithGemini();
-
-
-      return res.status(200).json({
-
-        review,
-
-        provider:
-          "gemini"
-
-      });
-
+      const review = await generateWithGemini();
+      return res.status(200).json({ review, provider: "gemini" });
     } catch (geminiError) {
-
       console.error(
         "Gemini primary failed. Trying Groq backup...",
         geminiError
       );
-
     }
-
-
-    /*
-      ============================================================
-      18. GROQ FALLBACK
-      ============================================================
-    */
 
     try {
-
-      const review =
-        await generateWithGroq();
-
-
-      return res.status(200).json({
-
-        review,
-
-        provider:
-          "groq"
-
-      });
-
+      const review = await generateWithGroq();
+      return res.status(200).json({ review, provider: "groq" });
     } catch (groqError) {
-
-      console.error(
-        "Groq backup also failed:",
-        groqError
-      );
-
-
-      return res.status(500).json({
-
-        error:
-          "Both AI services failed"
-
-      });
-
+      console.error("Groq backup also failed:", groqError);
+      return res.status(500).json({ error: "Both AI services failed" });
     }
-
-
   } catch (error) {
-
-    console.error(
-      "Server error:",
-      error
-    );
-
-
-    return res.status(500).json({
-
-      error:
-        "Something went wrong"
-
-    });
-
+    console.error("Server error:", error);
+    return res.status(500).json({ error: "Something went wrong" });
   }
-
 }
