@@ -72,7 +72,8 @@ module.exports = async function handler(req, res) {
       name,
       googleReviewUrl,
       category,
-      language
+      language,
+      businessInfo
     } = req.body || {};
 
     if (
@@ -86,6 +87,27 @@ module.exports = async function handler(req, res) {
       });
     }
 
+    // Jo cheezein update karni hain
+    const updateData = {
+      name: name.trim(),
+      google_review_url:
+        googleReviewUrl.trim(),
+      category:
+        category || "other",
+      language:
+        language || "en"
+    };
+
+    // Business info sirf tab badlo jab admin page ne bheja ho.
+    // Khaali bhejne par purana text hat jayega (null ho jayega).
+    if (typeof businessInfo === "string") {
+      const cleanBusinessInfo =
+        businessInfo.trim().slice(0, 500);
+
+      updateData.business_info =
+        cleanBusinessInfo || null;
+    }
+
     const updateResponse =
       await fetch(
         `${supabaseUrl}/rest/v1/businesses?id=eq.${encodeURIComponent(id)}`,
@@ -96,15 +118,7 @@ module.exports = async function handler(req, res) {
             "Content-Type": "application/json",
             Prefer: "return=representation"
           },
-          body: JSON.stringify({
-            name: name.trim(),
-            google_review_url:
-              googleReviewUrl.trim(),
-            category:
-              category || "other",
-            language:
-              language || "en"
-          })
+          body: JSON.stringify(updateData)
         }
       );
 
