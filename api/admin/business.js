@@ -86,7 +86,8 @@ module.exports = async function handler(req, res) {
       name,
       googleReviewUrl,
       category,
-      language
+      language,
+      businessInfo
     } = req.body || {};
 
     if (!name || !googleReviewUrl) {
@@ -95,6 +96,12 @@ module.exports = async function handler(req, res) {
           "Business name and Google Review URL are required."
       });
     }
+
+    // Business info optional hai. Max 500 akshar.
+    const cleanBusinessInfo =
+      typeof businessInfo === "string"
+        ? businessInfo.trim().slice(0, 500)
+        : "";
 
     // -----------------------------
     // 6. Create a URL-friendly slug
@@ -121,9 +128,9 @@ module.exports = async function handler(req, res) {
         slug
       )}&select=id&limit=1`,
       {
-headers: {
-  apikey: serviceRoleKey
-}
+        headers: {
+          apikey: serviceRoleKey
+        }
       }
     );
 
@@ -136,9 +143,9 @@ headers: {
         errorText
       );
 
-return res.status(500).json({
-  error: "Could not check business URL."
-});
+      return res.status(500).json({
+        error: "Could not check business URL."
+      });
     }
 
     const existingBusinesses =
@@ -158,9 +165,9 @@ return res.status(500).json({
             newSlug
           )}&select=id&limit=1`,
           {
-headers: {
-  apikey: serviceRoleKey
-}
+            headers: {
+              apikey: serviceRoleKey
+            }
           }
         );
 
@@ -185,12 +192,12 @@ headers: {
       {
         method: "POST",
 
-headers: {
-  apikey: serviceRoleKey,
-  "Content-Type": "application/json",
-  Prefer: "return=representation"
-},
-body: JSON.stringify({
+        headers: {
+          apikey: serviceRoleKey,
+          "Content-Type": "application/json",
+          Prefer: "return=representation"
+        },
+        body: JSON.stringify({
           name: name.trim(),
           slug,
           google_review_url:
@@ -199,6 +206,8 @@ body: JSON.stringify({
             category || "other",
           language:
             language || "en",
+          business_info:
+            cleanBusinessInfo || null,
           active: true
         })
       }
@@ -237,8 +246,8 @@ body: JSON.stringify({
       error
     );
 
-return res.status(500).json({
-  error: "Something went wrong."
-});
+    return res.status(500).json({
+      error: "Something went wrong."
+    });
   }
-}
+};
