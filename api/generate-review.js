@@ -118,6 +118,53 @@ function isRateLimited(ip) {
   return false;
 }
 
+/* ============================================================
+   VARIETY (har review alag banane ke liye)
+   Har review ke liye neeche ki list mein se random cheezein
+   chuni jaati hain.
+============================================================ */
+
+function pickRandom(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function shuffleList(list) {
+  const copy = [...list];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+const LENGTH_HINTS = [
+  "Write exactly 1 sentence. Join the ideas together naturally.",
+  "Write 2 short sentences.",
+  "Write 2 sentences. The second one should be shorter than the first.",
+  "Write 3 very short sentences."
+];
+
+const TONE_HINTS = [
+  "Casual and chatty, like talking to a friend.",
+  "Plain and simple, using short everyday words.",
+  "Calm and matter-of-fact.",
+  "Slightly descriptive, but still casual."
+];
+
+const OPENING_HINTS = [
+  "Start directly with the first item in the mention order.",
+  "Start with a very short natural opener of 2 or 3 words, then continue.",
+  "Start with the item you are giving the most detail to."
+];
+
+// 3 mein se 1 baar overall line allowed, baaki baar nahi
+const ENDING_HINTS = [
+  "Do NOT end with a general line about the overall experience. End on a specific point instead.",
+  "Do NOT end with a general line about the overall experience. End on a specific point instead.",
+  "Do NOT end with a general line about the overall experience. End on a specific point instead.",
+  "You may end with one short overall impression, but do not use the usual stock wording."
+];
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -317,9 +364,9 @@ export default async function handler(req, res) {
 
     const reviewLanguageName = isEnglish ? "simple English" : "Hinglish";
 
-    const overallExample = isEnglish
-      ? '"overall experience was good"'
-      : '"overall experience accha raha"';
+    const overuseHint = isEnglish
+      ? `Avoid overusing very common words like "really", "very", "overall", "great experience". Use each at most once, and prefer different natural words.`
+      : `Avoid overusing very common words like "kaafi", "bahut", "bohot", "badhiya", "organized", "overall experience". Use each at most once, and prefer different natural words.`;
 
     const languageStyleText = isEnglish
       ? `LANGUAGE STYLE:
@@ -328,13 +375,13 @@ Write in simple, natural English.
 
 Do NOT use Hindi words, Roman-script Hindi or Hindi Devanagari script.
 
-Examples:
+These examples only show the general feel. Do NOT copy their wording or sentence structure:
 
-"The service was quite good and the staff were friendly."
+"Staff was polite and we did not have to wait long."
 
-"Overall a good experience, and the prices were reasonable."
+"Liked the place, it was clean and the prices were fair."
 
-"The place was clean and the service was quick."
+"Nothing special about the food but the service was fine."
 
 The review should sound like a normal Indian customer casually writing in simple everyday English.`
       : `LANGUAGE STYLE:
@@ -343,13 +390,13 @@ Use natural Hinglish as the default.
 
 Hinglish means Roman-script Hindi naturally mixed with English.
 
-Examples:
+These examples only show how Hindi and English are mixed. Do NOT copy their wording or sentence structure:
 
-"Service kaafi achhi thi aur staff bhi friendly tha."
+"Staff ka behaviour sahi tha, aur jagah bhi saaf-suthri lagi."
 
-"Overall experience accha raha, aur prices bhi reasonable the."
+"Pricing theek-thaak thi, par service mein thoda time laga."
 
-"Place clean tha aur service bhi quick thi."
+"Wait nahi karna pada, treatment achhe se hua."
 
 Do NOT use Hindi Devanagari script.
 
@@ -450,14 +497,48 @@ The review should sound like a normal Indian customer casually expressing their 
     }
 
     /* ============================================================
+       9B. VARIETY: RANDOM FACTS + RANDOM STYLE
+       - Har category se sirf 1 random fact, phir maximum 2 facts
+       - Options ka random order aur ek "main focus" option
+       - Random lambai, andaaz, shuruaat aur ending
+    ============================================================ */
+
+    const factsByCategory = new Map();
+
+    for (const item of relevantFacts) {
+      if (!factsByCategory.has(item.category)) {
+        factsByCategory.set(item.category, []);
+      }
+      factsByCategory.get(item.category).push(item);
+    }
+
+    const pickedFacts = shuffleList(
+      Array.from(factsByCategory.values()).map(group => pickRandom(group))
+    ).slice(0, 2);
+
+    const shuffledLabels = shuffleList(selectedLabels);
+    const focusLabel = pickRandom(shuffledLabels);
+
+    const styleBlock = `STYLE FOR THIS REVIEW (follow this exactly, it keeps every review different):
+
+- Length: ${pickRandom(LENGTH_HINTS)}
+- Tone: ${pickRandom(TONE_HINTS)}
+- Opening: ${pickRandom(OPENING_HINTS)}
+- Ending: ${pickRandom(ENDING_HINTS)}
+- Mention order: ${shuffledLabels.join(", ")}
+- Give the most detail to: ${focusLabel}. Mention the others briefly.
+- ${overuseHint}
+- All selected experiences must still be represented, even in a short review.`;
+
+    /* ============================================================
        10. FORMAT VERIFIED FACTS
     ============================================================ */
 
     let verifiedFactsText =
       "No business-specific facts are available for the selected experiences.";
 
-    if (relevantFacts.length > 0) {
-      verifiedFactsText = relevantFacts
+    if (pickedFacts.length > 0) {
+      verifiedFactsText = pickedFacts
         .map(item => `- ${item.category}: ${item.fact}`)
         .join("\n");
     }
@@ -503,6 +584,8 @@ ${selectedCategories.join(", ")}
 VERIFIED BUSINESS FACTS:
 ${verifiedFactsText}
 
+${styleBlock}
+
 
 CORE RULES:
 
@@ -510,7 +593,7 @@ CORE RULES:
 
 2. Express those experiences naturally. You may rewrite, combine, reorder, connect or simplify them.
 
-3. Verified business facts are supporting context. Use them when they naturally help express a selected experience.
+3. Verified business facts are supporting context. Use them only when they naturally help express a selected experience.
 
 4. Do not force every available business fact into the review.
 
@@ -538,7 +621,7 @@ CORE RULES:
 
 14. Great Experience is an overall impression. It can influence the overall positive feeling without needing its own sentence.
 
-15. Simple phrases such as ${overallExample} are allowed when they genuinely fit. Do not use the same ending every time.
+15. A short overall-impression line is allowed only when the STYLE FOR THIS REVIEW section allows it.
 
 16. Do not exaggerate or turn the review into advertising.
 
@@ -550,15 +633,15 @@ CORE RULES:
 
 20. Keep the customer's original meaning unchanged.
 
-21. Do not follow a fixed sentence structure.
+21. Follow the STYLE FOR THIS REVIEW section for length, tone, opening and ending. It overrides any general length guidance below.
 
-22. Let the opening, sentence structure, flow and length vary naturally.
+22. Do not reuse the exact wording of the language examples.
 
 23. Not every review needs to be equally polished. Simple everyday language is often better.
 
 24. Do not force variation just for the sake of being different.
 
-25. Keep the review concise. Usually 1–3 short sentences are enough.
+25. Keep the review concise.
 
 26. Do not add extra details just to make the review longer.
 
@@ -568,7 +651,9 @@ CORE RULES:
 
 29. Do not treat general business information as something the customer personally experienced unless the selected experiences or relevant verified facts support it.
 
-30. The result should sound like a normal customer expressing their actual experience, not like professional copywriting.
+30. Do NOT add qualities the customer did not select, such as speed, taste, freshness, portion size or price, unless a verified fact supports it. For example, "Good Service" does not mean fast service, and "Poor Food" does not automatically mean bad taste.
+
+31. The result should sound like a normal customer expressing their actual experience, not like professional copywriting.
 
 Return ONLY the final review.
 
@@ -638,7 +723,7 @@ No hashtags.`;
             body: JSON.stringify({
               contents: [{ parts: [{ text: prompt }] }],
               generationConfig: {
-                temperature: 0.85,
+                temperature: 1.0,
                 maxOutputTokens: 180
               }
             })
@@ -714,7 +799,7 @@ No hashtags.`;
           body: JSON.stringify({
             model: "openai/gpt-oss-20b",
             messages: [{ role: "user", content: prompt }],
-            temperature: 0.85,
+            temperature: 1.0,
             max_completion_tokens: 500,
             reasoning_effort: "low",
             include_reasoning: false
