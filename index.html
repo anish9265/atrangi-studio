@@ -615,6 +615,47 @@ const copyGoogleBtn =
       return match ? chipIcons[match] : "•";
     }
 
+    // -------------------------
+    // Show the right options for the chosen star rating
+    // (star pehle chuna ho ya options baad mein bane,
+    //  dono case mein ye sahi options dikhata hai)
+    // -------------------------
+
+    function updateExperienceGroups() {
+
+      const experienceGroups =
+        document.querySelectorAll(".experience-group");
+
+      experienceGroups.forEach(group => {
+
+        const ratings =
+          group.dataset.ratings
+            .split(",")
+            .map(Number);
+
+        const showGroup =
+          selectedRating !== null &&
+          ratings.includes(selectedRating);
+
+        group.classList.toggle(
+          "show",
+          showGroup
+        );
+
+        if (!showGroup) {
+
+          group
+            .querySelectorAll(".chip.selected")
+            .forEach(chip => {
+              chip.classList.remove("selected");
+            });
+
+        }
+
+      });
+
+    }
+
     function renderExperienceOptions() {
       const key = getReviewCategoryKey(business?.category);
       const config = REVIEW_CATEGORY_CONFIG[key];
@@ -640,6 +681,10 @@ const copyGoogleBtn =
 
         experienceChips.appendChild(group);
       });
+
+      // Agar customer ne star pehle hi chun liya ho,
+      // to ab turant uske options dikha do.
+      updateExperienceGroups();
     }
 
     // -------------------------
@@ -707,39 +752,10 @@ const response = await fetch(
 
       button.addEventListener("click", () => {
 
-    selectedRating =
-      Number(button.dataset.rating);
+        selectedRating =
+          Number(button.dataset.rating);
 
-    const experienceGroups =
-      document.querySelectorAll(".experience-group");
-
-    experienceGroups.forEach(group => {
-
-      const ratings =
-        group.dataset.ratings
-          .split(",")
-          .map(Number);
-
-      const showGroup =
-        ratings.includes(selectedRating);
-
-      group.classList.toggle(
-        "show",
-        showGroup
-      );
-
-      if (!showGroup) {
-
-        group
-          .querySelectorAll(".chip.selected")
-          .forEach(chip => {
-            chip.classList.remove("selected");
-          });
-
-      }
-
-    });
-        
+        updateExperienceGroups();
 
         starButtons.forEach(star => {
 
@@ -752,8 +768,6 @@ const response = await fetch(
           );
 
         });
-
-
 
         errorBox.classList.remove("show");
 
