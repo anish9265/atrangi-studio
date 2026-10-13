@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,6 +60,12 @@
     input:focus, select:focus, textarea:focus {
       border-color: #111827;
       box-shadow: 0 0 0 3px rgba(17,24,39,.07);
+    }
+
+    #businessInfo {
+      min-height: 100px;
+      resize: vertical;
+      line-height: 1.5;
     }
 
     .hint {
@@ -543,6 +548,16 @@
             </select>
           </div>
 
+          <div class="field">
+            <label for="businessInfo">Business Info (optional)</label>
+            <textarea id="businessInfo" maxlength="500"
+              placeholder="Example: Family restaurant hai. Shaam ko bheed rehti hai. Parking available hai."></textarea>
+            <div class="hint">
+              2-3 chhoti line mein is business ke baare mein sirf <strong>sachchi</strong> baatein likho.
+              AI ye jaankari review likhte waqt use kar sakta hai. Max 500 akshar.
+            </div>
+          </div>
+
           <button class="add-btn" id="addBtn" type="submit">➕ Add Business</button>
           <button type="button" id="cancelEditBtn" class="cancel-edit-btn" style="display:none;">
             Cancel Edit
@@ -831,7 +846,8 @@ function updateFactCategories() {
           name: $("name").value.trim(),
           googleReviewUrl: $("googleReviewUrl").value.trim(),
           category: $("category").value,
-          language: $("language").value
+          language: $("language").value,
+          businessInfo: $("businessInfo").value.trim()
         };
 
         const editing = editingBusinessId !== null;
@@ -1209,7 +1225,8 @@ ratingGroup
         $("name").value = business.name || "";
         $("googleReviewUrl").value = business.google_review_url || "";
         $("category").value = getReviewCategoryKey(business.category);
-        $("language").value = business.language || "en";
+        $("language").value = business.language === "english" ? "english" : "en";
+        $("businessInfo").value = business.business_info || "";
         $("addBtn").textContent = "✓ Save Changes";
         $("cancelEditBtn").style.display = "block";
 
