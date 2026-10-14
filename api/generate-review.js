@@ -193,7 +193,7 @@ const TONE_HINTS = [
   "Casual and chatty, like talking to a friend.",
   "Plain and simple, using short everyday words.",
   "Calm and matter-of-fact.",
-  "Slightly descriptive, but still casual."
+  "Short and to the point, no fancy words."
 ];
 
 const OPENING_HINTS = [
@@ -414,12 +414,14 @@ export default async function handler(req, res) {
 
     const overuseHint = isEnglish
       ? `Avoid overusing very common words like "really", "very", "overall", "great experience". Also avoid superlatives and stock phrases like "best", "perfect", "amazing", "hassle-free", "smooth experience". Use each word at most once, and prefer different natural words.`
-      : `Avoid overusing very common words like "kaafi", "bahut", "bohot", "badhiya", "organized", "overall experience". Also avoid superlatives and stock phrases like "best", "perfect", "ekdum", "hassle-free", "smooth experience". Use each word at most once, and prefer different natural words.`;
+      : `Avoid overusing very common words like "kaafi", "bahut", "bohot", "badhiya", "organized", "overall experience". Also avoid superlatives and stock phrases like "best", "perfect", "ekdum", "hassle-free", "smooth experience", "lajawab", "kamaal", "dil khush". Use each word at most once, and prefer different natural words.`;
 
     const languageStyleText = isEnglish
       ? `LANGUAGE STYLE:
 
-Write in simple, natural English.
+Write the way a normal customer would type a quick review on their phone.
+
+Use simple, everyday English, like a short text message. Avoid fancy or formal words such as "exquisite", "delightful", "ambience", "impeccable".
 
 Do NOT use Hindi words, Roman-script Hindi or Hindi Devanagari script.
 
@@ -434,17 +436,21 @@ These examples only show the general feel. Do NOT copy their wording or sentence
 The review should sound like a normal Indian customer casually writing in simple everyday English.`
       : `LANGUAGE STYLE:
 
-Use natural Hinglish as the default.
+Write the way a normal customer from a small Indian city would type a quick review on their phone.
 
-Hinglish means Roman-script Hindi naturally mixed with English.
+Use simple, everyday, spoken Hinglish: Roman-script Hindi mixed with the English words people actually use in daily life.
 
-These examples only show how Hindi and English are mixed. Do NOT copy their wording or sentence structure:
+For common things, prefer the English word people really say, such as staff, behaviour, service, food, taste, place, parking, seating, wait, clean, helpful, friendly, fresh.
 
-"Staff ka behaviour sahi tha, aur jagah bhi saaf-suthri lagi."
+Do NOT use formal, bookish or Sanskrit-style Hindi words. Never use words like "milansar", "vyavahar", "sukoon", "laajawab", "kamaal", "swadisht", "dil khush", "seva", "atithi", "prabandhan". If a word sounds like it belongs in a Hindi textbook or a poem, replace it with a simpler everyday word.
 
-"Pricing theek-thaak thi, par service mein thoda time laga."
+These examples only show the everyday feel. Do NOT copy their wording or sentence structure:
 
-"Wait nahi karna pada, treatment achhe se hua."
+"Staff ka behaviour accha tha, jagah bhi clean lagi."
+
+"Khana fresh tha, parking bhi mil gayi."
+
+"Wait nahi karna pada, treatment bhi theek se hua."
 
 Do NOT use Hindi Devanagari script.
 
@@ -707,7 +713,11 @@ CORE RULES:
 
 33. If you run out of things to say, write a SHORTER review. Never invent details to fill space.
 
-34. The result should sound like a normal customer expressing their actual experience, not like professional copywriting.
+34. Do NOT make a verified fact stronger than it is written. For example, "does not take much time" must not become "no waiting at all", and "food is prepared fresh every day" must not become "always the best food". Keep the same strength as the fact.
+
+35. Use short, simple sentences in everyday spoken words. Do not build long sentences chained together with words like "jahan", "jisse", "jiske saath" or "toh... par". Avoid poetic or fancy expressions.
+
+36. The result should sound like a normal customer expressing their actual experience, not like professional copywriting.
 
 Return ONLY the final review.
 
@@ -931,19 +941,4 @@ No hashtags.`;
     });
 
     try {
-      const result = await Promise.any([geminiTask, groqTask]);
-
-      console.log(
-        `REVIEW READY IN ${Date.now() - startedAt} ms (provider: ${result.provider})`
-      );
-
-      return res.status(200).json(result);
-    } catch (bothError) {
-      console.error("Both AI services failed:", bothError);
-      return res.status(500).json({ error: "Both AI services failed" });
-    }
-  } catch (error) {
-    console.error("Server error:", error);
-    return res.status(500).json({ error: "Something went wrong" });
-  }
-}
+      const result = await
