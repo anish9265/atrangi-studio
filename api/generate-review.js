@@ -191,4 +191,7 @@ function getLengthHint(optionCount) {
 
 const TONE_HINTS = [
   "Casual and chatty, like talking to a friend.",
-  "Plain
+  "Plain and simple, using short everyday words.",
+  "Calm and matter-of-fact.",
+  "Short and to the point, no fancy words."
+];
