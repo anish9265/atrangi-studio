@@ -83,6 +83,9 @@ const HEDGE_DELAY_MS = 3000;
 const GEMINI_TIMEOUT_MS = 12000;
 const GROQ_TIMEOUT_MS = 10000;
 
+// AI kitna "creative" ho. Kam number = kam jhooti baatein jodta hai.
+const AI_TEMPERATURE = 0.85;
+
 // Ek request ko maximum itni der tak rukne do, phir cancel
 async function fetchWithTimeout(url, options, timeoutMs) {
   const controller = new AbortController();
@@ -161,12 +164,30 @@ function shuffleList(list) {
   return copy;
 }
 
-const LENGTH_HINTS = [
-  "Write exactly 1 sentence. Join the ideas together naturally.",
-  "Write 2 short sentences.",
-  "Write 2 sentences. The second one should be shorter than the first.",
-  "Write 3 very short sentences."
-];
+// Lambai options ki ginti ke hisaab se.
+// Kam options hon to review chhota, taaki AI ko kuch jodna na pade.
+function getLengthHint(optionCount) {
+  if (optionCount <= 1) {
+    return pickRandom([
+      "Write exactly 1 short sentence.",
+      "Write 1 short sentence, or 2 very short ones."
+    ]);
+  }
+
+  if (optionCount === 2) {
+    return pickRandom([
+      "Write exactly 1 sentence. Join the ideas together naturally.",
+      "Write 2 short sentences."
+    ]);
+  }
+
+  return pickRandom([
+    "Write exactly 1 sentence. Join the ideas together naturally.",
+    "Write 2 short sentences.",
+    "Write 2 sentences. The second one should be shorter than the first.",
+    "Write 3 very short sentences."
+  ]);
+}
 
 const TONE_HINTS = [
   "Casual and chatty, like talking to a friend.",
@@ -178,7 +199,7 @@ const TONE_HINTS = [
 const OPENING_HINTS = [
   "Start directly with the first item in the mention order.",
   "Start with a very short natural opener of 2 or 3 words, then continue.",
-  "Start with the item you are giving the most detail to."
+  "Start with the item you are giving the most emphasis to."
 ];
 
 // 4 mein se 1 baar overall line allowed, baaki baar nahi
@@ -392,8 +413,8 @@ export default async function handler(req, res) {
     const reviewLanguageName = isEnglish ? "simple English" : "Hinglish";
 
     const overuseHint = isEnglish
-      ? `Avoid overusing very common words like "really", "very", "overall", "great experience". Use each at most once, and prefer different natural words.`
-      : `Avoid overusing very common words like "kaafi", "bahut", "bohot", "badhiya", "organized", "overall experience". Use each at most once, and prefer different natural words.`;
+      ? `Avoid overusing very common words like "really", "very", "overall", "great experience". Also avoid superlatives and stock phrases like "best", "perfect", "amazing", "hassle-free", "smooth experience". Use each word at most once, and prefer different natural words.`
+      : `Avoid overusing very common words like "kaafi", "bahut", "bohot", "badhiya", "organized", "overall experience". Also avoid superlatives and stock phrases like "best", "perfect", "ekdum", "hassle-free", "smooth experience". Use each word at most once, and prefer different natural words.`;
 
     const languageStyleText = isEnglish
       ? `LANGUAGE STYLE:
@@ -548,12 +569,12 @@ The review should sound like a normal Indian customer casually expressing their 
 
     const styleBlock = `STYLE FOR THIS REVIEW (follow this exactly, it keeps every review different):
 
-- Length: ${pickRandom(LENGTH_HINTS)}
+- Length: ${getLengthHint(selectedLabels.length)}
 - Tone: ${pickRandom(TONE_HINTS)}
 - Opening: ${pickRandom(OPENING_HINTS)}
 - Ending: ${pickRandom(ENDING_HINTS)}
 - Mention order: ${shuffledLabels.join(", ")}
-- Give the most detail to: ${focusLabel}. Mention the others briefly.
+- Put the most emphasis on: ${focusLabel}. Do this only through slightly stronger wording. Do NOT add any new facts or details to give it more emphasis.
 - ${overuseHint}
 - All selected experiences must still be represented, even in a short review.`;
 
@@ -660,7 +681,7 @@ CORE RULES:
 
 20. Keep the customer's original meaning unchanged.
 
-21. Follow the STYLE FOR THIS REVIEW section for length, tone, opening and ending. It overrides any general length guidance below.
+21. Follow the STYLE FOR THIS REVIEW section for length, tone, opening and ending. It overrides any general length guidance.
 
 22. Do not reuse the exact wording of the language examples.
 
@@ -680,7 +701,13 @@ CORE RULES:
 
 30. Do NOT add qualities the customer did not select, such as speed, taste, freshness, portion size or price, unless a verified fact supports it. For example, "Good Service" does not mean fast service, and "Poor Food" does not automatically mean bad taste.
 
-31. The result should sound like a normal customer expressing their actual experience, not like professional copywriting.
+31. NEVER describe a specific incident, dish, ingredient, taste, smell, temperature, spice, salt, price, waiting time or staff action unless it is directly in the selected experiences or in the verified facts. For example, for "Poor Food" do not write about gravy, salt, spice or taste, and for "Slow Service" do not describe what a waiter did. Stay general and exactly as strong as the selected experience labels.
+
+32. For 1-2 star and 3 star reviews, never add any accusation or complaint that was not selected (for example rudeness, bad hygiene, stale or raw food, overcharging or cheating). A false complaint can harm a real business.
+
+33. If you run out of things to say, write a SHORTER review. Never invent details to fill space.
+
+34. The result should sound like a normal customer expressing their actual experience, not like professional copywriting.
 
 Return ONLY the final review.
 
@@ -750,7 +777,7 @@ No hashtags.`;
             body: JSON.stringify({
               contents: [{ parts: [{ text: prompt }] }],
               generationConfig: {
-                temperature: 1.0,
+                temperature: AI_TEMPERATURE,
                 maxOutputTokens: 180
               }
             })
@@ -827,7 +854,7 @@ No hashtags.`;
           body: JSON.stringify({
             model: "openai/gpt-oss-20b",
             messages: [{ role: "user", content: prompt }],
-            temperature: 1.0,
+            temperature: AI_TEMPERATURE,
             max_completion_tokens: 500,
             reasoning_effort: "low",
             include_reasoning: false
