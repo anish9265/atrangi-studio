@@ -832,7 +832,7 @@ No hashtags.`;
       }
 
       // Backup hai, isliye sirf 2 koshish
-      const maxRetries = 2;
+      const maxRetries = 3;
       let response;
 
       for (let attempt = 0; attempt < maxRetries; attempt++) {
