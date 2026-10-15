@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== "GET") {
     return res.status(405).json({
       error: "Method not allowed"
@@ -49,17 +49,17 @@ export default async function handler(req, res) {
       console.error("Supabase URL:", url);
       console.error("Supabase error:", responseText);
 
-return res.status(500).json({
-  error: "Database request failed"
-});
+      return res.status(500).json({
+        error: "Database request failed"
+      });
     }
 
     const businesses = JSON.parse(responseText);
 
     if (!businesses.length) {
-return res.status(404).json({
-  error: "Business not found"
-});
+      return res.status(404).json({
+        error: "Business not found"
+      });
     }
 
     return res.status(200).json(businesses[0]);
@@ -67,8 +67,8 @@ return res.status(404).json({
   } catch (error) {
     console.error("Server error:", error);
 
-return res.status(500).json({
-  error: "Something went wrong"
-});
+    return res.status(500).json({
+      error: "Something went wrong"
+    });
   }
-}
+};
