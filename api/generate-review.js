@@ -80,9 +80,9 @@ const REVIEW_CATEGORY_CONFIG = {
    GEMINI_TIMEOUT_MS: Gemini ka maximum intezaar.
 ============================================================ */
 
-const HEDGE_DELAY_MS = 2500;
+const HEDGE_DELAY_MS = 5000;
 const GROQ_TIMEOUT_MS = 8000;
-const GEMINI_TIMEOUT_MS = 10000;
+const GEMINI_TIMEOUT_MS = 12000;
 
 // AI kitna "creative" ho. Kam number = kam jhooti baatein jodta hai.
 const AI_TEMPERATURE = 0.85;
