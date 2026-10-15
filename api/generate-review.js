@@ -719,6 +719,8 @@ CORE RULES:
 
 36. The result should sound like a normal customer expressing their actual experience, not like professional copywriting.
 
+37. Write only about what the customer saw or felt. Do not speak to the reader (never write "you will find", "you can expect", "you should").
+
 Return ONLY the final review.
 
 No explanation.
