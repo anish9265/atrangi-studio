@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
 
   // Vercel Cron sends GET.
   // Admin panel button sends POST.
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
       process.env.CRON_SECRET;
 
     const isCronRequest =
-      cronSecret &&
+      Boolean(cronSecret) &&
       authorization ===
         `Bearer ${cronSecret}`;
 
@@ -77,10 +77,9 @@ export default async function handler(req, res) {
 
 
       const accessToken =
-        authorization.replace(
-          "Bearer ",
-          ""
-        );
+        authorization
+          .replace("Bearer ", "")
+          .trim();
 
 
       // -------------------------
@@ -121,7 +120,9 @@ export default async function handler(req, res) {
 
       if (
         !adminEmail ||
-        user.email !== adminEmail
+        !user.email ||
+        user.email.toLowerCase() !==
+          adminEmail.toLowerCase()
       ) {
         return res.status(403).json({
           error: "Access denied"
@@ -320,10 +321,10 @@ export default async function handler(req, res) {
       error
     );
 
-return res.status(500).json({
-  error: "Something went wrong"
-});
+    return res.status(500).json({
+      error: "Something went wrong"
+    });
 
   }
 
-}
+};
