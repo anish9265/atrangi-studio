@@ -910,46 +910,44 @@ No hashtags.`;
        - Jo pehle review de, wahi customer ko jata hai.
     ============================================================ */
 
-    const groqTask = generateWithGroq().then(review => ({
+    const geminiTask = generateWithGemini().then(review => ({
       review,
-      provider: "groq"
+      provider: "gemini"
     }));
 
-    const geminiTask = new Promise((resolve, reject) => {
-      let geminiStarted = false;
+    const groqTask = new Promise((resolve, reject) => {
+      let groqStarted = false;
 
-      const startGemini = () => {
-        if (geminiStarted) return;
-        geminiStarted = true;
+      const startGroq = () => {
+        if (groqStarted) return;
+        groqStarted = true;
 
-        generateWithGemini().then(
-          review => resolve({ review, provider: "gemini" }),
+        generateWithGroq().then(
+          review => resolve({ review, provider: "groq" }),
           reject
         );
       };
 
-      // Groq der kare to Gemini bhi chalu
-      const timer = setTimeout(startGemini, HEDGE_DELAY_MS);
+      // Gemini 5 second mein jawab na de to Groq bhi chalu
+      const timer = setTimeout(startGroq, HEDGE_DELAY_MS);
 
-      groqTask.then(
+      geminiTask.then(
         () => {
-          // Groq jaldi aa gaya, Gemini ki zaroorat nahi
           clearTimeout(timer);
         },
         error => {
-          // Groq fail ho gaya, Gemini turant chalu
           console.error(
-            "Groq failed. Starting Gemini backup...",
+            "Gemini failed. Starting Groq backup...",
             error
           );
           clearTimeout(timer);
-          startGemini();
+          startGroq();
         }
       );
     });
 
     try {
-      const result = await Promise.any([groqTask, geminiTask]);
+      const result = await Promise.any([geminiTask, groqTask]);
 
       console.log(
         `REVIEW READY IN ${Date.now() - startedAt} ms (provider: ${result.provider})`
