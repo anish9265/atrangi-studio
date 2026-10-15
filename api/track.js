@@ -1,8 +1,54 @@
+const RATE_LIMIT_MAX = 30;
+const RATE_LIMIT_WINDOW_MS = 4 * 60 * 1000;
+const requestLog = new Map();
+
+function getClientIp(req) {
+  const forwarded = req.headers["x-forwarded-for"];
+  if (forwarded) {
+    return String(forwarded).split(",")[0].trim();
+  }
+  return req.socket?.remoteAddress || "unknown";
+}
+
+function isRateLimited(ip) {
+  const now = Date.now();
+
+  if (requestLog.size > 1000) {
+    for (const [key, times] of requestLog.entries()) {
+      const fresh = times.filter(t => now - t < RATE_LIMIT_WINDOW_MS);
+      if (fresh.length === 0) {
+        requestLog.delete(key);
+      } else {
+        requestLog.set(key, fresh);
+      }
+    }
+  }
+
+  const recent = (requestLog.get(ip) || []).filter(
+    t => now - t < RATE_LIMIT_WINDOW_MS
+  );
+
+  if (recent.length >= RATE_LIMIT_MAX) {
+    requestLog.set(ip, recent);
+    return true;
+  }
+
+  recent.push(now);
+  requestLog.set(ip, recent);
+  return false;
+}
+
 module.exports = async function handler(req, res) {
 
   if (req.method !== "POST") {
     return res.status(405).json({
       error: "Method not allowed"
+    });
+  }
+
+  if (isRateLimited(getClientIp(req))) {
+    return res.status(429).json({
+      error: "Too many requests"
     });
   }
 
@@ -14,10 +60,6 @@ module.exports = async function handler(req, res) {
       session_id,
       rating
     } = req.body || {};
-
-    // -------------------------
-    // Basic validation
-    // -------------------------
 
     if (!business_id || !event_type) {
       return res.status(400).json({
@@ -37,9 +79,16 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // -------------------------
-    // Validate rating
-    // -------------------------
+    const numericBusinessId = Number(business_id);
+
+    if (
+      !Number.isInteger(numericBusinessId) ||
+      numericBusinessId <= 0
+    ) {
+      return res.status(400).json({
+        error: "Invalid business"
+      });
+    }
 
     if (
       rating !== undefined &&
@@ -76,9 +125,34 @@ module.exports = async function handler(req, res) {
     const supabaseRestUrl =
       `${baseUrl}/rest/v1`;
 
-    // -------------------------
-    // Insert usage event
-    // -------------------------
+    const supabaseHeaders = {
+      apikey: serviceRoleKey,
+      Authorization: `Bearer ${serviceRoleKey}`
+    };
+
+    // Check: business sach mein hai aur active hai
+    const checkResponse = await fetch(
+      `${supabaseRestUrl}/businesses?id=eq.${numericBusinessId}&active=eq.true&select=id&limit=1`,
+      { headers: supabaseHeaders }
+    );
+
+    if (!checkResponse.ok) {
+      return res.status(500).json({
+        error: "Could not verify business"
+      });
+    }
+
+    const foundBusinesses =
+      await checkResponse.json();
+
+    if (
+      !Array.isArray(foundBusinesses) ||
+      foundBusinesses.length === 0
+    ) {
+      return res.status(404).json({
+        error: "Business not found"
+      });
+    }
 
     const insertResponse = await fetch(
       `${supabaseRestUrl}/usage_events`,
@@ -86,17 +160,13 @@ module.exports = async function handler(req, res) {
         method: "POST",
 
         headers: {
-          apikey: serviceRoleKey,
-          Authorization:
-            `Bearer ${serviceRoleKey}`,
-          "Content-Type":
-            "application/json",
-          Prefer:
-            "return=minimal"
+          ...supabaseHeaders,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal"
         },
 
         body: JSON.stringify({
-          business_id: Number(business_id),
+          business_id: numericBusinessId,
           event_type,
           session_id:
             session_id || null,
@@ -109,10 +179,9 @@ module.exports = async function handler(req, res) {
       }
     );
 
-    const responseText =
-      await insertResponse.text();
-
     if (!insertResponse.ok) {
+      const responseText =
+        await insertResponse.text();
 
       console.error(
         "Supabase tracking error:",
