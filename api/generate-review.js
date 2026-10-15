@@ -831,7 +831,6 @@ No hashtags.`;
         throw new Error("GEMINI_API_KEY is missing");
       }
 
-      // Backup hai, isliye sirf 2 koshish
       const maxRetries = 3;
       let response;
 
