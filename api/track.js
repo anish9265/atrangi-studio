@@ -1,4 +1,4 @@
-const RATE_LIMIT_MAX = 30;
+const RATE_LIMIT_MAX = 15;
 const RATE_LIMIT_WINDOW_MS = 4 * 60 * 1000;
 const requestLog = new Map();
 
