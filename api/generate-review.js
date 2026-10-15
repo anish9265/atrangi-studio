@@ -79,7 +79,7 @@ const REVIEW_CATEGORY_CONFIG = {
    GROQ_TIMEOUT_MS: Groq ka maximum intezaar.
 ============================================================ */
 
-const HEDGE_DELAY_MS = 3000;
+const HEDGE_DELAY_MS = 5000;
 const GEMINI_TIMEOUT_MS = 12000;
 const GROQ_TIMEOUT_MS = 10000;
 
@@ -903,7 +903,7 @@ No hashtags.`;
     /* ============================================================
        16. GEMINI + GROQ (jo pehle jawab de wahi use hoga)
        - Gemini pehle chalta hai.
-       - 3 second mein jawab na aaye to Groq bhi chalu.
+       - 5 second mein jawab na aaye to Groq bhi chalu.
        - Gemini fail ho jaye to Groq turant chalu.
        - Jo pehle review de, wahi customer ko jata hai.
     ============================================================ */
