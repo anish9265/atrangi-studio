@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
 
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     }
 
     const accessToken =
-      authorization.replace("Bearer ", "");
+      authorization.replace("Bearer ", "").trim();
 
     // -----------------------------
     // 2. Environment variables
@@ -82,7 +82,11 @@ export default async function handler(req, res) {
     const user =
       await userResponse.json();
 
-    if (user.email !== adminEmail) {
+    if (
+      !user.email ||
+      user.email.toLowerCase() !==
+        adminEmail.toLowerCase()
+    ) {
       return res.status(403).json({
         error: "Access denied"
       });
@@ -139,7 +143,7 @@ export default async function handler(req, res) {
 
     const events = [];
 
-    const maxPages = 200; // safety: max 2 lakh events
+    const maxPages = 200;
 
     let offset = 0;
 
@@ -357,4 +361,4 @@ export default async function handler(req, res) {
 
   }
 
-}
+};
