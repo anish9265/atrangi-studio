@@ -168,24 +168,17 @@ function shuffleList(list) {
 // Lambai options ki ginti ke hisaab se.
 // Kam options hon to review chhota, taaki AI ko kuch jodna na pade.
 function getLengthHint(optionCount) {
-  if (optionCount <= 1) {
+  if (optionCount <= 2) {
     return pickRandom([
-      "Write exactly 1 short sentence.",
-      "Write 1 short sentence, or 2 very short ones."
-    ]);
-  }
-
-  if (optionCount === 2) {
-    return pickRandom([
-      "Write exactly 1 sentence. Join the ideas together naturally.",
-      "Write 2 short sentences."
+      "Write exactly 2 short sentences. Do not add new facts, only express the selected experiences in a natural way.",
+      "Write 2 short sentences. The second one can be a little shorter."
     ]);
   }
 
   return pickRandom([
-    "Write exactly 1 sentence. Join the ideas together naturally.",
     "Write 2 short sentences.",
     "Write 2 sentences. The second one should be shorter than the first.",
+    "Write 3 short sentences.",
     "Write 3 very short sentences."
   ]);
 }
