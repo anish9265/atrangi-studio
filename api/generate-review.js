@@ -838,7 +838,7 @@ No hashtags.`;
               contents: [{ parts: [{ text: prompt }] }],
               generationConfig: {
                 temperature: AI_TEMPERATURE,
-                maxOutputTokens: 180
+                maxOutputTokens: 250
               }
             })
           },
