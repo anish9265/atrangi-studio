@@ -73,15 +73,16 @@ const REVIEW_CATEGORY_CONFIG = {
 
 /* ============================================================
    SPEED SETTINGS
-   HEDGE_DELAY_MS: Gemini itne millisecond mein jawab na de
-                   to Groq bhi saath mein chalu ho jata hai.
-   GEMINI_TIMEOUT_MS: Gemini ka maximum intezaar.
+   Groq (gpt-oss-120b) PRIMARY hai, Gemini BACKUP hai.
+   HEDGE_DELAY_MS: Groq itne millisecond mein jawab na de
+                   to Gemini bhi saath mein chalu ho jata hai.
    GROQ_TIMEOUT_MS: Groq ka maximum intezaar.
+   GEMINI_TIMEOUT_MS: Gemini ka maximum intezaar.
 ============================================================ */
 
-const HEDGE_DELAY_MS = 5000;
-const GEMINI_TIMEOUT_MS = 12000;
-const GROQ_TIMEOUT_MS = 10000;
+const HEDGE_DELAY_MS = 2500;
+const GROQ_TIMEOUT_MS = 8000;
+const GEMINI_TIMEOUT_MS = 10000;
 
 // AI kitna "creative" ho. Kam number = kam jhooti baatein jodta hai.
 const AI_TEMPERATURE = 0.85;
@@ -772,7 +773,57 @@ No hashtags.`;
     }
 
     /* ============================================================
-       14. GEMINI PRIMARY
+       14. GROQ PRIMARY (gpt-oss-120b)
+    ============================================================ */
+
+    const generateWithGroq = async () => {
+      if (!process.env.GROQ_API_KEY) {
+        throw new Error("GROQ_API_KEY is missing");
+      }
+
+      const groqResponse = await fetchWithTimeout(
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.GROQ_API_KEY}`
+          },
+          body: JSON.stringify({
+            model: "openai/gpt-oss-120b",
+            messages: [{ role: "user", content: prompt }],
+            temperature: AI_TEMPERATURE,
+            max_completion_tokens: 500,
+            reasoning_effort: "low",
+            include_reasoning: false
+          })
+        },
+        GROQ_TIMEOUT_MS
+      );
+
+      if (!groqResponse.ok) {
+        const errorText = await groqResponse.text();
+        console.error("Groq API error:", errorText);
+        throw new Error("Groq API request failed");
+      }
+
+      const groqData = await groqResponse.json();
+
+      const rawGroqReview = groqData?.choices?.[0]?.message?.content;
+
+      const groqReview = cleanReviewText(rawGroqReview);
+
+      if (!groqReview) {
+        throw new Error("Groq returned no review");
+      }
+
+      console.log("AI PROVIDER USED: GROQ");
+
+      return groqReview;
+    };
+
+    /* ============================================================
+       15. GEMINI BACKUP
     ============================================================ */
 
     const generateWithGemini = async () => {
@@ -780,7 +831,8 @@ No hashtags.`;
         throw new Error("GEMINI_API_KEY is missing");
       }
 
-      const maxRetries = 3;
+      // Backup hai, isliye sirf 2 koshish
+      const maxRetries = 2;
       let response;
 
       for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -851,103 +903,53 @@ No hashtags.`;
     };
 
     /* ============================================================
-       15. GROQ BACKUP
-    ============================================================ */
-
-    const generateWithGroq = async () => {
-      if (!process.env.GROQ_API_KEY) {
-        throw new Error("GROQ_API_KEY is missing");
-      }
-
-      const groqResponse = await fetchWithTimeout(
-        "https://api.groq.com/openai/v1/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.GROQ_API_KEY}`
-          },
-          body: JSON.stringify({
-            model: "openai/gpt-oss-20b",
-            messages: [{ role: "user", content: prompt }],
-            temperature: AI_TEMPERATURE,
-            max_completion_tokens: 500,
-            reasoning_effort: "low",
-            include_reasoning: false
-          })
-        },
-        GROQ_TIMEOUT_MS
-      );
-
-      if (!groqResponse.ok) {
-        const errorText = await groqResponse.text();
-        console.error("Groq API error:", errorText);
-        throw new Error("Groq API request failed");
-      }
-
-      const groqData = await groqResponse.json();
-
-      const rawGroqReview = groqData?.choices?.[0]?.message?.content;
-
-      const groqReview = cleanReviewText(rawGroqReview);
-
-      if (!groqReview) {
-        throw new Error("Groq returned no review");
-      }
-
-      console.log("AI PROVIDER USED: GROQ");
-
-      return groqReview;
-    };
-
-    /* ============================================================
-       16. GEMINI + GROQ (jo pehle jawab de wahi use hoga)
-       - Gemini pehle chalta hai.
-       - 5 second mein jawab na aaye to Groq bhi chalu.
-       - Gemini fail ho jaye to Groq turant chalu.
+       16. GROQ + GEMINI (jo pehle jawab de wahi use hoga)
+       - Groq pehle chalta hai.
+       - 2.5 second mein jawab na aaye to Gemini bhi chalu.
+       - Groq fail ho jaye to Gemini turant chalu.
        - Jo pehle review de, wahi customer ko jata hai.
     ============================================================ */
 
-    const geminiTask = generateWithGemini().then(review => ({
+    const groqTask = generateWithGroq().then(review => ({
       review,
-      provider: "gemini"
+      provider: "groq"
     }));
 
-    const groqTask = new Promise((resolve, reject) => {
-      let groqStarted = false;
+    const geminiTask = new Promise((resolve, reject) => {
+      let geminiStarted = false;
 
-      const startGroq = () => {
-        if (groqStarted) return;
-        groqStarted = true;
+      const startGemini = () => {
+        if (geminiStarted) return;
+        geminiStarted = true;
 
-        generateWithGroq().then(
-          review => resolve({ review, provider: "groq" }),
+        generateWithGemini().then(
+          review => resolve({ review, provider: "gemini" }),
           reject
         );
       };
 
-      // Gemini der kare to Groq bhi chalu
-      const timer = setTimeout(startGroq, HEDGE_DELAY_MS);
+      // Groq der kare to Gemini bhi chalu
+      const timer = setTimeout(startGemini, HEDGE_DELAY_MS);
 
-      geminiTask.then(
+      groqTask.then(
         () => {
-          // Gemini jaldi aa gaya, Groq ki zaroorat nahi
+          // Groq jaldi aa gaya, Gemini ki zaroorat nahi
           clearTimeout(timer);
         },
         error => {
-          // Gemini fail ho gaya, Groq turant chalu
+          // Groq fail ho gaya, Gemini turant chalu
           console.error(
-            "Gemini failed. Starting Groq backup...",
+            "Groq failed. Starting Gemini backup...",
             error
           );
           clearTimeout(timer);
-          startGroq();
+          startGemini();
         }
       );
     });
 
     try {
-      const result = await Promise.any([geminiTask, groqTask]);
+      const result = await Promise.any([groqTask, geminiTask]);
 
       console.log(
         `REVIEW READY IN ${Date.now() - startedAt} ms (provider: ${result.provider})`
