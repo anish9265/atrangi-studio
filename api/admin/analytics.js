@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
 
   if (req.method !== "GET") {
     return res.status(405).json({
@@ -7,10 +7,6 @@ export default async function handler(req, res) {
   }
 
   try {
-
-    // -------------------------
-    // Check admin login
-    // -------------------------
 
     const authorization =
       req.headers.authorization || "";
@@ -22,11 +18,7 @@ export default async function handler(req, res) {
     }
 
     const accessToken =
-      authorization.replace("Bearer ", "");
-
-    // -------------------------
-    // Supabase settings
-    // -------------------------
+      authorization.replace("Bearer ", "").trim();
 
     const supabaseUrl =
       process.env.SUPABASE_URL;
@@ -49,10 +41,6 @@ export default async function handler(req, res) {
     const supabaseRestUrl =
       `${baseUrl}/rest/v1`;
 
-    // -------------------------
-    // Verify logged-in user
-    // -------------------------
-
     const userResponse = await fetch(
       `${baseUrl}/auth/v1/user`,
       {
@@ -73,25 +61,19 @@ export default async function handler(req, res) {
     const user =
       await userResponse.json();
 
-    // -------------------------
-    // Admin email check
-    // -------------------------
-
     const adminEmail =
       process.env.ADMIN_EMAIL;
 
     if (
       !adminEmail ||
-      user.email !== adminEmail
+      !user.email ||
+      user.email.toLowerCase() !==
+        adminEmail.toLowerCase()
     ) {
       return res.status(403).json({
         error: "Access denied"
       });
     }
-
-    // -------------------------
-    // Month
-    // -------------------------
 
     const month =
       req.query.month;
@@ -108,10 +90,6 @@ export default async function handler(req, res) {
 
     const monthDate =
       `${month}-01`;
-
-    // -------------------------
-    // Get businesses
-    // -------------------------
 
     const businessesResponse =
       await fetch(
@@ -133,10 +111,6 @@ export default async function handler(req, res) {
 
     const businesses =
       await businessesResponse.json();
-
-    // -------------------------
-    // Get monthly summaries
-    // -------------------------
 
     const summariesResponse =
       await fetch(
@@ -162,28 +136,17 @@ export default async function handler(req, res) {
     const summaries =
       await summariesResponse.json();
 
-    // -------------------------
-    // Match businesses
-    // with monthly summaries
-    // -------------------------
-
     const summaryMap =
       new Map();
 
     summaries.forEach(
       (summary) => {
-
         summaryMap.set(
           Number(summary.business_id),
           summary
         );
-
       }
     );
-
-    // -------------------------
-    // Create analytics
-    // -------------------------
 
     const analytics =
       businesses.map(
@@ -212,44 +175,28 @@ export default async function handler(req, res) {
               business.active,
 
             page_views:
-              Number(
-                summary?.page_views || 0
-              ),
+              Number(summary?.page_views || 0),
 
             reviews_generated:
-              Number(
-                summary?.reviews_generated || 0
-              ),
+              Number(summary?.reviews_generated || 0),
 
             google_clicks:
-              Number(
-                summary?.google_clicks || 0
-              ),
+              Number(summary?.google_clicks || 0),
 
             rating_1:
-              Number(
-                summary?.rating_1 || 0
-              ),
+              Number(summary?.rating_1 || 0),
 
             rating_2:
-              Number(
-                summary?.rating_2 || 0
-              ),
+              Number(summary?.rating_2 || 0),
 
             rating_3:
-              Number(
-                summary?.rating_3 || 0
-              ),
+              Number(summary?.rating_3 || 0),
 
             rating_4:
-              Number(
-                summary?.rating_4 || 0
-              ),
+              Number(summary?.rating_4 || 0),
 
             rating_5:
-              Number(
-                summary?.rating_5 || 0
-              )
+              Number(summary?.rating_5 || 0)
           };
 
         }
@@ -275,4 +222,4 @@ export default async function handler(req, res) {
 
   }
 
-}
+};
