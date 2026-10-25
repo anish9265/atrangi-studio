@@ -108,10 +108,9 @@ export async function onRequestPost(context) {
 
     const supabaseRestUrl = `${baseUrl}/rest/v1`;
 
-    const supabaseHeaders = {
-      apikey: serviceRoleKey,
-      Authorization: `Bearer ${serviceRoleKey}`
-    };
+    const supabaseHeaders = serviceRoleKey.startsWith("sb_")
+      ? { apikey: serviceRoleKey }
+      : { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` };
 
     // Check: business sach mein hai aur active hai
     const checkResponse = await fetch(
